@@ -1,0 +1,196 @@
+::-webkit-scrollbar {
+  width: 0.5px;
+  // border-radius: 6px;
+}
+.acc-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.acc-popup-inner {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 90%;
+  overflow-y: auto;
+  .detail {
+    margin-right: 21px;
+  }
+  .detail-update {
+    margin-right: 21px;
+  }
+}
+
+.acc-close-btn {
+  border: none;
+  background-color: transparent;
+  font-size: 30px;
+  cursor: pointer;
+  color: gray;
+}
+
+.acc-title-pop {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  // border-bottom: 1px solid gray;
+  font-weight: bold;
+  font-size: 20px;
+  align-self: center;
+  .underline {
+    position: absolute;
+    width: 940px;
+    bottom: 0;
+    left: -20px;
+    border-bottom: 0.5px solid rgb(184, 184, 184);
+  }
+}
+
+.acc-title {
+  margin-top: 10px;
+  display: flex;
+  color: white;
+  justify-content: space-between;
+  padding: 10px 10px 10px 23px;
+  background-color: #468faf;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  font-size: 17px;
+}
+.acc-text-input-update {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-bottom: 30px;
+  input[type="text"] {
+    width: 80%;
+    height: 30px;
+    margin-left: 3%;
+    border-radius: 5px;
+    border: 1px solid;
+  }
+  input[type="password"] {
+    width: 80%;
+    height: 30px;
+    margin-left: 3%;
+    border-radius: 5px;
+    border: 1px solid;
+  }
+  input[type="confirm_password"] {
+    width: 80%;
+    height: 30px;
+    margin-left: 27px;
+    border-radius: 5px;
+    border: 1px solid;
+  }
+}
+.acc-text-input {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-bottom: 30px;
+  margin-top: 30px;
+  input[type="text"] {
+    width: 80%;
+    height: 30px;
+    margin-left: 3%;
+    border-radius: 5px;
+    border: 1px solid;
+  }
+  input[type="password"] {
+    width: 80%;
+    height: 30px;
+    margin-left: 3%;
+    border-radius: 5px;
+    border: 1px solid;
+  }
+  input[type="confirm_password"] {
+    width: 80%;
+    height: 30px;
+    margin-left: 27px;
+    border-radius: 5px;
+    border: 1px solid;
+  }
+}
+
+.role-acc {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-bottom: 30px;
+  margin-top: 30px;
+  .role-select {
+    width: 710px;
+    height: 36px;
+    margin-left: 27px;
+    border-color: black;
+    border-radius: 5px;
+    .select-selected {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+.pass-text-input {
+  display: flex;
+  justify-content: right;
+  align-self: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  input[type="password"] {
+    width: 79%;
+    height: 30px;
+    margin-left: 1%;
+    border-radius: 5px;
+  }
+}
+
+.acc-footer-pop {
+  position: relative;
+  display: flex;
+  justify-content: right;
+  font-size: 18px;
+  padding-top: 100px;
+  align-self: center;
+  .cancel-btn {
+    width: 15%;
+    height: 35px;
+    border-radius: 5px;
+    border: 0.5px solid;
+  }
+  .save-btn {
+    width: 15%;
+    height: 35px;
+    margin-left: 15px;
+    color: white;
+    background-color: #468faf;
+    border: 0.5px solid black;
+    border-radius: 5px;
+  }
+  .underline {
+    position: absolute;
+    width: 940px;
+    top: 80px;
+    left: -20px;
+    border-bottom: 0.5px solid rgb(184, 184, 184);
+  }
+}
+
+.confirm-pass {
+  width: 85%;
+}
+
+.acc-dropped {
+  height: 0;
+}

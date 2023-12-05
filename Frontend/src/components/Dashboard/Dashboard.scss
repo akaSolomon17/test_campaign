@@ -1,0 +1,49 @@
+.dash-grid {
+  overflow: auto;
+  width: 100%;
+  gap: 20px;
+}
+
+.dash-search-container {
+  display: flex;
+  position: relative;
+  direction: flex;
+  flex-direction: row;
+  padding: 30px 50px 20px 50px;
+  align-items: center;
+  input {
+    padding: 15px;
+    width: 250px;
+    font-size: medium;
+  }
+  #startDateTimePicker {
+    position: absolute;
+    right: 440px;
+    border: none;
+    border-bottom: 1px solid #9e9e9e;
+    padding: 10px;
+    font-size: medium;
+    font-family: "Arial", sans-serif;
+  }
+  #endDateTimePicker {
+    position: absolute;
+    right: 50px;
+    border: none;
+    border-bottom: 1px solid #9e9e9e;
+    padding: 10px;
+    font-size: medium;
+    font-family: "Arial", sans-serif;
+  }
+  #label-start-time {
+    position: absolute;
+    right: 720px;
+    font-weight: 500;
+    margin: 5px 10px 0px 10px;
+  }
+  #label-end-time {
+    position: absolute;
+    right: 325px;
+    font-weight: 500;
+    margin: 5px 10px 0px 10px;
+  }
+}

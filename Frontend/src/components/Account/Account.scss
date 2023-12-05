@@ -1,0 +1,64 @@
+.account {
+  width: 100%;
+  padding: 138px 50px;
+  overflow: auto;
+}
+
+.acc-filter-bar {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+.acc-search-container {
+  #search-bar {
+    padding: 15px;
+    width: 250px;
+    font-size: medium;
+  }
+}
+
+.acc-nodata-text {
+  display: flex;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+// .acc-func-btn{
+//   .acc-export-btn{
+//     background-color: #468faf;
+//     color: white;
+//     border: None;
+//     padding: 10px;
+//     border-radius: 5px;
+//     margin-right: 5px;
+//     text-decoration: none;
+//   }
+//     button{
+//       background-color: #468faf;
+//       color: white;
+//       border: None;
+//       padding: 10px;
+//       border-radius: 5px;
+//       margin-right: 5px;
+//       font-size: 17px;
+//     }
+// }
+.acc-export-btn {
+  margin-right: 10px;
+}
+
+.acc-button {
+  background-color: #468faf;
+  color: white;
+  border: None;
+  border-radius: 5px;
+  text-decoration: none;
+  padding: 15px;
+  font-family: "Arial", sans-serif;
+  font-size: 15.5px;
+  text-decoration: none;
+  cursor: pointer;
+}

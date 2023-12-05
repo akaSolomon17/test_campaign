@@ -1,0 +1,6 @@
+export const WRONG_CONFIRM_PASSWORD  = 'WRONG_CONFIRM_PASSWORD'
+export const ADD_NEW_ACCOUNT_SUCCESSFULLY = 'ADD NEW ACCOUNT SUCCESSFULLY!'
+export const ERROR_ADD_NEW_ACCOUNT_FAILED = 'ERROR ADD NEW ACCOUNT FAILED!'
+export const INVALID_EMAIL = 'Invalid email'
+export const INVALID_PASSWORD = 'Password must contain at least 8 characters, including uppercase, lowercase, and numbers'
+export const INVALID_PHONE = 'Invalid phone number. Please enter a 10-digit phone number'

@@ -1,0 +1,49 @@
+.camp-table-data {
+  width: 100%;
+  height: 70vh;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  table {
+    margin: auto;
+    border: 2px solid rgb(0, 0, 0);
+    width: 94%;
+    min-width: 800px;
+    border-collapse: collapse;
+    overflow: auto;
+    th {
+      border: 2px solid black;
+      background-color: #468faf;
+      color: white;
+      height: 50px;
+    }
+
+    td {
+      text-align: center;
+      border: 2px solid black;
+      align-self: center;
+      padding: 10px;
+      img {
+        padding-right: 10px;
+        width: 40px;
+        height: 40px;
+      }
+    }
+    .valid {
+      color: green;
+    }
+    .invalid {
+      color: red;
+    }
+  }
+
+  .btn {
+    margin: 0px 10px 0px 10px;
+  }
+}
+.pagination-container {
+  ul {
+    justify-content: center;
+    padding-top: 20px;
+  }
+}

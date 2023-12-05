@@ -1,0 +1,26 @@
+.tableFooter {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+    height: 40px;
+}
+
+.button {
+    border: none;
+    padding: 7px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-right: 4px;
+    margin-left: 4px;
+}
+
+.activeButton {
+    color: white;
+    background: #468faf;
+}
+
+.inactiveButton {
+    color: #468faf;
+    background: #f9f9f9;
+}
+
