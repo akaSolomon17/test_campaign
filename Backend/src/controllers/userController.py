@@ -108,6 +108,7 @@ class getAccessToken(Resource):
             
             user = jwt.decode(refresh_token, REFRESH_TOKEN_SECRET, algorithms=["HS256"])
             user_id = user['user_id']
+            refreshTokenEXP = user['exp']
             
             User = Users.query.filter_by(user_id = user_id).one_or_404()
             
@@ -119,8 +120,10 @@ class getAccessToken(Resource):
                 jwt.decode(refresh_token,REFRESH_TOKEN_SECRET,"HS256")
 
                 access_token = createAccessToken(User.user_id,User.role_id)
-                
-                return access_token
+                accessToken = jwt.decode(access_token,ACCESS_TOKEN_SECRET,algorithms=["HS256"])
+                accessTokenEXP = accessToken['exp']
+
+                return {"access_token":access_token,"refresh_token":refresh_token,"refreshTokenEXP":refreshTokenEXP,"accessTokenEXP":accessTokenEXP}
             except InvalidTokenError:
                 return errConfig.statusCode("Invalid token",401)
             except DecodeError:

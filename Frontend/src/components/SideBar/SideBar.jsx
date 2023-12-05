@@ -15,17 +15,17 @@ const SideBar = (props) => {
 
   return (
     <div
-      className={`${"side-bar"} 
+      className={`${"side-bar"}
             ${props.show ? "" : "hidden"}`}
     >
       <div className="user-info">
         <div className="logo-user">
-          <img alt="#" src={props.user.user?.avatar} />
+          <img alt="#" src={props.user?.avatar} />
         </div>
         <div className={"name-user"}>
           <p>
-            {props.user
-              ? props.user.user?.first_name + " " + props.user.user?.last_name
+            {props
+              ? props.user?.first_name + " " + props.user?.last_name
               : "Please sign in"}
           </p>
         </div>

@@ -28,7 +28,7 @@ const Navbar = (props) => {
         alt="logo"
         className="logo"
         onClick={logOut}
-        src={props.user.user?.avatar}
+        src={props.user?.avatar}
       />
     </ul>
   );

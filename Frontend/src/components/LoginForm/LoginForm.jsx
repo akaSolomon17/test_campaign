@@ -16,6 +16,7 @@ import {
   showSuccessMsg,
   showErrMsg,
 } from "../../utils/Notification/Notification";
+import { loginAction } from "../../store/actions/authActions";
 
 const initialState = {
   email: "",
@@ -41,18 +42,22 @@ const LoginForm = () => {
     e.preventDefault();
     dispatch(turnOnLoading());
     try {
-      const res = await AccountServices.userLogin({
-        email,
-        password,
-      });
+      // const res = await AccountServices.userLogin({
+      //   email,
+      //   password,
+      // });
+      // setUser({ ...user, err: "", success: res.data.msg });
+      // const resToken = await AccountServices.getAccessToken(null);
 
-      setUser({ ...user, err: "", success: res.data.msg });
+      // localStorage.setItem("firstLogin", true);
+      // localStorage.setItem("access_token", resToken.data.access_token);
+      // localStorage.setItem("refresh_token", resToken.data.refresh_token);
 
-      localStorage.setItem("firstLogin", true);
-
-      dispatch(dispatchLogin());
-      dispatch(turnOffLoading());
-      navigate("/");
+      // dispatch(dispatchLogin());
+      // dispatch(turnOffLoading());
+      // navigate("/");
+      const loginData = { email, password };
+      dispatch(loginAction(loginData, navigate));
     } catch (err) {
       dispatch(turnOffLoading());
       err.message && setUser({ ...user, err: err.message, success: "" });

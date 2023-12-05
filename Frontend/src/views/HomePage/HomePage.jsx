@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 const HomePage = () => {
   const [openMenu, setOpenMenu] = useState(OPEN_DASHBOARD);
   const [isOpenSideBar, setIsOpenSideBar] = useState(true);
-  const currentUser = useSelector((state) => state.auth?.user);
+  const currentUser = useSelector((state) => state.auth?.currentUser);
 
   function openSideBar() {
     return setIsOpenSideBar(!isOpenSideBar);
