@@ -119,10 +119,6 @@ export const updateAccountAction = (dataAcc, api) => {
     dispatch(updateAccountStart());
     try {
       const res = await accountServices.updateAccount(dataAcc, api);
-      console.log(
-        "🚀 ~ file: accountAction.js:122 ~ return ~ res update:",
-        res
-      );
       // if (res.status === 200) {
       //   dispatch(fetchListAccountAction(api));
       // } else {

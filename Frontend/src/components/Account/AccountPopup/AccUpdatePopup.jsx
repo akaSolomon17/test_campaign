@@ -17,7 +17,7 @@ const AccPopup = (props) => {
     address: props.record ? props.record.address : "",
     role: props.record ? props.record.role_id : "",
     lastname: props.record ? props.record.last_name : "",
-    id: props.record ? props.record.user_id : "",
+    user_id: props.record ? props.record.user_id : "",
   });
 
   const handlePhoneChange = (event) => {
@@ -40,7 +40,7 @@ const AccPopup = (props) => {
     setUser((prevUser) => ({ ...prevUser, role: event.target.value }));
   };
 
-  const emailRef = useRef();
+  // const emailRef = useRef();
   const firstNameRef = useRef();
   const lastNameRef = useRef();
   const roleRef = useRef();
@@ -56,32 +56,39 @@ const AccPopup = (props) => {
     setDropDetail(!isDropDetail);
   };
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = emailRef.current.value;
+    // const email = emailRef.current.value;
     const firstName = firstNameRef.current.value;
     const lastName = lastNameRef.current.value;
     const role = roleRef.current.value;
     const address = addressRef.current.value;
     const phone = phoneRef.current.value;
-    const id = idRef.current.value;
 
     const dataAcc = {
       // email: email,
-      user_id: id,
+      user_id: user.user_id,
       first_name: firstName,
       last_name: lastName,
-      role: role,
+      role_id: role,
       address: address,
       phone: phone,
     };
-    console.log(
-      "🚀 ~ file: AccUpdatePopup.jsx:78 ~ handleSubmit ~ dataAcc:",
-      dataAcc
+    const user_str = user.user_id;
+    dispatch(
+      updateAccountAction(
+        {
+          user_id: user_str,
+          first_name: firstName,
+          last_name: lastName,
+          role_id: role,
+          address: address,
+          phone: phone,
+        },
+        api
+      )
     );
-
-    dispatch(updateAccountAction(dataAcc, api));
-
+    closePopup();
     // try {
     //   const res = await AccountServices.updateAccount(dataAcc, token);
     //   console.log(res);
@@ -90,7 +97,7 @@ const AccPopup = (props) => {
     // } catch (error) {
     //   alert("UPDATE ACCOUNT FAILED!");
     // }
-  }
+  };
 
   return (
     <div className="acc-popup">
@@ -112,12 +119,9 @@ const AccPopup = (props) => {
           className={`${"detail-update"} ${isDropDetail ? "" : "acc-dropped"}`}
         >
           <div className="acc-text-input-update">
-            <input ref={idRef} value={user.id} type="hidden" name="name" />
-          </div>
-          <div className="acc-text-input-update">
             Email:
             <input
-              ref={emailRef}
+              // ref={emailRef}
               readOnly={true}
               value={user.email}
               type="text"

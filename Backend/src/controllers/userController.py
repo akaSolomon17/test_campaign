@@ -31,7 +31,7 @@ ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
 def createRefreshToken(user_id, role_id):
     gmt7 = pytz.timezone('Asia/Ho_Chi_Minh')
 
-    exp_time_gmt7 = datetime.now().astimezone(gmt7) + timedelta(minutes=10)
+    exp_time_gmt7 = datetime.now().astimezone(gmt7) + timedelta(days=7)
     payload = {
         "user_id": user_id,
         "role_id": role_id,
@@ -43,7 +43,7 @@ def createRefreshToken(user_id, role_id):
 def createAccessToken(user_id, role_id):
     gmt7 = pytz.timezone('Asia/Ho_Chi_Minh')
 
-    exp_time_gmt7 = datetime.now().astimezone(gmt7) + timedelta(seconds=60)
+    exp_time_gmt7 = datetime.now().astimezone(gmt7) + timedelta(minutes=15)
     
     payload = {
         "user_id": user_id,
@@ -156,13 +156,13 @@ class getAccessToken(Resource):
             
             user = jwt.decode(refresh_token, REFRESH_TOKEN_SECRET, algorithms=["HS256"])
             user_id = user['user_id']
+            print(user_id)
             refreshEXP = user['exp']
             datetime_object_gmt7 = datetime.fromtimestamp(refreshEXP, tz=pytz.timezone('Asia/Ho_Chi_Minh'))
-            print(datetime_object_gmt7)
             
             currentTime = datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))
-            print(currentTime)
-            User = Users.query.filter_by(user_id = user_id).one_or_404()
+
+            User = Users.query.filter_by(user_id = user_id).one()
             if datetime_object_gmt7 < currentTime:
                 return errConfig.statusCode("Expired refresh token",403)
             
@@ -301,39 +301,44 @@ class addUser(Resource):
             return errConfig.statusCode(str(e),500)
 # UPDATE USER
 class updateUser(Resource):
-    # @authMiddleware
-    # @authMiddlewareAdmin
-    def put(self):
+    @authMiddleware
+    @authMiddlewareAdmin
+    def post(self):
         from initSQL import db
         from models.userModel import Users
         
         try:
-            json = request.get_json()
-            user_id = json["user_id"]
-            first_name = json['first_name']
-            last_name = json['last_name']
-            role_id = json['role_id']
-            address = json['address']
-            phone = json['phone']
-            print("BUG!")
-            
-            user = Users.query.filter_by(user_id=user_id).first()
-            user.first_name = first_name
-            user.last_name = last_name
-            user.role_id = role_id
-            user.address = address
-            user.phone = phone
-            update_user = {
-                first_name,
-                last_name,
-                role_id,
-                address,
-                phone
-            }
-            print(update_user)
-            db.session.commit()
-            
-            return errConfig.statusCode('Update user successfully!')
+            content_type = request.headers.get('Content-Type')
+            if content_type == "application/json":
+                json = request.get_json()
+                if "first_name" not in json:
+                    return errConfig.statusCode('"first" is required in the request JSON!', 401)
+                address = json['address']
+                first_name = json['first_name']
+                last_name = json['last_name']
+                phone = json['phone']
+                role_id = json['role_id']
+                user_id = json['user_id']
+                
+                user = Users.query.filter_by(user_id=user_id).one()
+                user.first_name = first_name
+                user.last_name = last_name
+                user.role_id = role_id
+                user.address = address
+                user.phone = phone
+                
+                update_user = {
+                    user_id,
+                    first_name,
+                    last_name,
+                    role_id,
+                    address,
+                    phone
+                }
+                print(update_user)
+                db.session.commit()
+                
+                return errConfig.statusCode('Update user successfully!')
         except Exception as e:
             return errConfig.statusCode(str(e),401)
 # DELETE ALL USERS

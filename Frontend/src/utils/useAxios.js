@@ -25,13 +25,20 @@ const useAxios = () => {
             `${baseURL}/api/refresh_token`,
             { refresh_token: currentUser.refresh_token }
           );
+          console.log(
+            "🚀 ~ file: useAxios.js:38 ~ new_acc_token:",
+            resRefreshToken.data.new_acc_token
+          );
           const refreshUser = {
             ...currentUser,
             access_token: resRefreshToken.data.new_acc_token,
+
             access_token_exp: resRefreshToken.data.access_token_exp,
           };
+
           dispatch(loginSuccess(refreshUser));
           req.headers.Authorization = `${resRefreshToken.data.new_acc_token}`;
+
           return req;
         } else {
           dispatch(logoutAction(currentUser, navigate));
