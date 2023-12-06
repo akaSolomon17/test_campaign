@@ -6,6 +6,8 @@ import {
   LOGIN_START,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
+  GET_USER,
+  GET_ALL_USERS,
 } from "../types/authType";
 import AccountServices from "../../services/AccountServices";
 
@@ -41,6 +43,39 @@ export const loginAction = (loginData, navigate) => {
     }
   };
 };
+
+// Lấy bên redux
+export const fetchUser = async (token) => {
+  const res = await AccountServices.searchAccount({
+    headers: { Authorization: token },
+  });
+  return res;
+};
+
+export const dispatchGetUser = (res) => {
+  return {
+    type: GET_USER,
+    payload: {
+      user: res.data,
+      isAdmin: res.data.role_id === "ADMIN" ? true : false,
+    },
+  };
+};
+export const fetchAllUsers = async (token) => {
+  const res = await AccountServices.getAllAccount({
+    headers: { Authorization: token },
+  });
+  return res;
+};
+
+export const dispatchGetAllUsers = (res) => {
+  return {
+    type: GET_ALL_USERS,
+    payload: res.data,
+  };
+};
+//
+
 export const loginStart = () => {
   return {
     type: LOGIN_START,

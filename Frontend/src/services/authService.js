@@ -16,8 +16,24 @@ export const authServices = {
     });
   },
   getUserInfor: (api) => {
-    let res = api.get("api/profile");
+    let res = api.get(`/api/user_info`);
     return res;
+  },
+  getAllUserInfor: (api) => {
+    let res = api.get("/api/all_user_info");
+    return res;
+  },
+  updateUser: () => {
+    return axios({
+      url: `${BACKEND_DOMAIN}/api/update_user`,
+      method: "PUT",
+    });
+  },
+  deleteUser: () => {
+    return axios({
+      url: `${BACKEND_DOMAIN}/api/delete_user`,
+      method: "DELETE",
+    });
   },
   logout: (refresh_token, access_token) => {
     return axios({
