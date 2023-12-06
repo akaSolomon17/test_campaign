@@ -245,7 +245,7 @@ class logout(Resource):
 class deleteUser(Resource):
     @authMiddleware
     @authMiddlewareAdmin
-    def delete(self):
+    def post(self):
         from initSQL import db
         from models.userModel import Users
         
@@ -301,7 +301,8 @@ class addUser(Resource):
             return errConfig.statusCode(str(e),500)
 # UPDATE USER
 class updateUser(Resource):
-    @authMiddlewareAdmin
+    # @authMiddleware
+    # @authMiddlewareAdmin
     def put(self):
         from initSQL import db
         from models.userModel import Users
@@ -314,7 +315,7 @@ class updateUser(Resource):
             role_id = json['role_id']
             address = json['address']
             phone = json['phone']
-        
+            print("BUG!")
             
             user = Users.query.filter_by(user_id=user_id).first()
             user.first_name = first_name
@@ -322,7 +323,14 @@ class updateUser(Resource):
             user.role_id = role_id
             user.address = address
             user.phone = phone
-            
+            update_user = {
+                first_name,
+                last_name,
+                role_id,
+                address,
+                phone
+            }
+            print(update_user)
             db.session.commit()
             
             return errConfig.statusCode('Update user successfully!')

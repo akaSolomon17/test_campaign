@@ -2,10 +2,13 @@ import React, { useRef, useState } from "react";
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import "./AccPopup.scss";
 // import AccountServices from "../../../services/AccountServices";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import useAxios from "../../../utils/useAxios";
+import { updateAccountAction } from "../../../store/actions/accountAction";
 
 const AccPopup = (props) => {
-  const token = useSelector((state) => state.token);
+  const api = useAxios();
+  const dispatch = useDispatch();
   const [isDropDetail, setDropDetail] = useState(true);
   const [user, setUser] = useState({
     firstname: props.record ? props.record.first_name : "",
@@ -14,7 +17,7 @@ const AccPopup = (props) => {
     address: props.record ? props.record.address : "",
     role: props.record ? props.record.role_id : "",
     lastname: props.record ? props.record.last_name : "",
-    // id: props.record ? props.record.user_id : "",
+    id: props.record ? props.record.user_id : "",
   });
 
   const handlePhoneChange = (event) => {
@@ -55,22 +58,30 @@ const AccPopup = (props) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     const email = emailRef.current.value;
     const firstName = firstNameRef.current.value;
     const lastName = lastNameRef.current.value;
     const role = roleRef.current.value;
     const address = addressRef.current.value;
     const phone = phoneRef.current.value;
-    // const id = idRef.current.value;
+    const id = idRef.current.value;
+
     const dataAcc = {
-      email: email,
+      // email: email,
+      user_id: id,
       first_name: firstName,
       last_name: lastName,
-      role: parseInt(role),
+      role: role,
       address: address,
       phone: phone,
     };
+    console.log(
+      "🚀 ~ file: AccUpdatePopup.jsx:78 ~ handleSubmit ~ dataAcc:",
+      dataAcc
+    );
+
+    dispatch(updateAccountAction(dataAcc, api));
+
     // try {
     //   const res = await AccountServices.updateAccount(dataAcc, token);
     //   console.log(res);

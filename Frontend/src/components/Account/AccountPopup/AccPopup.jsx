@@ -9,16 +9,18 @@ import {
   INVALID_PASSWORD,
   INVALID_PHONE,
 } from "../../../containers/alertContainer";
-import AccountServices from "../../../services/accountServices";
+// import AccountServices from "../../../services/accountServices";
 // import AccountServices from "../../../services/AccountServices";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import useAxios from "../../../utils/useAxios";
+import { createAccountAction } from "../../../store/actions/accountAction";
 
 const initialState = {
   email: "",
   password: "",
   first_name: "",
   last_name: "",
-  role_id: "",
+  role_id: "ADMIN",
   address: "",
   phone: "",
   confirm_password: "",
@@ -27,8 +29,8 @@ const initialState = {
 };
 
 const AccPopup = (props) => {
-  const token = useSelector((state) => state.token);
-
+  const api = useAxios();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState(initialState);
   const [isDropDetail, setDropDetail] = useState(true);
 
@@ -38,11 +40,15 @@ const AccPopup = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("form data create account", formData);
+    dispatch(createAccountAction(formData, api));
+    closePopup();
+
     // try {
     //   const res = await AccountServices.postNewAccount(formData, token);
     //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     //   const passwordRegex =
-    //     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+    //     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/
     //   const phoneRegex = /^\d{10}$/;
     //   if (!emailRegex.test(formData.email)) {
     //     alert(INVALID_EMAIL);

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BACKEND_DOMAIN = "http://127.0.0.1:5000";
+const BACKEND_DOMAIN = process.env.REACT_APP_API_BASE_URL;
 export const authServices = {
   signin: (data) => {
     return axios({

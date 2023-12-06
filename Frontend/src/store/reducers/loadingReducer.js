@@ -1,24 +1,24 @@
-import { TURN_ON_LOADING, TURN_OFF_LOADING } from "../types/authType";
+// import { TURN_ON_LOADING, TURN_OFF_LOADING } from "../types/authType";
 
-const initialState = {
-  isLoading: false,
-};
+// const initialState = {
+//   isLoading: false,
+// };
 
-var loadingReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case TURN_ON_LOADING:
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case TURN_OFF_LOADING:
-      return {
-        ...state,
-        isLoading: false,
-      };
-    default:
-      return state;
-  }
-};
+// var loadingReducer = (state = initialState, action) => {
+//   switch (action.type) {
+//     case TURN_ON_LOADING:
+//       return {
+//         ...state,
+//         isLoading: true,
+//       };
+//     case TURN_OFF_LOADING:
+//       return {
+//         ...state,
+//         isLoading: false,
+//       };
+//     default:
+//       return state;
+//   }
+// };
 
-export default loadingReducer;
+// export default loadingReducer;

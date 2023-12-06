@@ -30,6 +30,7 @@ def initialRoutes(api):
     
     # [DELETE] DELETE ALL USERS
     api.add_resource(deleteAllUser,"/api/delete_all_user", endpoint="delete_all_user")
-    
+    # [PUT] UPDATE USER
+    api.add_resource(updateUser,"/api/update_user", endpoint="update_user")
     # [PUT] UPDATE USER
     api.add_resource(deleteAllUser,"/api/update_all_user", endpoint="update_all_user")

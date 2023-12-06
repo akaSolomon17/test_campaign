@@ -7,11 +7,15 @@ import { useDispatch } from "react-redux";
 
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
+import { deleteAccountAction } from "../../../store/actions/accountAction";
+import useAxios from "../../../utils/useAxios";
 
 const AccTable = (props) => {
+  const api = useAxios();
+  const listAccounts = props.listAccounts;
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isOpenPopup, setOpenPopup] = useState(false);
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
 
   const dispatch = useDispatch();
 
@@ -27,42 +31,22 @@ const AccTable = (props) => {
     setOpenPopup(!isOpenPopup);
   };
 
-  const handleChangePage = (event, value) => {
-    setPage(value);
-  };
+  // const handleChangePage = (event, value) => {
+  //   setPage(value);
+  // };
 
-  const rowsPerPage = 5;
+  // const rowsPerPage = 5;
 
-  const startIndex = (page - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
+  // const startIndex = (page - 1) * rowsPerPage;
+  // const endIndex = startIndex + rowsPerPage;
 
-  const slice = props.data || [];
-  const slice_data = slice.slice(startIndex, endIndex);
+  // const props_data = props || [];
+  // const slice_data = props_data.slice(startIndex, endIndex);
 
-  const count = Array.isArray(props.data) ? props.data.length : 0;
+  // const count = Array.isArray(props) ? props.length : 0;
 
-  function renderTable() {
-    return slice_data.map((user, key) => {
-      return (
-        <>
-          <tr key={user.user_id}>
-            <td>{user.user_id}</td>
-            <td>{`${user.first_name} ${user.last_name}`}</td>
-            <td>{user.email}</td>
-            <td>{user.address}</td>
-            <td>{user.phone}</td>
-            <td>{user.role_id}</td>
-            <td>
-              <AiFillEdit
-                className="btn"
-                onClick={() => handleEditClick(user)}
-              />
-              <AiFillDelete className="btn" />
-            </td>
-          </tr>
-        </>
-      );
-    });
+  function handleDeleteUser(user) {
+    dispatch(deleteAccountAction(user.user_id, api));
   }
 
   return (
@@ -80,13 +64,39 @@ const AccTable = (props) => {
           </tr>
         </thead>
 
-        <tbody>{renderTable()}</tbody>
+        <tbody>
+          {listAccounts &&
+            listAccounts.map((user, index) => {
+              return (
+                <React.Fragment key={index}>
+                  <tr>
+                    <td>{user.user_id}</td>
+                    <td>{`${user.first_name} ${user.last_name}`}</td>
+                    <td>{user.email}</td>
+                    <td>{user.address}</td>
+                    <td>{user.phone}</td>
+                    <td>{user.role_id}</td>
+                    <td>
+                      <AiFillEdit
+                        className="btn"
+                        onClick={() => handleEditClick(user)}
+                      />
+                      <AiFillDelete
+                        className="btn"
+                        onClick={() => handleDeleteUser(user)}
+                      />
+                    </td>
+                  </tr>
+                </React.Fragment>
+              );
+            })}
+        </tbody>
       </table>
       <Stack spacing={2} className="pagination-container">
         <Pagination
-          count={Math.ceil(count / rowsPerPage)} // Total number of pages
-          page={page}
-          onChange={handleChangePage}
+          // count={Math.ceil(count / rowsPerPage)} // Total number of pages
+          // page={page}
+          // onChange={handleChangePage}
           color="primary"
         />
       </Stack>
