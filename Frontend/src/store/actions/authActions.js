@@ -9,7 +9,7 @@ import {
   GET_USER,
   GET_ALL_USERS,
 } from "../types/authType";
-import AccountServices from "../../services/AccountServices";
+import AccountServices from "../../services/accountServices";
 
 // login action
 export const loginAction = (loginData, navigate) => {
@@ -17,21 +17,20 @@ export const loginAction = (loginData, navigate) => {
     try {
       const res = await authServices.signin(loginData);
       if (res.status === 200) {
-        const resToken = await AccountServices.getAccessToken();
-        const resUserInfo = await AccountServices.searchAccount({
-          headers: { Authorization: resToken.data.access_token },
-        });
-
         const authInformation = {
-          first_name: resUserInfo.data.first_name,
-          last_name: resUserInfo.data.last_name,
-          email: resUserInfo.data.email,
-          avatar: resUserInfo.data.avatar,
-          access_token: resToken.data.access_token,
-          access_token_exp: resToken.data.accessTokenEXP,
-          refresh_token: resToken.data.refresh_token,
-          refresh_token_exp: resToken.data.refreshTokenEXP,
+          first_name: res.data.user_info.first_name,
+          last_name: res.data.user_info.last_name,
+          email: res.data.user_info.email,
+          avatar: res.data.user_info.avatar,
+          access_token: res.data.access_token,
+          access_token_exp: res.data.access_exp,
+          refresh_token: res.data.refresh_token,
+          refresh_token_exp: res.data.refresh_exp,
         };
+        console.log(
+          "file: authActions.js:30 ~ authInformation:",
+          authInformation
+        );
         dispatch(loginSuccess(authInformation));
         return navigate("/");
       } else {
@@ -96,22 +95,24 @@ export const loginFailed = () => {
 export const logoutAction = (currentUser, navigate) => {
   return async (dispatch) => {
     try {
-      console.log("current user loggout: ", currentUser);
-      if (currentUser.access_token_exp > getDateTime()) {
-        await authServices.logout(
-          currentUser.refresh_token,
-          currentUser.access_token
-        );
-        await authServices.deleteRefreshToken(currentUser.refresh_token);
-        localStorage.clear();
-        dispatch(logoutSuccess());
-        navigate("/login");
-      } else {
-        await authServices.deleteRefreshToken(currentUser.refresh_token);
-        localStorage.clear();
-        dispatch(logoutSuccess());
-        navigate("/login");
-      }
+      // if (currentUser.access_token_exp > getDateTime()) {
+      //   await authServices.logout(
+      //     currentUser.refresh_token,
+      //     currentUser.access_token
+      //   );
+      //   await authServices.deleteRefreshToken(currentUser.refresh_token);
+      //   localStorage.clear();
+      //   dispatch(logoutSuccess());
+      //   navigate("/login");
+      // } else {
+      //   await authServices.deleteRefreshToken(currentUser.refresh_token);
+      //   localStorage.clear();
+      //   dispatch(logoutSuccess());
+      //   navigate("/login");
+      // }
+      // Xử lí logic logout gọi api logout xóa in4 user trên db
+      localStorage.clear();
+      navigate("/login");
     } catch (e) {}
   };
 };

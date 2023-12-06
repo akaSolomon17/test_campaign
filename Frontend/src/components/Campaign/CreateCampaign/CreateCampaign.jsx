@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import moment from "moment";
 import "./CreateCampaign.scss";
-import AccountServices from "../../../services/AccountServices";
+// import AccountServices from "../../../services/AccountServices";
 import { useSelector } from "react-redux";
 
 const CreateCampaign = (props) => {

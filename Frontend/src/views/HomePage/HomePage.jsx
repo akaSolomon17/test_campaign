@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import NavBar from "../../components/Navbar/Navbar";
 import Banner from "../../components/Banner/Banner";
 import SideBar from "../../components/SideBar/SideBar";
@@ -13,6 +13,7 @@ import Campaign from "../../components/Campaign/Campaign";
 import Dashboard from "../../components/Dashboard/Dashboard";
 
 import { useSelector } from "react-redux";
+import useAxios from "../../utils/useAxios";
 const HomePage = () => {
   const [openMenu, setOpenMenu] = useState(OPEN_DASHBOARD);
   const [isOpenSideBar, setIsOpenSideBar] = useState(true);
@@ -25,6 +26,15 @@ const HomePage = () => {
   function clickSideBar(changeValue) {
     return setOpenMenu(changeValue);
   }
+  const api = useAxios();
+  // khiem test axios custom
+  const getUserInfo = async () => {
+    const res = await api.get("/api/user_info");
+    console.log("file: HomePage.jsx:33 ~ res user_info:", res);
+  };
+  useEffect(() => {
+    getUserInfo();
+  }, []);
 
   return (
     <div className="home-page">

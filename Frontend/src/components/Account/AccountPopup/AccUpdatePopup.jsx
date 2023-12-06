@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import "./AccPopup.scss";
-import AccountServices from "../../../services/AccountServices";
+// import AccountServices from "../../../services/AccountServices";
 import { useSelector } from "react-redux";
 
 const AccPopup = (props) => {
@@ -71,14 +71,14 @@ const AccPopup = (props) => {
       address: address,
       phone: phone,
     };
-    try {
-      const res = await AccountServices.updateAccount(dataAcc, token);
-      console.log(res);
-      alert("UPDATE ACCOUNT SUCCESSFULLY!");
-      closePopup();
-    } catch (error) {
-      alert("UPDATE ACCOUNT FAILED!");
-    }
+    // try {
+    //   const res = await AccountServices.updateAccount(dataAcc, token);
+    //   console.log(res);
+    //   alert("UPDATE ACCOUNT SUCCESSFULLY!");
+    //   closePopup();
+    // } catch (error) {
+    //   alert("UPDATE ACCOUNT FAILED!");
+    // }
   }
 
   return (

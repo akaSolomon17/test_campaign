@@ -4,13 +4,13 @@ import { useDispatch } from "react-redux";
 import "./LoginForm.scss";
 
 import { useNavigate } from "react-router-dom";
-import { dispatchLogin } from "../../redux/actions/authAction";
+// import { dispatchLogin } from "../../redux/actions/authAction";
 import {
   turnOnLoading,
   turnOffLoading,
-} from "../../redux/actions/loadingAction";
+} from "../../store/actions/loadingActions";
 
-import AccountServices from "../../services/AccountServices";
+// import AccountServices from "../../services/AccountServices";
 
 import {
   showSuccessMsg,

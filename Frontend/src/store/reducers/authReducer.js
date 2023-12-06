@@ -3,7 +3,9 @@ import {
   LOGIN_START,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
+  GET_USER,
 } from "../types/authType";
+
 const initialState = {
   currentUser: null,
   // isLoading: false,
@@ -37,7 +39,13 @@ const authReducer = (state = initialState, action) => {
         // isLoading: false,
         error: false,
       };
-
+    case GET_USER:
+      return {
+        ...state,
+        user: action.payload,
+        token: action.payload.token,
+        isAdmin: action.payload.isAdmin,
+      };
     default:
       return state;
   }

@@ -9,7 +9,7 @@ export const authServices = {
       data,
     });
   },
-  getToken: () => {
+  getRefreshToken: () => {
     return axios({
       url: `${BACKEND_DOMAIN}/api/refresh_token`,
       method: "POST",
@@ -35,11 +35,10 @@ export const authServices = {
       method: "DELETE",
     });
   },
-  logout: (refresh_token, access_token) => {
+  logout: (access_token) => {
     return axios({
       method: "POST",
       url: `${BACKEND_DOMAIN}/api/logout`,
-      data: refresh_token,
       headers: {
         Authorization: `Bearer ${access_token}`,
       },

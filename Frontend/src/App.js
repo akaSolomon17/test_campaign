@@ -2,13 +2,13 @@ import React, { lazy, Suspense, useEffect } from "react";
 import PrivateRoute from "./router/PrivateRoute";
 import { useSelector, useDispatch } from "react-redux";
 import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
-import {
-  dispatchLogin,
-  fetchUser,
-  dispatchGetUser,
-} from "./redux/actions/authAction";
+// import {
+//   dispatchLogin,
+//   fetchUser,
+//   dispatchGetUser,
+// } from "./redux/actions/authAction";
 
-import AccountServices from "./services/AccountServices";
+// import AccountServices from "./services/AccountServices";
 import Loading from "./utils/Loading/Loading";
 import HomePage from "./views/HomePage/HomePage";
 import LoginPage from "./views/LoginPage/LoginPage";

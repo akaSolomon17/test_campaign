@@ -2,8 +2,8 @@ import React from "react";
 import "./Navbar.scss";
 import { TbLayoutSidebarRightExpandFilled } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/actions/authAction";
 import { useNavigate } from "react-router-dom";
+import { logoutAction } from "../../store/actions/authActions";
 
 const Navbar = (props) => {
   const navigate = useNavigate();
@@ -11,10 +11,8 @@ const Navbar = (props) => {
   function toggleClick() {
     props.openSideBar();
   }
-
   function logOut() {
-    dispatch(logout());
-    navigate("/");
+    dispatch(logoutAction(props.user, navigate));
   }
 
   return (

@@ -35,8 +35,11 @@ const AccTable = (props) => {
 
   const startIndex = (page - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
+
   const slice = props.data || [];
   const slice_data = slice.slice(startIndex, endIndex);
+
+  const count = Array.isArray(props.data) ? props.data.length : 0;
 
   function renderTable() {
     return slice_data.map((user, key) => {
@@ -61,8 +64,6 @@ const AccTable = (props) => {
       );
     });
   }
-
-  const count = Array.isArray(props.data) ? props.data.length : 0;
 
   return (
     <div className="acc-table-data">

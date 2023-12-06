@@ -9,7 +9,8 @@ import {
   INVALID_PASSWORD,
   INVALID_PHONE,
 } from "../../../containers/alertContainer";
-import AccountServices from "../../../services/AccountServices";
+import AccountServices from "../../../services/accountServices";
+// import AccountServices from "../../../services/AccountServices";
 import { useSelector } from "react-redux";
 
 const initialState = {
@@ -37,38 +38,33 @@ const AccPopup = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await AccountServices.postNewAccount(formData, token);
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const passwordRegex =
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-      const phoneRegex = /^\d{10}$/;
-
-      if (!emailRegex.test(formData.email)) {
-        alert(INVALID_EMAIL);
-        return;
-      }
-
-      if (!passwordRegex.test(formData.password)) {
-        alert(INVALID_PASSWORD);
-        return;
-      }
-
-      if (formData.password !== formData.confirm_password) {
-        alert(WRONG_CONFIRM_PASSWORD);
-        return;
-      }
-
-      if (!phoneRegex.test(formData.phone)) {
-        alert(INVALID_PHONE);
-        return;
-      }
-
-      alert(ADD_NEW_ACCOUNT_SUCCESSFULLY);
-      closePopup();
-    } catch (error) {
-      alert(ERROR_ADD_NEW_ACCOUNT_FAILED);
-    }
+    // try {
+    //   const res = await AccountServices.postNewAccount(formData, token);
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //   const passwordRegex =
+    //     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+    //   const phoneRegex = /^\d{10}$/;
+    //   if (!emailRegex.test(formData.email)) {
+    //     alert(INVALID_EMAIL);
+    //     return;
+    //   }
+    //   if (!passwordRegex.test(formData.password)) {
+    //     alert(INVALID_PASSWORD);
+    //     return;
+    //   }
+    //   if (formData.password !== formData.confirm_password) {
+    //     alert(WRONG_CONFIRM_PASSWORD);
+    //     return;
+    //   }
+    //   if (!phoneRegex.test(formData.phone)) {
+    //     alert(INVALID_PHONE);
+    //     return;
+    //   }
+    //   alert(ADD_NEW_ACCOUNT_SUCCESSFULLY);
+    //   closePopup();
+    // } catch (error) {
+    //   alert(ERROR_ADD_NEW_ACCOUNT_FAILED);
+    // }
   };
 
   const closePopup = () => {

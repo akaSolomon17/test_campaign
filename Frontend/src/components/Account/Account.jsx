@@ -5,10 +5,10 @@ import "./Account.scss";
 
 import { useDispatch, useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
-import {
-  fetchAllUsers,
-  dispatchGetAllUsers,
-} from "../../redux/actions/usersAction";
+// import {
+//   fetchAllUsers,
+//   dispatchGetAllUsers,
+// } from "../../redux/actions/usersAction";
 import {
   showErrMsg,
   showSuccessMsg,
@@ -42,12 +42,12 @@ const Account = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    fetchAllUsers(token).then((res) => {
-      dispatch(dispatchGetAllUsers(res));
-      setData([res.data]);
-    });
-  }, [token, dispatch]);
+  // useEffect(() => {
+  //   fetchAllUsers(token).then((res) => {
+  //     dispatch(dispatchGetAllUsers(res));
+  //     setData([res.data]);
+  //   });
+  // }, [token, dispatch]);
 
   function changePopup() {
     setOpenPopup(!isOpenPopup);
