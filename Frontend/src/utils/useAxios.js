@@ -25,10 +25,6 @@ const useAxios = () => {
             `${baseURL}/api/refresh_token`,
             { refresh_token: currentUser.refresh_token }
           );
-          console.log(
-            "🚀 ~ file: useAxios.js:38 ~ new_acc_token:",
-            resRefreshToken.data.new_acc_token
-          );
           const refreshUser = {
             ...currentUser,
             access_token: resRefreshToken.data.new_acc_token,

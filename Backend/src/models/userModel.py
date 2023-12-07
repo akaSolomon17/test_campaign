@@ -13,7 +13,7 @@ def generate_uuid():
     return   
   
 class Users(db.Model):
-  user_id = db.Column(db.NVARCHAR(36), primary_key=True, default=str(uuid.uuid4()))
+  user_id = db.Column(db.INT, primary_key=True,autoincrement=True)
   email = db.Column(db.NVARCHAR(120), nullable = False)
   password = db.Column(db.NVARCHAR(150), nullable = False)
   first_name = db.Column(db.VARCHAR(150), nullable = False)
@@ -38,4 +38,3 @@ class Users(db.Model):
     self.address = address
     self.phone = phone
     self.password = password
-

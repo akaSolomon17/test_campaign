@@ -1,24 +1,28 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import "./AccPopup.scss";
-// import AccountServices from "../../../services/AccountServices";
-import { useDispatch, useSelector } from "react-redux";
+
 import useAxios from "../../../utils/useAxios";
 import { updateAccountAction } from "../../../store/actions/accountAction";
 
-const AccPopup = (props) => {
-  const api = useAxios();
-  const dispatch = useDispatch();
-  const [isDropDetail, setDropDetail] = useState(true);
-  const [user, setUser] = useState({
+const AccUpdatePopup = (props) => {
+  const initialState = {
     firstname: props.record ? props.record.first_name : "",
     email: props.record ? props.record.email : "",
     phone: props.record ? props.record.phone : "",
     address: props.record ? props.record.address : "",
-    role: props.record ? props.record.role_id : "",
+    role_id: props.record ? props.record.role_id : "1",
     lastname: props.record ? props.record.last_name : "",
     user_id: props.record ? props.record.user_id : "",
-  });
+  };
+
+  const api = useAxios();
+  const dispatch = useDispatch();
+
+  const [user, setUser] = useState(initialState);
+  const [isDropDetail, setDropDetail] = useState(true);
 
   const handlePhoneChange = (event) => {
     setUser((prevUser) => ({ ...prevUser, phone: event.target.value }));
@@ -40,14 +44,6 @@ const AccPopup = (props) => {
     setUser((prevUser) => ({ ...prevUser, role: event.target.value }));
   };
 
-  // const emailRef = useRef();
-  const firstNameRef = useRef();
-  const lastNameRef = useRef();
-  const roleRef = useRef();
-  const addressRef = useRef();
-  const phoneRef = useRef();
-  const idRef = useRef();
-
   const closePopup = () => {
     props.onClose();
   };
@@ -58,37 +54,22 @@ const AccPopup = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const email = emailRef.current.value;
-    const firstName = firstNameRef.current.value;
-    const lastName = lastNameRef.current.value;
-    const role = roleRef.current.value;
-    const address = addressRef.current.value;
-    const phone = phoneRef.current.value;
+    try {
+      const updateData = {
+        user_id: user.user_id,
+        first_name: user.firstname,
+        last_name: user.lastname,
+        role_id: user.role_id,
+        address: user.address,
+        phone: user.phone,
+      };
 
-    const dataAcc = {
-      // email: email,
-      user_id: user.user_id,
-      first_name: firstName,
-      last_name: lastName,
-      role_id: role,
-      address: address,
-      phone: phone,
-    };
-    const user_str = user.user_id;
-    dispatch(
-      updateAccountAction(
-        {
-          user_id: user_str,
-          first_name: firstName,
-          last_name: lastName,
-          role_id: role,
-          address: address,
-          phone: phone,
-        },
-        api
-      )
-    );
-    closePopup();
+      dispatch(updateAccountAction(updateData, api));
+      closePopup();
+    } catch (error) {
+      console.log(error);
+    }
+
     // try {
     //   const res = await AccountServices.updateAccount(dataAcc, token);
     //   console.log(res);
@@ -131,7 +112,6 @@ const AccPopup = (props) => {
           <div className="acc-text-input-update">
             First name:
             <input
-              ref={firstNameRef}
               value={user.firstname}
               onChange={handleFirstNameChange}
               type="text"
@@ -141,7 +121,6 @@ const AccPopup = (props) => {
           <div className="acc-text-input-update">
             Last name:
             <input
-              ref={lastNameRef}
               value={user.lastname}
               onChange={handleLastNameChange}
               type="text"
@@ -151,7 +130,6 @@ const AccPopup = (props) => {
           <div className="role-acc">
             Role:
             <select
-              ref={roleRef}
               value={user.role_id}
               onChange={handleRoleChange}
               className="role-select"
@@ -165,7 +143,6 @@ const AccPopup = (props) => {
           <div className="acc-text-input-update">
             Address:
             <input
-              ref={addressRef}
               value={user.address}
               onChange={handleAddressChange}
               type="text"
@@ -175,7 +152,6 @@ const AccPopup = (props) => {
           <div className="acc-text-input-update">
             Phone:
             <input
-              ref={phoneRef}
               value={user.phone}
               onChange={handlePhoneChange}
               type="text"
@@ -198,4 +174,4 @@ const AccPopup = (props) => {
   );
 };
 
-export default AccPopup;
+export default AccUpdatePopup;

@@ -12,7 +12,7 @@ export const accountServices = {
     return res;
   },
   updateAccount: (dataAcc, api) => {
-    let res = api.post(`/api/update_user`, { dataAcc });
+    let res = api.put(`/api/update_user`, { dataAcc });
     return res;
   },
 };

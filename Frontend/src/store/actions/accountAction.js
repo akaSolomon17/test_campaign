@@ -119,11 +119,11 @@ export const updateAccountAction = (dataAcc, api) => {
     dispatch(updateAccountStart());
     try {
       const res = await accountServices.updateAccount(dataAcc, api);
-      // if (res.status === 200) {
-      //   dispatch(fetchListAccountAction(api));
-      // } else {
-      //   dispatch(updateAccountFailed());
-      // }
+      if (res.status === 200) {
+        dispatch(fetchListAccountAction(api));
+      } else {
+        dispatch(updateAccountFailed());
+      }
     } catch (e) {
       dispatch(updateAccountFailed());
     }

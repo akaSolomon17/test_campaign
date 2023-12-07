@@ -1,23 +1,34 @@
 import React, { useRef, useState, useEffect } from "react";
-import { CSVLink } from "react-csv";
-import "./Campaign.scss";
-import CampaignTable from "./CampaignTable/CampaignTable";
-import moment from "moment";
-import CreateCampaign from "./CreateCampaign/CreateCampaign";
+import { useDispatch, useSelector } from "react-redux";
 
-const initialState = {
-  user_id: "",
-};
+import "./Campaign.scss";
+
+import moment from "moment";
+import { CSVLink } from "react-csv";
+
+import CampaignTable from "./CampaignTable/CampaignTable";
+import CreateCampaign from "./CreateCampaign/CreateCampaign";
+import { fetchListCampaignAction } from "../../store/actions/campaignActions";
+import useAxios from "../../utils/useAxios";
 
 const Campaign = () => {
   const searchRef = useRef();
+
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
+
   const [dataSearch, setDataSearch] = useState({ search: null });
+
   const [loading, setLoading] = useState(false);
+
   const [isOpenPopup, setOpenPopup] = useState(false);
   const [isReload, setReload] = useState(true); // set Callback
-  const [data, setData] = useState([initialState]);
+
+  const [data, setData] = useState([]);
+
+  const api = useAxios();
+  const dispatch = useDispatch();
+  const listCampaigns = useSelector((state) => state.campaign.listCampaigns);
 
   const { err, success } = data;
 
@@ -71,6 +82,11 @@ const Campaign = () => {
 
     setEndTime(selectedEndTime);
   }
+
+  //dispatch to fetch all Campaigns
+  useEffect(() => {
+    dispatch(fetchListCampaignAction(api));
+  }, []);
 
   return (
     <div className="campaign-grid">
@@ -128,8 +144,11 @@ const Campaign = () => {
         </div>
       </div>
 
-      {data && <CampaignTable data={data} />}
-      {!data && <div className="camp-nodata-text">NO DATA</div>}
+      {listCampaigns && listCampaigns.length > 0 ? (
+        <CampaignTable listCampaigns={listCampaigns} />
+      ) : (
+        <div className="camp-nodata-text">NO DATA</div>
+      )}
       {isOpenPopup && <CreateCampaign changePopup={changePopup} />}
     </div>
   );

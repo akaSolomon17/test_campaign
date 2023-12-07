@@ -14,6 +14,7 @@ export const loginAction = (loginData, navigate) => {
       const res = await authServices.signin(loginData);
       if (res.status === 200) {
         const authInformation = {
+          user_id: res.data.user_info.user_id,
           first_name: res.data.user_info.first_name,
           last_name: res.data.user_info.last_name,
           email: res.data.user_info.email,
@@ -23,10 +24,6 @@ export const loginAction = (loginData, navigate) => {
           refresh_token: res.data.refresh_token,
           refresh_token_exp: res.data.refresh_exp,
         };
-        console.log(
-          "file: authActions.js:30 ~ authInformation:",
-          authInformation
-        );
         dispatch(loginSuccess(authInformation));
         return navigate("/");
       } else {

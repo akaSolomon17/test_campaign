@@ -7,8 +7,10 @@ import DashboardTable from "./DashboardTable/DashboardTable";
 const Dashboard = (props) => {
   const searchRef = useRef();
   const [dataSearch, setDataSearch] = useState({ search: null });
+
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
+
   const [isReload, setReload] = useState(true); // set Callback
   const [data, setData] = useState([]);
 

@@ -11,24 +11,8 @@ import {
 import { fetchListAccountAction } from "../../store/actions/accountAction";
 import useAxios from "../../utils/useAxios";
 
-// const initialState = {
-//   user_id: "",
-//   username: "",
-//   email: "",
-//   address: "",
-//   phone: "",
-//   role: "",
-//   action: "",
-//   err: "",
-//   success: "",
-// };
-
 const Account = () => {
   const searchRef = useRef();
-  // const auth = useSelector((state) => state.auth.currentUser);
-  // const token = useSelector((state) => state.token);
-
-  // const { isAdmin } = auth;
   // const { err, success } = data;
 
   const [dataSearch, setDataSearch] = useState({ search: null });

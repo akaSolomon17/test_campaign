@@ -104,6 +104,7 @@ class login(Resource):
                 
                 User = Users.query.filter_by(email = email).options(db.defer(Users.password)).one_or_none()
                 user_info = {
+                    "user_id": User.user_id,
                     "first_name": User.first_name,
                     "last_name": User.last_name,
                     "email": User.email,
@@ -303,39 +304,29 @@ class addUser(Resource):
 class updateUser(Resource):
     @authMiddleware
     @authMiddlewareAdmin
-    def post(self):
+    def put(self):
         from initSQL import db
         from models.userModel import Users
         
         try:
             content_type = request.headers.get('Content-Type')
             if content_type == "application/json":
-                json = request.get_json()
-                if "first_name" not in json:
-                    return errConfig.statusCode('"first" is required in the request JSON!', 401)
-                address = json['address']
-                first_name = json['first_name']
-                last_name = json['last_name']
-                phone = json['phone']
-                role_id = json['role_id']
-                user_id = json['user_id']
+                data_acc = request.json.get('dataAcc', {})  # Lấy giá trị của khóa 'dataAcc' hoặc trả về một từ điển trống nếu không tồn tại
+                print(data_acc)
+                address = data_acc.get('address')
+                first_name = data_acc.get('first_name')
+                last_name = data_acc.get('last_name')
+                phone = data_acc.get('phone')
+                role_id = data_acc.get('role_id')
+                user_id = data_acc.get('user_id')
                 
                 user = Users.query.filter_by(user_id=user_id).one()
+                user.address = address
                 user.first_name = first_name
                 user.last_name = last_name
-                user.role_id = role_id
-                user.address = address
                 user.phone = phone
+                user.role_id = role_id    
                 
-                update_user = {
-                    user_id,
-                    first_name,
-                    last_name,
-                    role_id,
-                    address,
-                    phone
-                }
-                print(update_user)
                 db.session.commit()
                 
                 return errConfig.statusCode('Update user successfully!')

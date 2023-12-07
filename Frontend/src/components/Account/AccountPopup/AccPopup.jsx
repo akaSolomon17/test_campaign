@@ -11,7 +11,7 @@ import {
 } from "../../../containers/alertContainer";
 // import AccountServices from "../../../services/accountServices";
 // import AccountServices from "../../../services/AccountServices";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import useAxios from "../../../utils/useAxios";
 import { createAccountAction } from "../../../store/actions/accountAction";
 
@@ -40,7 +40,7 @@ const AccPopup = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("form data create account", formData);
+
     dispatch(createAccountAction(formData, api));
     closePopup();
 

@@ -6,6 +6,7 @@ import {
 
 const initialState = {
   listAccounts: [],
+  isLoading: false,
 };
 
 const accountReducer = (state = initialState, action) => {
@@ -14,17 +15,18 @@ const accountReducer = (state = initialState, action) => {
       return {
         // bat loading
         ...state,
+        isLoading: true,
       };
     case FETCH_ACCOUNT_SUCCESS:
       return {
         ...state,
-        // isLoading: false,
+        isLoading: false,
         listAccounts: action.payload,
       };
     case FETCH_ACCOUNT_FAILED:
       return {
         ...state,
-        // isLoading: false,
+        isLoading: false,
       };
     default:
       return state;

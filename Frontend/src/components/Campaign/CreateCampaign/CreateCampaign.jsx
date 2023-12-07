@@ -1,16 +1,36 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import moment from "moment";
 import "./CreateCampaign.scss";
-// import AccountServices from "../../../services/AccountServices";
-import { useSelector } from "react-redux";
+
+import { createCampaignAction } from "../../../store/actions/campaignActions";
+import useAxios from "../../../utils/useAxios";
 
 const CreateCampaign = (props) => {
-  const token = useSelector((state) => state.token);
+  const api = useAxios();
+  const dispatch = useDispatch();
 
+  const currentUser = useSelector((state) => state.auth?.currentUser);
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
-  const [formData, setFormData] = useState("");
+
+  const initialState = {
+    name: "",
+    user_status: true,
+    start_date: moment(startTime).format("YYYY-MM-DD HH:mm:ss"),
+    end_date: moment(endTime).format("YYYY-MM-DD HH:mm:ss"),
+    budget: "",
+    bid_amount: "",
+    title: "",
+    description: "",
+    img_preview:
+      "https://res.cloudinary.com/dooge27kv/image/upload/v1701586838/project/6SB-7138-87000072_fpnway.jpg",
+    final_url: "",
+  };
+
+  const [formData, setFormData] = useState(initialState);
   const [isDropDetail, setDropDetail] = useState(true);
 
   useEffect(() => {
@@ -22,11 +42,11 @@ const CreateCampaign = (props) => {
   }, [setStartTime, setEndTime]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    setFormData({
+      ...formData,
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+      [e.target.name]: e.target.value,
+    });
   };
 
   const closePopup = () => {
@@ -38,12 +58,48 @@ const CreateCampaign = (props) => {
   };
 
   function handleStartTimeChange(event) {
-    setStartTime(event.target.value);
+    const selectedStartTime = event.target.value;
+    const currentMoment = moment();
+    const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm");
+
+    if (moment(selectedStartTime).isBefore(minDateTime)) {
+      return;
+    }
+
+    if (moment(selectedStartTime).isAfter(endTime)) {
+      return;
+    }
+
+    setStartTime(selectedStartTime);
   }
 
   function handleEndTimeChange(event) {
-    setEndTime(event.target.value);
+    const selectedEndTime = event.target.value;
+    const minDateTime = moment(startTime)
+      .add(1, "days")
+      .format("YYYY-MM-DDTHH:mm");
+
+    if (moment(selectedEndTime).isBefore(minDateTime)) {
+      return;
+    }
+
+    if (moment(selectedEndTime).isBefore(startTime)) {
+      return;
+    }
+
+    setEndTime(selectedEndTime);
   }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const createFormData = {
+      ...formData,
+      user_id: currentUser.user_id,
+    };
+
+    dispatch(createCampaignAction(createFormData, api));
+    closePopup();
+  };
 
   return (
     <div className="camp-popup">
@@ -74,13 +130,13 @@ const CreateCampaign = (props) => {
           <div className="status-camp">
             User status:
             <select
-              value={formData.user_status ? formData.user_status : "1"}
+              value={formData.user_status ? formData.user_status : true}
               onChange={handleChange}
               className="status-select"
               name="status"
             >
-              <option value="1">ACTIVE</option>
-              <option value="2">INACTIVE</option>
+              <option value={true}>ACTIVE</option>
+              <option value={false}>INACTIVE</option>
             </select>
           </div>
         </div>
@@ -123,7 +179,7 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Budget:
             <input
-              value={formData.address}
+              value={formData.budget}
               onChange={handleChange}
               type="text"
               name="budget"
@@ -139,10 +195,10 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Bid Amount:
             <input
-              value={formData.address}
+              value={formData.bid_amount}
               onChange={handleChange}
               type="text"
-              name="budget"
+              name="bid_amount"
             />
           </div>
         </div>
@@ -154,16 +210,16 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Title:
             <input
-              value={formData.address}
+              value={formData.title}
               onChange={handleChange}
               type="text"
-              name="budget"
+              name="title"
             />
           </div>
           <div className="camp-text-input">
             Description:
             <input
-              value={formData.address}
+              value={formData.description}
               onChange={handleChange}
               type="text"
               name="description"
@@ -172,18 +228,18 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Creative preview:
             <img
-              className="preview-img"
-              src="https://res.cloudinary.com/dooge27kv/image/upload/v1701586838/project/6SB-7138-87000072_fpnway.jpg"
-              alt="preview-img"
+              className="img-preview"
+              src={formData.img_preview}
+              alt="img-preview"
             />
           </div>
           <div className="camp-text-input">
             Final URL:
             <input
-              value={formData.address}
+              value={formData.final_url}
               onChange={handleChange}
               type="text"
-              name="description"
+              name="final_url"
             />
           </div>
         </div>

@@ -30,7 +30,6 @@ const HomePage = () => {
   // khiem test axios custom
   const getUserInfo = async () => {
     const res = await api.get("/api/user_info");
-    console.log("file: HomePage.jsx:33 ~ res user_info:", res);
   };
   useEffect(() => {
     getUserInfo();

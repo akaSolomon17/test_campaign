@@ -1,16 +1,22 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import "./CampaignTable.scss";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import { FaCircleDot } from "react-icons/fa6";
 import CreateCampaign from "../CreateCampaign/CreateCampaign";
 import EditCampaign from "../CreateCampaign/EditCampaign";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-import Footer from "../../Footer/Footer";
+import { deleteCampaignAction } from "../../../store/actions/campaignActions";
+import useAxios from "../../../utils/useAxios";
 
 const CampaignTable = (props) => {
+  const api = useAxios();
+  const dispatch = useDispatch();
+  const listCampaigns = props.listCampaigns;
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isOpenPopup, setOpenPopup] = useState(false);
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
 
   const handleEditClick = (record) => {
     setSelectedRecord(record);
@@ -24,68 +30,20 @@ const CampaignTable = (props) => {
     setOpenPopup(!isOpenPopup);
   };
 
-  const handleChangePage = (event, value) => {
-    setPage(value);
-  };
+  function handleDeleteUser(campaign) {
+    dispatch(deleteCampaignAction(campaign.campaign_id, api));
+  }
 
-  const rowsPerPage = 5;
+  // const handleChangePage = (event, value) => {
+  //   setPage(value);
+  // };
 
-  const startIndex = (page - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const slice = props.data || [];
-  const slice_data = slice.slice(startIndex, endIndex);
+  // const rowsPerPage = 5;
 
-  const renderTable = () => {
-    return slice_data.map((campaign) => (
-      <tr key={campaign.campaign_id}>
-        <td>{campaign.name}</td>
-        <td>
-          {/* {
-              <td>
-                {campaign.status === 1 ? (
-                  <FontAwesomeIcon
-                    icon="fa-duotone fa-circle"
-                    style={{
-                      "--fa-primary-color": "#03c200",
-                      "--fa-secondary-color": "#03c200",
-                    }}
-                  />
-                ) : (
-                  <FontAwesomeIcon
-                    icon="fa-duotone fa-circle"
-                    style={{
-                      "--fa-primary-color": "#f00000",
-                      "--fa-secondary-color": "#e60000",
-                    }}
-                  />
-                )}
-                {
-                  <FontAwesomeIcon
-                    icon="fa-duotone fa-circle"
-                    style={{
-                      "--fa-primary-color": "#03c200",
-                      "--fa-secondary-color": "#03c200",
-                    }}
-                  />
-                }
-              </td>
-            } */}
-        </td>
-        <td>{campaign.email}</td>
-        <td>{campaign.address}</td>
-        <td>{campaign.phone}</td>
-        <td>{campaign.role_id}</td>
-        <td>{campaign.action}</td>
-        <td>
-          <AiFillEdit
-            className="btn"
-            onClick={() => handleEditClick(campaign)}
-          />
-          <AiFillDelete className="btn" />
-        </td>
-      </tr>
-    ));
-  };
+  // const startIndex = (page - 1) * rowsPerPage;
+  // const endIndex = startIndex + rowsPerPage;
+  // const slice = props.data || [];
+  // const slice_data = slice.slice(startIndex, endIndex);
 
   return (
     <div className="camp-table-data">
@@ -102,17 +60,58 @@ const CampaignTable = (props) => {
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>{renderTable()}</tbody>
+        <tbody>
+          {listCampaigns &&
+            listCampaigns.map((campaign, index = campaign.campaign_id) => {
+              return (
+                <React.Fragment key={index}>
+                  <tr>
+                    <td>{campaign.name}</td>
+                    <td>
+                      <FaCircleDot
+                        className="fa-duotone"
+                        icon="fa-duotone fa-circle"
+                        style={{
+                          color: campaign.user_status ? "green" : "red",
+                        }}
+                      />
+                    </td>
+                    <td>{campaign.used_amount}</td>
+                    <td>{campaign.usage_rate}</td>
+                    <td>{campaign.budget}</td>
+                    <td>{campaign.start_date}</td>
+                    <td>{campaign.end_date}</td>
+                    <td>
+                      <AiFillEdit
+                        className="btn"
+                        onClick={() =>
+                          handleEditClick({
+                            ...campaign,
+                            preview_img: campaign.creatives.preview_img,
+                            user_id: campaign.user_id,
+                          })
+                        }
+                      />
+                      <AiFillDelete
+                        className="btn"
+                        onClick={() => handleDeleteUser(campaign)}
+                      />
+                    </td>
+                  </tr>
+                </React.Fragment>
+              );
+            })}
+        </tbody>
       </table>
 
-      <Stack spacing={2} className="pagination-container">
+      {/* <Stack spacing={2} className="pagination-container">
         <Pagination
           count={Math.ceil(props.data?.length / rowsPerPage)} // Total number of pages
           page={page}
           onChange={handleChangePage}
           color="primary"
         />
-      </Stack>
+      </Stack> */}
 
       {isOpenPopup && <CreateCampaign changePopup={changePopup} />}
       {selectedRecord && (

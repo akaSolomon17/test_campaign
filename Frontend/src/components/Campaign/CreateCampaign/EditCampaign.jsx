@@ -1,28 +1,36 @@
-import React, { useRef, useState, useEffect } from "react";
-// import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+
+import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 
 import "./CreateCampaign.scss";
 import moment from "moment";
-import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
-// import AccountServices from "../../services/AccountServices";
+
+import { updateCampaignAction } from "../../../store/actions/campaignActions";
+import useAxios from "../../../utils/useAxios";
 
 const EditCampaign = (props) => {
-  //   const token = useSelector((state) => state.token);
+  const api = useAxios();
+  const dispatch = useDispatch();
+  const initialState = {
+    user_id: props.record ? props.record.user_id : "",
+    campaign_id: props.record ? props.record.campaign_id : "",
+    name: props.record ? props.record.name : "",
+    user_status: props.record ? props.record.user_status : true,
+    start_time: props.record ? props.record.start_date : "",
+    end_time: props.record ? props.record.end_date : "",
+    budget: props.record ? props.record.budget : "",
+    bid_amount: props.record ? props.record.bid_amount : "",
+    title: props.record ? props.record.creatives[0].title : "",
+    description: props.record ? props.record.creatives[0].description : "",
+    img_preview: props.record ? props.record.creatives[0].img_preview : "",
+    final_url: props.record ? props.record.creatives[0].final_url : "",
+  };
 
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
   const [isDropDetail, setDropDetail] = useState(true);
-  const [campaign, setCampaign] = useState({
-    name: props.record ? props.record.name : "",
-    user_status: props.record ? props.record.user_status : "",
-    start_time: props.record ? props.record.start_time : "",
-    end_time: props.record ? props.record.end_time : "",
-    budget: props.record ? props.record.budget : "",
-    bid_amount: props.record ? props.record.bid_amount : "",
-    title: props.record ? props.record.title : "",
-    description: props.record ? props.record.description : "",
-    final_url: props.record ? props.record.final_url : "",
-  });
+  const [campaign, setCampaign] = useState(initialState);
 
   useEffect(() => {
     const currentMoment = moment();
@@ -89,44 +97,29 @@ const EditCampaign = (props) => {
     setDropDetail(!isDropDetail);
   };
 
-  const userStatusRef = useRef();
-  const startTimeRef = useRef();
-  const endTimeRef = useRef();
-  const budgetRef = useRef();
-  const bidAmountRef = useRef();
-  const titleRef = useRef();
-  const descriptionRef = useRef();
-  const finalURLRef = useRef();
-
   async function handleSubmit(e) {
     e.preventDefault();
-    const user_status = userStatusRef.target.value;
-    const start_time = startTimeRef.target.value;
-    const end_time = endTimeRef.target.value;
-    const budget = budgetRef.target.value;
-    const bid_amount = bidAmountRef.target.value;
-    const title = titleRef.target.value;
-    const description = descriptionRef.target.value;
-    const final_url = finalURLRef.target.value;
 
     const campData = {
-      user_status: user_status,
-      start_time: start_time,
-      end_time: end_time,
-      budget: budget,
-      bid_amount: bid_amount,
-      title: title,
-      description: description,
-      final_url: final_url,
+      user_id: campaign.user_id,
+      user_status: campaign.user_status,
+      start_date: campaign.start_time,
+      end_date: campaign.end_time,
+      budget: campaign.budget,
+      bid_amount: campaign.bid_amount,
+      title: campaign.title,
+      description: campaign.description,
+      img_preview: campaign.img_preview,
+      final_url: campaign.final_url,
     };
-    try {
-      //   const res = await AccountServices.updateAccount(campData, token);
-      //   console.log(res);
-      alert("UPDATE ACCOUNT SUCCESSFULLY!");
-      closePopup();
-    } catch (error) {
-      alert("UPDATE ACCOUNT FAILED!");
-    }
+    dispatch(updateCampaignAction(campaign.campaign_id, campData, api));
+    closePopup();
+    // try {
+    //   alert("UPDATE ACCOUNT SUCCESSFULLY!");
+    //   closePopup();
+    // } catch (error) {
+    //   alert("UPDATE ACCOUNT FAILED!");
+    // }
   }
 
   return (
@@ -158,7 +151,6 @@ const EditCampaign = (props) => {
           <div className="status-camp">
             User status:
             <select
-              ref={userStatusRef}
               value={campaign.user_status ? campaign.user_status : "1"}
               onChange={handleUserStatusChange}
               className="status-select"
@@ -179,29 +171,26 @@ const EditCampaign = (props) => {
             <div className="camp-starttime-container">
               <label htmlFor="startDateTimePicker">Start Time: </label>
               <input
-                ref={startTimeRef}
                 type="datetime-local"
                 id="startDateTimePicker"
                 name="startDateTimePicker"
-                value={startTime}
+                value={campaign.start_time}
                 onChange={handleStartTimeChange}
               ></input>
             </div>
             <div className="camp-endtime-container">
               <label htmlFor="endDateTimePicker">End Time:</label>
               <input
-                ref={endTimeRef}
                 className="endtime"
                 type="datetime-local"
                 id="endDateTimePicker"
                 name="endDateTimePicker"
-                value={endTime}
+                value={campaign.end_time}
                 onChange={handleEndTimeChange}
               ></input>
             </div>
           </div>
         </div>
-
         <div className="camp-title" onClick={changeDetailDrop}>
           Budget
           <AiOutlineDown className="drop-btn" />
@@ -210,15 +199,13 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Budget:
             <input
-              ref={budgetRef}
-              value={campaign.address}
+              value={campaign.budget}
               onChange={handleBudgetChange}
               type="text"
               name="budget"
             />
           </div>
         </div>
-
         <div className="camp-title" onClick={changeDetailDrop}>
           Bidding
           <AiOutlineDown className="drop-btn" />
@@ -227,8 +214,7 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Bid Amount:
             <input
-              ref={bidAmountRef}
-              value={campaign.address}
+              value={campaign.bid_amount}
               onChange={handleBidAmountChange}
               type="text"
               name="budget"
@@ -243,8 +229,7 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Title:
             <input
-              ref={titleRef}
-              value={campaign.address}
+              value={campaign.title}
               onChange={handleTitleChange}
               type="text"
               name="budget"
@@ -253,8 +238,7 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Description:
             <input
-              ref={descriptionRef}
-              value={campaign.address}
+              value={campaign.description}
               onChange={handleDescriptionChange}
               type="text"
               name="description"
@@ -263,16 +247,19 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Creative preview:
             <img
-              className="preview-img"
-              src="https://res.cloudinary.com/dooge27kv/image/upload/v1701586838/project/6SB-7138-87000072_fpnway.jpg"
-              alt="preview-img"
+              className="img-preview"
+              src={
+                campaign.preview_img
+                  ? campaign.preview_img
+                  : "https://res.cloudinary.com/dooge27kv/image/upload/v1701941092/Insert_image_here_kttfjb.svg"
+              }
+              alt="img-preview"
             />
           </div>
           <div className="camp-text-input">
             Final URL:
             <input
-              ref={finalURLRef}
-              value={campaign.address}
+              value={campaign.final_url}
               onChange={handleFinalURLChange}
               type="text"
               name="description"

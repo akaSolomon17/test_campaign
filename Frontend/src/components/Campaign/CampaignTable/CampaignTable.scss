@@ -17,7 +17,6 @@
       color: white;
       height: 50px;
     }
-
     td {
       text-align: center;
       border: 2px solid black;
@@ -34,6 +33,11 @@
     }
     .invalid {
       color: red;
+    }
+    tbody {
+      .fa-duotone {
+        border: none !important;
+      }
     }
   }
 

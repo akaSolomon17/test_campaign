@@ -17,16 +17,16 @@ def authMiddleware(func):
         try:
             token = request.headers.get("Authorization")
             if not token:
-                return errorStatus.statusCode("Invalid Authentication.",400)
+                return errorStatus.statusCode("Invalid Authentication.", 400)
 
             user = jwt.decode(token, ACCESS_TOKEN_SECRET, algorithms=["HS256"])
             setattr(request, 'user', user)
             return func(*args, **kwargs)
 
         except jwt.ExpiredSignatureError:
-            return errorStatus.statusCode("Token has expired.",400)
+            return errorStatus.statusCode("Token has expired.", 400)
         except jwt.InvalidTokenError:
-            return errorStatus.statusCode("Invalid Authentication.",400)
+            return errorStatus.statusCode("Invalid Authentication.", 400)
         except Exception as e:
             # return errorStatus.statusCode(str(e), 500)
             return str(e)

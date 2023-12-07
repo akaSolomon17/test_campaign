@@ -25,12 +25,12 @@ def initialRoutes(api):
     # [POST] ADD USER
     api.add_resource(addUser,"/api/add_user", endpoint="add_user")
     
+    # [POST] UPDATE USER
+    api.add_resource(updateUser,"/api/update_user", endpoint="update_user")
+    
     # [DELETE] DELETE USER
     api.add_resource(deleteUser,"/api/delete_user", endpoint="delete_user")
     
     # [DELETE] DELETE ALL USERS
     api.add_resource(deleteAllUser,"/api/delete_all_user", endpoint="delete_all_user")
-    # [PUT] UPDATE USER
-    api.add_resource(updateUser,"/api/update_user", endpoint="update_user")
-    # [PUT] UPDATE USER
-    api.add_resource(deleteAllUser,"/api/update_all_user", endpoint="update_all_user")
+    
