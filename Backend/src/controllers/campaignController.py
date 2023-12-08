@@ -51,25 +51,12 @@ class getAllCampaign(Resource):
                 campaign_list = []
                 for campaign in campaigns:
                     creatives = Creatives.query.filter_by(campaign_id=campaign.campaign_id).all()
-                    tuple_creative = [
-                        {
-                            "creative_id": creative.creative_id,
-                            "title": creative.title,
-                            "description": creative.description,
-                            "img_preview": creative.img_preview,
-                            "final_url": creative.final_url,
-                            "status": creative.status,
-                            "create_at": creative.create_at,
-                            "update_at": creative.update_at,
-                            "delete_flag": creative.delete_flag,
-                            "campaign_id": creative.campaign_id,
-                        }
-                        for creative in creatives
-                    ]
-
+                    
+                    
                     campaign_info = OrderedDict([
                         ("user_id", campaign.user_id),
                         ("name", campaign.name),
+                        ("status", campaign.status),
                         ("user_status", campaign.user_status),
                         ("used_amount", campaign.used_amount),
                         ("budget", campaign.budget),
@@ -80,7 +67,18 @@ class getAllCampaign(Resource):
                         ("end_date", str(campaign.end_date)),
                         ("usage_rate", campaign.usage_rate),
                         ("campaign_id", campaign.campaign_id),
-                        ("creatives", tuple_creative)
+                        ("creatives", [{
+                            "creative_id": creative.creative_id,
+                            "title": creative.title,
+                            "description": creative.description,
+                            "img_preview": creative.img_preview,
+                            "final_url": creative.final_url,
+                            "create_at": creative.create_at,
+                            "update_at": creative.update_at,
+                            "delete_flag": creative.delete_flag,
+                            "campaign_id": creative.campaign_id,
+                        }
+                        for creative in creatives])
                     ])
 
                     campaign_list.append(campaign_info)
@@ -196,12 +194,13 @@ class updateCampaign(Resource):
             budget = json["budget"]
             start_date = json["start_date"]
             end_date = json["end_date"]
-            user_status = json["user_status"]
+            status = json["status"]
+
             title = json["title"]
             description = json["description"]
             img_preview = json["img_preview"]
             final_url = json["final_url"]
-
+            
             if not check_date(start_date, end_date):
                 return errConfig.statusCode("Invalid date", 400)
             
@@ -216,7 +215,9 @@ class updateCampaign(Resource):
                 or len(description) ==0 or len(img_preview) ==0 or len(final_url) ==0):
                 # or len(bid_amount) == 0  or len(budget) == 0):
                 return errConfig.statusCode("Invalid. Please re-enter",400)
-
+            
+            
+            
             campaign = Campaigns.query.filter(
                 Campaigns.campaign_id == camp_id, Campaigns.user_id == user_id
             ).first()
@@ -226,12 +227,13 @@ class updateCampaign(Resource):
             ).first()
 
             try:
-                campaign.status = user_status
+                print(status)
+
                 campaign.budget = budget
                 campaign.bid_amount = bid_amount
                 campaign.start_date = start_date
                 campaign.end_date = end_date
-
+                campaign.status = status
                 creative = campaign.creative
                 creative.title = title
                 creative.description = description

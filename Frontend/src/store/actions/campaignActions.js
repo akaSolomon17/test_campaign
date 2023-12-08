@@ -1,151 +1,120 @@
 import { campaignServices } from "../../services/campaignService";
+import { toast } from "react-toastify";
 import {
-  FETCH_CAMPAIGN_FAILED,
   FETCH_CAMPAIGN_SUCCESS,
-  FETCH_CAMPAIGN_START,
-  CREATE_CAMPAIGN_FAILED,
   CREATE_CAMPAIGN_SUCCESS,
-  CREATE_CAMPAIGN_START,
-  DELETE_CAMPAIGN_FAILED,
-  DELETE_CAMPAIGN_START,
   DELETE_CAMPAIGN_SUCCESS,
-  UPDATE_CAMPAIGN_FAILED,
-  UPDATE_CAMPAIGN_START,
   UPDATE_CAMPAIGN_SUCCESS,
 } from "../types/campaignType";
+import { turnOffLoading, turnOnLoading } from "./loadingActions";
 
 //fetch list Campaign Action
 export const fetchListCampaignAction = (api) => {
   return async (dispatch) => {
-    dispatch(fetchListCampaignStart());
-    const res = await campaignServices.fetchListCampaign(api);
     try {
+      dispatch(turnOnLoading());
+      const res = await campaignServices.fetchListCampaign(api);
+      dispatch(turnOffLoading());
       if (res.status === 200) {
         dispatch(fetchListCampaignSuccess(res.data.campaigns));
       } else {
-        dispatch(fetchListCampaignFailed());
+        dispatch(turnOffLoading());
       }
     } catch (e) {
-      dispatch(fetchListCampaignFailed());
+      console.log(e);
+      dispatch(turnOffLoading());
     }
   };
 };
-export const fetchListCampaignStart = () => {
-  return {
-    type: FETCH_CAMPAIGN_START,
-  };
-};
+
 export const fetchListCampaignSuccess = (payload) => {
   return {
     type: FETCH_CAMPAIGN_SUCCESS,
     payload,
   };
 };
-export const fetchListCampaignFailed = () => {
-  return {
-    type: FETCH_CAMPAIGN_FAILED,
-  };
-};
 
 // create Campaign Action
 export const createCampaignAction = (formData, api) => {
   return async (dispatch) => {
-    dispatch(createCampaignStart());
     try {
+      dispatch(turnOnLoading());
       const res = await campaignServices.createCampaign(formData, api);
+      dispatch(turnOffLoading());
       if (res.status === 200) {
         dispatch(fetchListCampaignAction(api));
+        toast.success("Create Campaign Successfully!");
       } else {
-        dispatch(createCampaignFailed());
+        dispatch(turnOffLoading());
       }
     } catch (e) {
-      dispatch(createCampaignFailed());
+      console.log(e);
+      dispatch(turnOffLoading());
     }
   };
 };
-export const createCampaignStart = () => {
-  return {
-    type: CREATE_CAMPAIGN_START,
-  };
-};
+
 export const createCampaignSuccess = (payload) => {
   return {
     type: CREATE_CAMPAIGN_SUCCESS,
     payload,
   };
 };
-export const createCampaignFailed = () => {
-  return {
-    type: CREATE_CAMPAIGN_FAILED,
-  };
-};
 
 // delete Campaign Action
 export const deleteCampaignAction = (campaignId, api) => {
   return async (dispatch) => {
-    dispatch(deleteCampaignStart());
     try {
+      dispatch(turnOnLoading());
       const res = await campaignServices.deleteCampaign(campaignId, api);
+      dispatch(turnOffLoading());
       if (res.status === 200) {
         dispatch(fetchListCampaignAction(api));
+        toast.success("Delete Campaign Successfully!");
       } else {
-        dispatch(deleteCampaignFailed());
+        dispatch(turnOffLoading());
       }
     } catch (e) {
-      dispatch(deleteCampaignFailed());
+      console.log(e);
+      dispatch(turnOffLoading());
     }
   };
 };
-export const deleteCampaignStart = () => {
-  return {
-    type: DELETE_CAMPAIGN_START,
-  };
-};
+
 export const deleteCampaignSuccess = (payload) => {
   return {
     type: DELETE_CAMPAIGN_SUCCESS,
     payload,
   };
 };
-export const deleteCampaignFailed = () => {
-  return {
-    type: DELETE_CAMPAIGN_FAILED,
-  };
-};
 
 // update Campaign Action
 export const updateCampaignAction = (campaignId, dataCamp, api) => {
   return async (dispatch) => {
-    dispatch(updateCampaignStart());
     try {
+      dispatch(turnOnLoading());
       const res = await campaignServices.updateCampaign(
         campaignId,
         dataCamp,
         api
       );
+      dispatch(turnOffLoading());
       if (res.status === 200) {
         dispatch(fetchListCampaignAction(api));
+        toast.success("Update Campaign Successfully!");
       } else {
-        dispatch(updateCampaignFailed());
+        dispatch(turnOffLoading());
       }
     } catch (e) {
-      dispatch(updateCampaignFailed());
+      console.log(e);
+      dispatch(turnOffLoading());
     }
   };
 };
-export const updateCampaignStart = () => {
-  return {
-    type: UPDATE_CAMPAIGN_START,
-  };
-};
+
 export const updateCampaignSuccess = (payload) => {
   return {
     type: UPDATE_CAMPAIGN_SUCCESS,
     payload,
-  };
-};
-export const updateCampaignFailed = () => {
-  return {
-    type: UPDATE_CAMPAIGN_FAILED,
   };
 };

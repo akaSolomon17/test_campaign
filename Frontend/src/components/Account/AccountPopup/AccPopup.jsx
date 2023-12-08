@@ -1,18 +1,13 @@
 import React, { useState } from "react";
-import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
-import "./AccPopup.scss";
-import {
-  WRONG_CONFIRM_PASSWORD,
-  ADD_NEW_ACCOUNT_SUCCESSFULLY,
-  ERROR_ADD_NEW_ACCOUNT_FAILED,
-  INVALID_EMAIL,
-  INVALID_PASSWORD,
-  INVALID_PHONE,
-} from "../../../containers/alertContainer";
-// import AccountServices from "../../../services/accountServices";
-// import AccountServices from "../../../services/AccountServices";
 import { useDispatch } from "react-redux";
 import useAxios from "../../../utils/useAxios";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
+import "./AccPopup.scss";
+
 import { createAccountAction } from "../../../store/actions/accountAction";
 
 const initialState = {
@@ -38,40 +33,47 @@ const AccPopup = (props) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      first_name: "",
+      last_name: "",
+      role_id: "",
+      address: "",
+      phone: "",
+      confirm_password: "",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .required("Email must be required")
+        .email("Please enter a valid email"),
+      password: Yup.string()
+        .required("Password must required")
+        .min(6, "Password must be at least 6 characters"),
+      first_name: Yup.string().required(),
+      last_name: Yup.string().required(),
+      role_id: Yup.string().required(),
+      address: Yup.string().required(),
+      phone: Yup.string().required(),
+      confirm_password: Yup.string().required(),
+    }),
+    onSubmit: async (values) => {
+      if (values.role_id === "") {
+        values.role_id = "1";
+      }
+      let formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("name", values.name);
+      formData.append("name", values.name);
+      formData.append("name", values.name);
+      formData.append("name", values.name);
 
-    dispatch(createAccountAction(formData, api));
-    closePopup();
-
-    // try {
-    //   const res = await AccountServices.postNewAccount(formData, token);
-    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //   const passwordRegex =
-    //     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/
-    //   const phoneRegex = /^\d{10}$/;
-    //   if (!emailRegex.test(formData.email)) {
-    //     alert(INVALID_EMAIL);
-    //     return;
-    //   }
-    //   if (!passwordRegex.test(formData.password)) {
-    //     alert(INVALID_PASSWORD);
-    //     return;
-    //   }
-    //   if (formData.password !== formData.confirm_password) {
-    //     alert(WRONG_CONFIRM_PASSWORD);
-    //     return;
-    //   }
-    //   if (!phoneRegex.test(formData.phone)) {
-    //     alert(INVALID_PHONE);
-    //     return;
-    //   }
-    //   alert(ADD_NEW_ACCOUNT_SUCCESSFULLY);
-    //   closePopup();
-    // } catch (error) {
-    //   alert(ERROR_ADD_NEW_ACCOUNT_FAILED);
-    // }
-  };
+      dispatch(createAccountAction(formData, api));
+      formik.resetForm();
+      closePopup();
+    },
+  });
 
   const closePopup = () => {
     props.changePopup();
@@ -83,7 +85,7 @@ const AccPopup = (props) => {
 
   return (
     <div className="acc-popup">
-      <form onSubmit={handleSubmit} className="acc-popup-inner">
+      <form onSubmit={formik.handleSubmit} className="acc-popup-inner">
         <div className="acc-title-pop">
           Create Account
           <div className="underline"></div>
@@ -181,7 +183,11 @@ const AccPopup = (props) => {
           <button className="cancel-btn" onClick={closePopup}>
             Cancel
           </button>
-          <button type="submit" className="save-btn" onClick={handleSubmit}>
+          <button
+            type="submit"
+            className="save-btn"
+            onClick={formik.handleSubmit}
+          >
             Create
           </button>
         </div>
