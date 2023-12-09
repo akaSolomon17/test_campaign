@@ -12,7 +12,6 @@ class Creatives(db.Model):
     description = db.Column(db.NVARCHAR(255), nullable=False)
     img_preview = db.Column(db.VARCHAR(255), nullable=False)
     final_url = db.Column(db.NVARCHAR(255), nullable=False)
-    status = db.Column(db.BOOLEAN, default=True, nullable=False)
     create_at = db.Column(db.TIMESTAMP, default=datetime.now())
     update_at = db.Column(db.TIMESTAMP, default=datetime.now(), onupdate=datetime.now())
     delete_flag = db.Column(db.BOOLEAN, default=False)

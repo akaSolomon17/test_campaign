@@ -14,6 +14,7 @@ const CampaignTable = (props) => {
   const api = useAxios();
   const dispatch = useDispatch();
   const listCampaigns = props.listCampaigns;
+
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isOpenPopup, setOpenPopup] = useState(false);
   // const [page, setPage] = useState(1);
@@ -72,7 +73,7 @@ const CampaignTable = (props) => {
                         className="fa-duotone"
                         icon="fa-duotone fa-circle"
                         style={{
-                          color: campaign.user_status ? "green" : "red",
+                          color: campaign.status === true ? "green" : "red",
                         }}
                       />
                     </td>

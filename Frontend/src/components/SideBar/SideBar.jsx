@@ -1,14 +1,16 @@
+import React from "react";
+import { useSelector } from "react-redux";
 import "./SideBar.scss";
 import {
   OPEN_ACCOUNT,
   OPEN_CAMPAIGN,
   OPEN_DASHBOARD,
 } from "../../containers/menuContainer";
-import React from "react";
 import { TbCategory } from "react-icons/tb";
 import { useSelector } from "react-redux";
 
 const SideBar = (props) => {
+  const currentUser = useSelector((state) => state.auth?.currentUser);
   const { activeItem } = props;
   function clickChange(value) {
     props.clickSideBar(value);
@@ -50,9 +52,7 @@ const SideBar = (props) => {
         <TbCategory className="icon-side-bar" />
         Campaign
       </div>
-      <div
-        className={currentUser.role_id === "ADMIN" ? "" : "hide-tab-account"}
-      >
+      <div style={{ display: currentUser.role_id === "ADMIN" ? "" : "none" }}>
         <div
           className={
             activeItem === OPEN_ACCOUNT ? "highlight-item-side" : "item-side"

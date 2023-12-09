@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { authServices } from "../../services/authService";
 import {
   LOGIN_ERROR,
@@ -5,13 +6,20 @@ import {
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
 } from "../types/authType";
+import { turnOffLoading, turnOnLoading } from "./loadingActions";
 
 // login action
 export const loginAction = (loginData, navigate) => {
   return async (dispatch) => {
     dispatch(loginStart());
     try {
+      dispatch(turnOnLoading());
       const res = await authServices.signin(loginData);
+      dispatch(turnOffLoading());
+      if (res.data.errorMessage) {
+        toast.error(res.data.errorMessage);
+        return;
+      }
       if (res.status === 200) {
         const authInformation = {
           role_id: res.data.user_info.role_id,
@@ -26,9 +34,9 @@ export const loginAction = (loginData, navigate) => {
           refresh_token_exp: res.data.refresh_exp,
         };
         dispatch(loginSuccess(authInformation));
+
         return navigate("/");
       } else {
-        alert(res.data.message);
         dispatch(loginFailed());
       }
     } catch (e) {
@@ -72,6 +80,7 @@ export const logoutAction = (currentUser, navigate) => {
       //   navigate("/login");
       // }
       // Xử lí logic logout gọi api logout xóa in4 user trên db
+      dispatch(logoutSuccess());
       localStorage.clear();
       navigate("/login");
     } catch (e) {}

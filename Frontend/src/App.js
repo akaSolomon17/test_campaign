@@ -2,6 +2,8 @@ import React, { lazy, Suspense, useEffect } from "react";
 import PrivateRoute from "./router/PrivateRoute";
 import { useSelector, useDispatch } from "react-redux";
 import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import {
 //   dispatchLogin,
 //   fetchUser,
@@ -9,7 +11,7 @@ import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 // } from "./redux/actions/authAction";
 
 // import AccountServices from "./services/AccountServices";
-import Loading from "./utils/Loading/Loading";
+import Loading from "./components/Loading/Loading";
 import HomePage from "./views/HomePage/HomePage";
 import LoginPage from "./views/LoginPage/LoginPage";
 
@@ -37,7 +39,6 @@ function App() {
 
   return (
     // <BrowserRouter>
-    //   <Loading />
     //   <Suspense fallback={<div>Loading...</div>}>
     //     <Routes>
     //       {
@@ -55,14 +56,18 @@ function App() {
     //     </Routes>
     //   </Suspense>
     // </BrowserRouter>
-    <div className="App">
-      <Routes>
-        <Route exact path="/" element={<PrivateRoute />}>
-          <Route exact path="/" element={<HomePage />} />
-        </Route>
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
-    </div>
+    <>
+      <div className="App">
+        <Loading />
+        <Routes>
+          <Route exact path="/" element={<PrivateRoute />}>
+            <Route exact path="/" element={<HomePage />} />
+          </Route>
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+      </div>
+      <ToastContainer />
+    </>
   );
 }
 

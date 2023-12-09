@@ -1,19 +1,16 @@
 import React, { useRef, useState, useEffect } from "react";
-import AccTable from "./AccountTable/AccTable";
-import AccPopup from "./AccountPopup/AccPopup";
-import "./Account.scss";
+import useAxios from "../../utils/useAxios";
 import { useDispatch, useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
-import {
-  showErrMsg,
-  showSuccessMsg,
-} from "../../utils/Notification/Notification";
+
+import "./Account.scss";
+import AccTable from "./AccountTable/AccTable";
+import AccPopup from "./AccountPopup/AccPopup";
+
 import { fetchListAccountAction } from "../../store/actions/accountAction";
-import useAxios from "../../utils/useAxios";
 
 const Account = () => {
   const searchRef = useRef();
-  // const { err, success } = data;
 
   const [dataSearch, setDataSearch] = useState({ search: null });
   const [isOpenPopup, setOpenPopup] = useState(false);
@@ -22,6 +19,19 @@ const Account = () => {
   const dispatch = useDispatch();
   const api = useAxios();
   const listAccounts = useSelector((state) => state.account.listAccounts);
+
+  const headerExport = [
+    { label: "Role", key: "role_id" },
+    { label: "ID", key: "user_id" },
+    { label: "First Name", key: "first_name" },
+    { label: "Last Name", key: "last_name" },
+    { label: "Email", key: "email" },
+    { label: "Address", key: "address" },
+    { label: "Phone Number", key: "phone" },
+    { label: "Avatar", key: "avatar" },
+    { label: "create_at", key: "create_at" },
+    { label: "update_at", key: "update_at" },
+  ];
 
   useEffect(() => {
     dispatch(fetchListAccountAction(api));
@@ -37,11 +47,8 @@ const Account = () => {
     setDataSearch({ search: search });
     setReload(!isReload);
   }
-
   return (
     <div className="account">
-      {/* {err && showErrMsg(err)} */}
-      {/* {success && showSuccessMsg(success)} */}
       <div className="acc-filter-bar">
         <div className="acc-search-container">
           <input
@@ -53,9 +60,13 @@ const Account = () => {
           />
         </div>
         <div className="acc-func-btn">
-          {/* <CSVLink className="acc-export-btn acc-button" data={listAccounts}>
-            Export CSV
-          </CSVLink> */}
+          <CSVLink
+            data={listAccounts}
+            headers={headerExport}
+            filename="accounts.csv"
+          >
+            <button className="acc-export-btn acc-button">Export CSV</button>
+          </CSVLink>
           <button className="acc-create-btn acc-button" onClick={changePopup}>
             Create Account
           </button>
@@ -68,7 +79,6 @@ const Account = () => {
       )}
       {isOpenPopup && <AccPopup changePopup={changePopup} />}
     </div>
-    // <div>account</div>
   );
 };
 

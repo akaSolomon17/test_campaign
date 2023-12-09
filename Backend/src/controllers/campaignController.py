@@ -225,12 +225,13 @@ class updateCampaign(Resource):
             budget = json["budget"]
             start_date = json["start_date"]
             end_date = json["end_date"]
-            user_status = json["user_status"]
+            status = json["status"]
+
             title = json["title"]
             description = json["description"]
             img_preview = json["img_preview"]
             final_url = json["final_url"]
-
+            
             if not check_date(start_date, end_date):
                 return errConfig.statusCode("Invalid date", 400)
             
@@ -245,7 +246,9 @@ class updateCampaign(Resource):
                 or len(description) ==0 or len(img_preview) ==0 or len(final_url) ==0):
                 # or len(bid_amount) == 0  or len(budget) == 0):
                 return errConfig.statusCode("Invalid. Please re-enter",400)
-
+            
+            
+            
             campaign = Campaigns.query.filter(
                 Campaigns.campaign_id == camp_id, Campaigns.user_id == user_id
             ).first()
@@ -255,12 +258,13 @@ class updateCampaign(Resource):
             ).first()
 
             try:
-                campaign.status = user_status
+                print(status)
+
                 campaign.budget = budget
                 campaign.bid_amount = bid_amount
                 campaign.start_date = start_date
                 campaign.end_date = end_date
-
+                campaign.status = status
                 creative = campaign.creative
                 creative.title = title
                 creative.description = description

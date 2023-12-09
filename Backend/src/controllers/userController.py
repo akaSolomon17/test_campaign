@@ -86,9 +86,10 @@ class login(Resource):
                 
                 if not isinstance(email, str):
                     return errConfig.statusCode("Email must be a string!",401)
+                
                 if not isinstance(password, bytes):
                     return errConfig.statusCode("Password must be a string!",401)
-                print("BUG1!")
+                
                 # CHECK VALID EMAIL
                 if not validate_email(email):
                     return errConfig.statusCode("Invalid email",401)
@@ -102,7 +103,8 @@ class login(Resource):
                 
                 # CHECK MATCH EMAIL & PASSWORD IN DB
                 
-                User = Users.query.filter_by(email = email).options(db.defer(Users.password)).one_or_none()
+                User = Users.query.filter_by(email = email).options(db.defer(Users.password)).one()
+                
                 user_info = {
                     "user_id": User.user_id,
                     "first_name": User.first_name,
@@ -114,34 +116,35 @@ class login(Resource):
                     "phone": User.phone,
                     "delete_flag": User.delete_flag,
                 }
+
                 checkPW = bcrypt.checkpw(password, User.password.encode('utf-8'))
                 
                 if not checkPW:
                     return errConfig.statusCode("Wrong password!",401)
-                try:
-                    refresh_token = createRefreshToken(User.user_id, User.role_id)
-                    access_token = createAccessToken(User.user_id, User.role_id)
+                # try:
+                refresh_token = createRefreshToken(User.user_id, User.role_id)
+                access_token = createAccessToken(User.user_id, User.role_id)
                     
-                    refreshToken = jwt.decode(refresh_token, REFRESH_TOKEN_SECRET, algorithms=["HS256"])
-                    accessToken = jwt.decode(access_token, ACCESS_TOKEN_SECRET, algorithms=["HS256"])
-                    
-                    refreshTokenEXP = refreshToken['exp']
-                    accessTokenEXP = accessToken['exp']
+                refreshToken = jwt.decode(refresh_token, REFRESH_TOKEN_SECRET, algorithms=["HS256"])
+                accessToken = jwt.decode(access_token, ACCESS_TOKEN_SECRET, algorithms=["HS256"])
+                
+                refreshTokenEXP = refreshToken['exp']
+                accessTokenEXP = accessToken['exp']
                     
                     # resSuccess = errConfig.statusCode("Login successful!",200)
                 
-                    return {"msg":"Login successful!",
-                            "refresh_token":refresh_token,
-                            "access_token":access_token,
-                            "refresh_exp": refreshTokenEXP,
-                            "access_exp": accessTokenEXP,
-                            "user_info":user_info
-                            }
-                except Exception as e:
-                    return errConfig.statusCode(f'Error msg: {str(e)}',401)
+                return {"msg":"Login successful!",
+                        "refresh_token":refresh_token,
+                        "access_token":access_token,
+                        "refresh_exp": refreshTokenEXP,
+                        "access_exp": accessTokenEXP,
+                        "user_info":user_info
+                        }
+                # except Exception as e:
+                #     return errConfig.statusCode(f'Error msg: {str(e)}',401)
             else: return "Content-Type not support!"
         except NoResultFound:
-            return errConfig.statusCode('Email is not exist!',401)
+            return {"errorMessage":"Email or password is invalid!"}
         except Exception as e :
             return errConfig.statusCode(str(e),400)
 # Get ACCESS_TOKEN

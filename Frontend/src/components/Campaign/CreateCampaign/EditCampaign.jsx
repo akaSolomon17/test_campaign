@@ -16,7 +16,8 @@ const EditCampaign = (props) => {
     user_id: props.record ? props.record.user_id : "",
     campaign_id: props.record ? props.record.campaign_id : "",
     name: props.record ? props.record.name : "",
-    user_status: props.record ? props.record.user_status : true,
+    status: props.record ? props.record.status : true,
+    // user_status: props.record ? props.record.user_status : true,
     start_time: props.record ? props.record.start_date : "",
     end_time: props.record ? props.record.end_date : "",
     budget: props.record ? props.record.budget : "",
@@ -40,10 +41,11 @@ const EditCampaign = (props) => {
     setEndTime(formatCurrentDate);
   }, [setStartTime, setEndTime]);
 
-  const handleUserStatusChange = (e) => {
+  const handleStatusChange = (e) => {
     setCampaign((prevCampaign) => ({
       ...prevCampaign,
-      user_status: e.target.value,
+
+      status: e.target.value,
     }));
   };
   const handleStartTimeChange = (e) => {
@@ -102,7 +104,7 @@ const EditCampaign = (props) => {
 
     const campData = {
       user_id: campaign.user_id,
-      user_status: campaign.user_status,
+      status: campaign.status === "0" ? false : true,
       start_date: campaign.start_time,
       end_date: campaign.end_time,
       budget: campaign.budget,
@@ -114,12 +116,6 @@ const EditCampaign = (props) => {
     };
     dispatch(updateCampaignAction(campaign.campaign_id, campData, api));
     closePopup();
-    // try {
-    //   alert("UPDATE ACCOUNT SUCCESSFULLY!");
-    //   closePopup();
-    // } catch (error) {
-    //   alert("UPDATE ACCOUNT FAILED!");
-    // }
   }
 
   return (
@@ -151,13 +147,13 @@ const EditCampaign = (props) => {
           <div className="status-camp">
             User status:
             <select
-              value={campaign.user_status ? campaign.user_status : "1"}
-              onChange={handleUserStatusChange}
+              value={campaign.status ? campaign.status : "1"}
+              onChange={handleStatusChange}
               className="status-select"
               name="status"
             >
-              <option value="1">ACTIVE</option>
-              <option value="2">INACTIVE</option>
+              <option value={1}>ACTIVE</option>
+              <option value={0}>INACTIVE</option>
             </select>
           </div>
         </div>

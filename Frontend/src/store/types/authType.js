@@ -4,8 +4,6 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_ERROR = "LOGIN_ERROR";
 export const GET_USER = "GET_USER";
 export const GET_ALL_USERS = "GET_ALL_USERS";
-export const TURN_ON_LOADING = "TURN_ON_LOADING";
-export const TURN_OFF_LOADING = "TURN_OFF_LOADING";
 
 // logout constants
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
