@@ -7,7 +7,6 @@ import {
   OPEN_DASHBOARD,
 } from "../../containers/menuContainer";
 import { TbCategory } from "react-icons/tb";
-import { useSelector } from "react-redux";
 
 const SideBar = (props) => {
   const currentUser = useSelector((state) => state.auth?.currentUser);
@@ -15,7 +14,6 @@ const SideBar = (props) => {
   function clickChange(value) {
     props.clickSideBar(value);
   }
-  let currentUser = useSelector((state) => state.auth?.currentUser);
 
   return (
     <div

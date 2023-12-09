@@ -10,9 +10,53 @@ import CampaignTable from "./CampaignTable/CampaignTable";
 import CreateCampaign from "./CreateCampaign/CreateCampaign";
 import { fetchListCampaignAction } from "../../store/actions/campaignActions";
 import useAxios from "../../utils/useAxios";
+import ReactPaginate from "react-paginate";
+import { toast } from "react-toastify";
 
 const Campaign = () => {
   const searchRef = useRef();
+  const [searchInfo, setSearchInfo] = useState({
+    key_word: "",
+    page_number: 1,
+    start_time: "",
+    end_time: "",
+  });
+  const handleChangeSearchByKeyWord = (e) => {
+    const value = e.target.value;
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      setSearchInfo({ ...searchInfo, key_word: value });
+    }, 600);
+  };
+  const handleChangeSearchByStartTime = (e) => {
+    if (
+      searchInfo.end_time !== "" &&
+      searchInfo.end_time < e.target.value.replace("T", " ")
+    ) {
+      toast.error("End time cannot be before start time");
+    } else {
+      setSearchInfo({
+        ...searchInfo,
+        start_time: e.target.value.replace("T", " "),
+      });
+    }
+  };
+  const handleChangeSearchByEndTime = (e) => {
+    if (
+      searchInfo.start_time !== "" &&
+      searchInfo.start_time > e.target.value.replace("T", " ")
+    ) {
+      toast.error("End time cannot be before start time");
+    } else {
+      setSearchInfo({
+        ...searchInfo,
+        end_time: e.target.value.replace("T", " "),
+      });
+    }
+  };
+  const typingTimeoutRef = useRef(null);
 
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
@@ -84,9 +128,20 @@ const Campaign = () => {
   }
 
   //dispatch to fetch all Campaigns
+  // useEffect(() => {
+  //   // dispatch(fetchListCampaignAction(api));
+
+  // }, []);
   useEffect(() => {
-    // dispatch(fetchListCampaignAction(api));
-  }, []);
+    dispatch(
+      fetchListCampaignAction(
+        searchInfo.key_word,
+        searchInfo.page_number,
+        searchInfo.start_time,
+        searchInfo.end_time
+      )
+    );
+  }, [searchInfo]);
 
   return (
     <div className="campaign-grid">
@@ -150,6 +205,27 @@ const Campaign = () => {
         <div className="camp-nodata-text">NO DATA</div>
       )}
       {isOpenPopup && <CreateCampaign changePopup={changePopup} />}
+      <div className="page-navigation">
+        <ReactPaginate
+          previousLabel="<"
+          nextLabel=">"
+          breakLabel="..."
+          // pageCount={pageCount}
+          // onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          renderOnZeroPageCount={null}
+          containerClassName={"pagination justify-content-center"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item"}
+          previousLinkClassName={"page-link"}
+          nextClassName={"page-item"}
+          nextLinkClassName={"page-link"}
+          breakClassName={"page-item"}
+          breakLinkClassName={"page-link"}
+          activeClassName={"active"}
+        />
+      </div>
     </div>
   );
 };

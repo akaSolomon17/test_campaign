@@ -83,3 +83,37 @@
   font-size: 20px;
   font-weight: bold;
 }
+.page-navigation {
+  text-align: center;
+}
+
+.page-disable {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.page-navigation-btn {
+  color: var(--blue-main-color);
+  font-weight: 700;
+  padding: 10px;
+  font-size: 1.2rem;
+}
+
+.page-navigation-btn span {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.page-navigation-btn button {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 5px;
+  background: white;
+  color: var(--blue-main-color);
+}
+
+.page-navigation-btn button:hover {
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.5s;
+}
