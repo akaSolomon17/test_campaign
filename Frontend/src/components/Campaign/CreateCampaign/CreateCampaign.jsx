@@ -96,7 +96,7 @@ const CreateCampaign = (props) => {
       ...formData,
       user_id: currentUser.user_id,
     };
-
+    console.log(createFormData);
     dispatch(createCampaignAction(createFormData, api));
     closePopup();
   };

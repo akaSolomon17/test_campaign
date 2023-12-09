@@ -6,12 +6,14 @@ import {
 } from "../../containers/menuContainer";
 import React from "react";
 import { TbCategory } from "react-icons/tb";
+import { useSelector } from "react-redux";
 
 const SideBar = (props) => {
   const { activeItem } = props;
   function clickChange(value) {
     props.clickSideBar(value);
   }
+  let currentUser = useSelector((state) => state.auth?.currentUser);
 
   return (
     <div
@@ -49,13 +51,17 @@ const SideBar = (props) => {
         Campaign
       </div>
       <div
-        className={
-          activeItem === OPEN_ACCOUNT ? "highlight-item-side" : "item-side"
-        }
-        onClick={() => clickChange(OPEN_ACCOUNT)}
+        className={currentUser.role_id === "ADMIN" ? "" : "hide-tab-account"}
       >
-        <TbCategory className="icon-side-bar" />
-        Account
+        <div
+          className={
+            activeItem === OPEN_ACCOUNT ? "highlight-item-side" : "item-side"
+          }
+          onClick={() => clickChange(OPEN_ACCOUNT)}
+        >
+          <TbCategory className="icon-side-bar" />
+          Account
+        </div>
       </div>
     </div>
   );

@@ -46,46 +46,75 @@ class getAllCampaign(Resource):
     def get(self):
         try:
             campaigns = Campaigns.query.all()
+            key_word = request.args.get('key_word')
+            page_number = int(request.args.get('page_number', 1))
+            start_date = request.args.get('start_date')
+            end_date = request.args.get('end_date')
+
+            if key_word is None:
+                key_word = ""
+
+            limit_number_records = 3
+            offset = (page_number - 1) * limit_number_records
+            if not isinstance(page_number, int) or page_number < 1:
+                return jsonify({
+                    "statusCode": 400,
+                    "message": "",
+                    "errors": {"page_number": ["Invalid page number"]}
+                })
+            campaign_list = []
+            count_campaigns = 0
+
+            name = Campaigns.query.filter(Campaigns.name)
             
-            if campaigns:
-                campaign_list = []
-                for campaign in campaigns:
-                    creatives = Creatives.query.filter_by(campaign_id=campaign.campaign_id).all()
-                    tuple_creative = [
-                        {
-                            "creative_id": creative.creative_id,
-                            "title": creative.title,
-                            "description": creative.description,
-                            "img_preview": creative.img_preview,
-                            "final_url": creative.final_url,
-                            "status": creative.status,
-                            "create_at": creative.create_at,
-                            "update_at": creative.update_at,
-                            "delete_flag": creative.delete_flag,
-                            "campaign_id": creative.campaign_id,
-                        }
-                        for creative in creatives
-                    ]
+            campaign_list = Campaigns.query.filter(Campaigns.name.like(f"%{key_word}%"), Campaigns.delete_flag == 0,Campaigns.start_date >= start_date,Campaigns.end_date <= end_date) \
+            .limit(limit_number_records).offset(offset).all()
+            # print(Campaigns.query(Campaigns.start_date),Campaigns.query(Campaigns.end_date))
+            total_records = Campaigns.query.filter(Campaigns.name.like(f"%{key_word}%"), Campaigns.delete_flag == 0,Campaigns.start_date >= start_date,Campaigns.end_date <= end_date) \
+            .limit(limit_number_records).offset(offset).count()
 
-                    campaign_info = OrderedDict([
-                        ("user_id", campaign.user_id),
-                        ("name", campaign.name),
-                        ("user_status", campaign.user_status),
-                        ("used_amount", campaign.used_amount),
-                        ("budget", campaign.budget),
-                        ("create_at", campaign.create_at),
-                        ("update_at", campaign.update_at),
-                        ("bid_amount", campaign.bid_amount),
-                        ("start_date", str(campaign.start_date)),
-                        ("end_date", str(campaign.end_date)),
-                        ("usage_rate", campaign.usage_rate),
-                        ("campaign_id", campaign.campaign_id),
-                        ("creatives", tuple_creative)
-                    ])
+            if campaign_list:
+                for campaign in campaign_list:
+                        print(campaign.start_date,start_date)
+                        print(campaign.end_date,end_date)
+                        creatives = Creatives.query.filter_by(campaign_id=campaign.campaign_id).all()
+                        tuple_creative = [
+                            {
+                                "creative_id": creative.creative_id,
+                                "title": creative.title,
+                                "description": creative.description,
+                                "img_preview": creative.img_preview,
+                                "final_url": creative.final_url,
+                                "status": creative.status,
+                                "create_at": creative.create_at,
+                                "update_at": creative.update_at,
+                                "delete_flag": creative.delete_flag,
+                                "campaign_id": creative.campaign_id,
+                            }
+                            for creative in creatives
+                        ]
+                        campaign_data = OrderedDict([
+                            ("user_id", campaign.user_id),
+                            ("name", campaign.name),
+                            ("user_status", campaign.user_status),
+                            ("used_amount", campaign.used_amount),
+                            ("budget", campaign.budget),
+                            ("create_at", campaign.create_at),
+                            ("update_at", campaign.update_at),
+                            ("bid_amount", campaign.bid_amount),
+                            ("start_date", str(campaign.start_date)),
+                            ("end_date", str(campaign.end_date)),
+                            ("usage_rate", campaign.usage_rate),
+                            ("campaign_id", campaign.campaign_id),
+                            ("creatives", tuple_creative)
+                        ])
 
-                    campaign_list.append(campaign_info)
-
-                return jsonify(campaigns=campaign_list)
+                return jsonify({
+                    "campaign_list": campaign_data,
+                    "total_records": total_records,
+                    "page_number": page_number,
+                    "limit_number_records": limit_number_records
+                })
             else:
                 return errConfig.statusCode("Campaign not found", 404)
         except Exception as e:

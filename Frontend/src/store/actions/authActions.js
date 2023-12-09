@@ -14,6 +14,7 @@ export const loginAction = (loginData, navigate) => {
       const res = await authServices.signin(loginData);
       if (res.status === 200) {
         const authInformation = {
+          role_id: res.data.user_info.role_id,
           user_id: res.data.user_info.user_id,
           first_name: res.data.user_info.first_name,
           last_name: res.data.user_info.last_name,

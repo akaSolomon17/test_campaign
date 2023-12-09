@@ -25,10 +25,10 @@ const useAxios = () => {
             `${baseURL}/api/refresh_token`,
             { refresh_token: currentUser.refresh_token }
           );
+
           const refreshUser = {
             ...currentUser,
             access_token: resRefreshToken.data.new_acc_token,
-
             access_token_exp: resRefreshToken.data.access_token_exp,
           };
 

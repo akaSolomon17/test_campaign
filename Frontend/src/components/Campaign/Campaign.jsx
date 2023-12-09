@@ -85,7 +85,7 @@ const Campaign = () => {
 
   //dispatch to fetch all Campaigns
   useEffect(() => {
-    dispatch(fetchListCampaignAction(api));
+    // dispatch(fetchListCampaignAction(api));
   }, []);
 
   return (

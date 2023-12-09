@@ -176,6 +176,7 @@ class getAccessToken(Resource):
                 access_token = createAccessToken(User.user_id,User.role_id)
                 access_token_decode = jwt.decode(access_token, ACCESS_TOKEN_SECRET, algorithms=["HS256"])
                 access_token_exp = access_token_decode['exp']
+                # role_id = access_token_decode['role_id']
                 return {"new_acc_token":access_token, "access_token_exp":access_token_exp}
             except InvalidTokenError:
                 return errConfig.statusCode("Invalid token",401)
@@ -344,3 +345,4 @@ class deleteAllUser(Resource):
             return errConfig.statusCode('Delete all users successfully!')
         except Exception as e:
             return errConfig.statusCode(str(e),500)
+
