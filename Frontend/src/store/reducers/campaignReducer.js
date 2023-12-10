@@ -21,7 +21,7 @@ const campaignReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        listCampaigns: action.payload,
+        listCampaigns: action.payload.campaign_list,
         totalRecords: action.payload.total_records,
       };
     case FETCH_CAMPAIGN_FAILED:

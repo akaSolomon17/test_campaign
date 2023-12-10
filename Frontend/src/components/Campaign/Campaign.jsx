@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Pagination from "react-pagination-js";
+import "react-pagination-js/dist/styles.css";
 
 import "./Campaign.scss";
 
@@ -18,8 +20,8 @@ const Campaign = () => {
   const typingTimeoutRef = useRef(null);
 
   const [startTime, setStartTime] = useState("2023-01-01 23:59:59");
-  const [endTime, setEndTime] = useState("2023-05-05 23:59:59");
-  const [pageNumber, setpageNumber] = useState(1);
+  const [endTime, setEndTime] = useState("2023-12-31 23:59:59");
+  const [pageNumber, setPageNumber] = useState(1);
   const [keyWord, setkeyWord] = useState("ALL");
 
   const [isOpenPopup, setOpenPopup] = useState(false);
@@ -33,21 +35,21 @@ const Campaign = () => {
   const totalRecords = useSelector((state) => state.campaign.totalRecords);
   const pageCount = Math.ceil(totalRecords / 3);
   const handlePageClick = (event) => {
-    console.log("event", event);
-    // setpageNumber(event.selected + 1);
+    setPageNumber(event.selected + 1);
   };
 
   const { err, success } = data;
 
-  // const handleChangeSearchByKeyWord = (e) => {
-  //   const value = e.target.value;
-  //   if (typingTimeoutRef.current) {
-  //     clearTimeout(typingTimeoutRef.current);
-  //   }
-  //   typingTimeoutRef.current = setTimeout(() => {
-  //     setSearchInfo({ ...searchInfo, key_word: value });
-  //   }, 600);
-  // };
+  const handleChangeSearchByKeyWord = (e) => {
+    const value = e.target.value;
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      // setSearchInfo({ ...searchInfo, key_word: value });
+      setkeyWord(value);
+    }, 600);
+  };
   // const handleChangeSearchByStartTime = (e) => {
   //   if (
   //     searchInfo.end_time !== "" &&
@@ -76,11 +78,10 @@ const Campaign = () => {
   // };
 
   useEffect(() => {
-    const currentMoment = moment();
-    const formatCurrentDate = currentMoment.format("YYYY-MM-DD HH:mm:ss");
-
-    setStartTime(formatCurrentDate);
-    setEndTime(formatCurrentDate);
+    // const currentMoment = moment();
+    // const formatCurrentDate = currentMoment.format("YYYY-MM-DD HH:mm:ss");
+    // setStartTime(formatCurrentDate);
+    // setEndTime(formatCurrentDate);
   }, [setStartTime, setEndTime, pageNumber]);
 
   function changePopup() {
@@ -125,11 +126,6 @@ const Campaign = () => {
     setEndTime(moment(selectedEndTime).format("YYYY-MM-DD HH:mm:ss"));
   }
 
-  //dispatch to fetch all Campaigns
-  // useEffect(() => {
-  //   // dispatch(fetchListCampaignAction(api));
-
-  // }, []);
   useEffect(() => {
     dispatch(
       fetchListCampaignAction(
@@ -142,7 +138,21 @@ const Campaign = () => {
         api
       )
     );
-  }, []);
+  }, [pageNumber, keyWord]);
+  const setPageNumberDefault = () => {
+    setPageNumber(1);
+    dispatch(
+      fetchListCampaignAction(
+        {
+          key_word: keyWord,
+          page_number: pageNumber,
+          start_time: startTime,
+          end_time: endTime,
+        },
+        api
+      )
+    );
+  };
 
   return (
     <div className="campaign-grid">
@@ -175,12 +185,18 @@ const Campaign = () => {
           </div>
         </div>
         <div className="camp-search-container">
-          <input
+          {/* <input
             type="text"
             id="search-bar"
             onBlur={handleSearch}
             ref={searchRef}
             placeholder="Search"
+          /> */}
+          <input
+            type="search"
+            placeholder="Search"
+            id="search-bar"
+            onInput={(e) => handleChangeSearchByKeyWord(e)}
           />
           <div className="camp-func-btn-container">
             <CSVLink
@@ -201,22 +217,47 @@ const Campaign = () => {
       </div>
 
       {listCampaigns && listCampaigns.length > 0 ? (
-        <CampaignTable listCampaigns={listCampaigns} />
+        <CampaignTable
+          listCampaigns={listCampaigns}
+          startTime={startTime}
+          endTime={endTime}
+          keyWord={keyWord}
+          pageNumber={pageNumber}
+          setPageNumberDefault={setPageNumberDefault}
+        />
       ) : (
         <div className="camp-nodata-text">NO DATA</div>
       )}
-      {isOpenPopup && <CreateCampaign changePopup={changePopup} />}
-      <div className="page-navigation">
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={18}
-          previousLabel="< previous"
-          renderOnZeroPageCount={null}
+      {isOpenPopup && (
+        <CreateCampaign
+          changePopup={changePopup}
+          startTime={startTime}
+          endTime={endTime}
+          keyWord={keyWord}
+          pageNumber={pageNumber}
         />
-      </div>
+      )}
+      {listCampaigns && totalRecords > 3 && (
+        <ReactPaginate
+          previousLabel={"previous"}
+          nextLabel={"next"}
+          breakLabel={"..."}
+          pageCount={pageCount}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={3}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination justify-content-center"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item"}
+          previousLinkClassName={"page-link"}
+          nextClassName={"page-item"}
+          nextLinkClassName={"page-link"}
+          breakClassName={"page-item"}
+          breakLinkClassName={"page-link"}
+          activeClassName={"active"}
+        />
+      )}
     </div>
   );
 };

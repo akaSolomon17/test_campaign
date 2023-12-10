@@ -11,6 +11,10 @@ import useAxios from "../../../utils/useAxios";
 
 const EditCampaign = (props) => {
   const api = useAxios();
+  const startTimeForGet = props.startTime;
+  const endTimeForget = props.endTime;
+  const keyWord = props.keyWord;
+  const pageNumber = props.pageNumber;
   const dispatch = useDispatch();
   const initialState = {
     user_id: props.record ? props.record.user_id : "",
@@ -114,7 +118,14 @@ const EditCampaign = (props) => {
       img_preview: campaign.img_preview,
       final_url: campaign.final_url,
     };
-    dispatch(updateCampaignAction(campaign.campaign_id, campData, api));
+    dispatch(
+      updateCampaignAction(campaign.campaign_id, campData, api, {
+        key_word: keyWord,
+        start_time: startTimeForGet,
+        end_time: endTimeForget,
+        page_number: pageNumber,
+      })
+    );
     closePopup();
   }
 

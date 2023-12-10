@@ -6,6 +6,7 @@ from jwt.exceptions import *
 from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
+from sqlalchemy import func
 
 # FLASK
 from flask import Flask, request, make_response, jsonify
@@ -70,13 +71,20 @@ class getAllCampaign(Resource):
                 Campaigns.start_date >= start_date,
                 Campaigns.end_date <= end_date
             )
-
+            # if not query:
+            #     return jsonify({
+            #         "campaign_list": [],
+            #         "total_records": 0,
+            #         "page_number": page_number,
+            #         "limit_number_records": limit_number_records
+            #     })
             if key_word == "ALL":
                 campaign_list = query.limit(limit_number_records).offset(offset).all()
-                total_records = query.limit(limit_number_records).offset(offset).count()
+                total_records = query.count()
             else:
                 campaign_list = query.filter(Campaigns.name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).all()
-                total_records = query.filter(Campaigns.name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).count()
+                total_records = query.filter(Campaigns.name.like(f"%{key_word}%")).with_entities(func.sum(Campaigns.total_records)).scalar()
+
             
             if campaign_list:
                 for campaign in campaign_list:
@@ -122,7 +130,12 @@ class getAllCampaign(Resource):
                     "limit_number_records": limit_number_records
                 })
             else:
-                return errConfig.statusCode("Campaign not found", 404)
+                return jsonify({
+                    "campaign_list": [],
+                    "total_records": 0,
+                    "page_number": page_number,
+                    "limit_number_records": limit_number_records
+                })
         except Exception as e:
             return errConfig.statusCode(str(e), 500)
 

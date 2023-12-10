@@ -1,40 +1,6 @@
 .camp-datetime {
   display: flex;
   padding: 80px 50px 20px 50px;
-  .page-navigation {
-    text-align: center;
-  }
-
-  .page-disable {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  .page-navigation-btn {
-    color: blue;
-    font-weight: 700;
-    padding: 10px;
-    font-size: 1.2rem;
-  }
-
-  .page-navigation-btn span {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-
-  .page-navigation-btn button {
-    padding: 5px 15px;
-    border: none;
-    border-radius: 5px;
-    background: white;
-    color: blue;
-  }
-
-  .page-navigation-btn button:hover {
-    cursor: pointer;
-    opacity: 0.8;
-    transition: 0.5s;
-  }
 
   .starttime-container {
     // grid-area: starttime;
@@ -67,19 +33,20 @@
 }
 
 .camp-search-container {
+  display: flex;
   // grid-area: search;
-  direction: flex;
-  flex-direction: row;
-  padding: 10px 50px 20px 50px;
+  padding: 10px 20px 20px 34px;
+
   #search-bar {
     padding: 15px;
     width: 250px;
     font-size: medium;
+    margin-right: 539px;
   }
   .camp-func-btn-container {
-    position: absolute;
-    right: 3.125rem;
-    top: 26.5rem;
+    // position: absolute;
+    // right: 3.125rem;
+    // top: 26.5rem;
   }
 }
 .camp-export-btn {

@@ -11,6 +11,10 @@ import useAxios from "../../../utils/useAxios";
 const CreateCampaign = (props) => {
   const api = useAxios();
   const dispatch = useDispatch();
+  const startTimeForGet = props.startTime;
+  const endTimeForGet = props.endTime;
+  const keyWord = props.keyWord;
+  const pageNumber = props.pageNumber;
 
   const currentUser = useSelector((state) => state.auth?.currentUser);
   const [startTime, setStartTime] = useState(new Date());
@@ -96,8 +100,18 @@ const CreateCampaign = (props) => {
       ...formData,
       user_id: currentUser.user_id,
     };
-    console.log(createFormData);
-    dispatch(createCampaignAction(createFormData, api));
+    dispatch(
+      createCampaignAction(
+        createFormData,
+        {
+          key_word: keyWord,
+          start_time: startTimeForGet,
+          end_time: endTimeForGet,
+          page_number: pageNumber,
+        },
+        api
+      )
+    );
     closePopup();
   };
 

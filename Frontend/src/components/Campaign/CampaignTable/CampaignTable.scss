@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   overflow: auto;
+  margin-bottom: 50px;
   table {
     margin: auto;
     border: 2px solid rgb(0, 0, 0);
@@ -15,6 +16,7 @@
       background-color: #468faf;
       color: white;
       height: 50px;
+      text-align: center;
     }
     td {
       text-align: center;
@@ -48,5 +50,22 @@
   ul {
     justify-content: center;
     padding-top: 20px;
+  }
+}
+.btn-camp-delete {
+  background-color: #468faf;
+  color: white;
+  border: none;
+  :hover {
+    cursor: pointer;
+  }
+  margin-left: 10px;
+}
+.btn-camp-update {
+  background-color: red;
+  color: white;
+  border: none;
+  :hover {
+    cursor: pointer;
   }
 }

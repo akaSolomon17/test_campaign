@@ -14,6 +14,10 @@ const CampaignTable = (props) => {
   const api = useAxios();
   const dispatch = useDispatch();
   const listCampaigns = props.listCampaigns;
+  const startTime = props.startTime;
+  const endTime = props.endTime;
+  const keyWord = props.keyWord;
+  const pageNumber = props.pageNumber;
 
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isOpenPopup, setOpenPopup] = useState(false);
@@ -31,9 +35,16 @@ const CampaignTable = (props) => {
     setOpenPopup(!isOpenPopup);
   };
 
-  function handleDeleteUser(campaign) {
-    dispatch(deleteCampaignAction(campaign.campaign_id, api));
-  }
+  const handleDeleteCampaign = async (campaign) => {
+    dispatch(
+      deleteCampaignAction(campaign.campaign_id, api, {
+        key_word: keyWord,
+        start_time: startTime,
+        end_time: endTime,
+        page_number: 1,
+      })
+    );
+  };
 
   // const handleChangePage = (event, value) => {
   //   setPage(value);
@@ -83,8 +94,8 @@ const CampaignTable = (props) => {
                     <td>{campaign.start_date}</td>
                     <td>{campaign.end_date}</td>
                     <td>
-                      <AiFillEdit
-                        className="btn"
+                      <button
+                        className="btn-camp-update"
                         onClick={() =>
                           handleEditClick({
                             ...campaign,
@@ -92,11 +103,15 @@ const CampaignTable = (props) => {
                             user_id: campaign.user_id,
                           })
                         }
-                      />
-                      <AiFillDelete
-                        className="btn"
-                        onClick={() => handleDeleteUser(campaign)}
-                      />
+                      >
+                        UPDATE
+                      </button>
+                      <button
+                        className="btn-camp-delete"
+                        onClick={() => handleDeleteCampaign(campaign)}
+                      >
+                        DELETE
+                      </button>
                     </td>
                   </tr>
                 </React.Fragment>
@@ -116,7 +131,14 @@ const CampaignTable = (props) => {
 
       {isOpenPopup && <CreateCampaign changePopup={changePopup} />}
       {selectedRecord && (
-        <EditCampaign record={selectedRecord} onClose={handleFormClose} />
+        <EditCampaign
+          record={selectedRecord}
+          onClose={handleFormClose}
+          startTime={startTime}
+          endTime={endTime}
+          keyWord={keyWord}
+          pageNumber={pageNumber}
+        />
       )}
     </div>
   );
