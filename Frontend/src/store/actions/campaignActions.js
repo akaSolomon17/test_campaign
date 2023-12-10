@@ -9,14 +9,14 @@ import {
 import { turnOffLoading, turnOnLoading } from "./loadingActions";
 
 //fetch list Campaign Action
-export const fetchListCampaignAction = (api) => {
+export const fetchListCampaignAction = (initInfo, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
-      const res = await campaignServices.fetchListCampaign(api);
+      const res = await campaignServices.fetchListCampaign(initInfo, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListCampaignSuccess(res.data.campaigns));
+        dispatch(fetchListCampaignSuccess(res.data.campaign_list));
       } else {
         dispatch(turnOffLoading());
       }

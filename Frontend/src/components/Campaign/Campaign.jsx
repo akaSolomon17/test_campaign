@@ -15,55 +15,12 @@ import { toast } from "react-toastify";
 
 const Campaign = () => {
   const searchRef = useRef();
-  const [searchInfo, setSearchInfo] = useState({
-    key_word: "",
-    page_number: 1,
-    start_time: "",
-    end_time: "",
-  });
-  const handleChangeSearchByKeyWord = (e) => {
-    const value = e.target.value;
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    typingTimeoutRef.current = setTimeout(() => {
-      setSearchInfo({ ...searchInfo, key_word: value });
-    }, 600);
-  };
-  const handleChangeSearchByStartTime = (e) => {
-    if (
-      searchInfo.end_time !== "" &&
-      searchInfo.end_time < e.target.value.replace("T", " ")
-    ) {
-      toast.error("End time cannot be before start time");
-    } else {
-      setSearchInfo({
-        ...searchInfo,
-        start_time: e.target.value.replace("T", " "),
-      });
-    }
-  };
-  const handleChangeSearchByEndTime = (e) => {
-    if (
-      searchInfo.start_time !== "" &&
-      searchInfo.start_time > e.target.value.replace("T", " ")
-    ) {
-      toast.error("End time cannot be before start time");
-    } else {
-      setSearchInfo({
-        ...searchInfo,
-        end_time: e.target.value.replace("T", " "),
-      });
-    }
-  };
   const typingTimeoutRef = useRef(null);
 
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-
-  const [dataSearch, setDataSearch] = useState({ search: null });
-
-  const [loading, setLoading] = useState(false);
+  const [startTime, setStartTime] = useState("2023-01-01 23:59:59");
+  const [endTime, setEndTime] = useState("2023-05-05 23:59:59");
+  const [pageNumber, setpageNumber] = useState(1);
+  const [keyWord, setkeyWord] = useState("ALL");
 
   const [isOpenPopup, setOpenPopup] = useState(false);
   const [isReload, setReload] = useState(true); // set Callback
@@ -73,32 +30,70 @@ const Campaign = () => {
   const api = useAxios();
   const dispatch = useDispatch();
   const listCampaigns = useSelector((state) => state.campaign.listCampaigns);
+  const totalRecords = useSelector((state) => state.campaign.totalRecords);
+  const pageCount = Math.ceil(totalRecords / 3);
+  const handlePageClick = (event) => {
+    console.log("event", event);
+    // setpageNumber(event.selected + 1);
+  };
 
   const { err, success } = data;
 
+  // const handleChangeSearchByKeyWord = (e) => {
+  //   const value = e.target.value;
+  //   if (typingTimeoutRef.current) {
+  //     clearTimeout(typingTimeoutRef.current);
+  //   }
+  //   typingTimeoutRef.current = setTimeout(() => {
+  //     setSearchInfo({ ...searchInfo, key_word: value });
+  //   }, 600);
+  // };
+  // const handleChangeSearchByStartTime = (e) => {
+  //   if (
+  //     searchInfo.end_time !== "" &&
+  //     searchInfo.end_time < e.target.value.replace("T", " ")
+  //   ) {
+  //     toast.error("End time cannot be before start time");
+  //   } else {
+  //     setSearchInfo({
+  //       ...searchInfo,
+  //       start_time: e.target.value.replace("T", " "),
+  //     });
+  //   }
+  // };
+  // const handleChangeSearchByEndTime = (e) => {
+  //   if (
+  //     searchInfo.start_time !== "" &&
+  //     searchInfo.start_time > e.target.value.replace("T", " ")
+  //   ) {
+  //     toast.error("End time cannot be before start time");
+  //   } else {
+  //     setSearchInfo({
+  //       ...searchInfo,
+  //       end_time: e.target.value.replace("T", " "),
+  //     });
+  //   }
+  // };
+
   useEffect(() => {
     const currentMoment = moment();
-    const formatCurrentDate = currentMoment.format("YYYY-MM-DDTHH:mm");
+    const formatCurrentDate = currentMoment.format("YYYY-MM-DD HH:mm:ss");
 
     setStartTime(formatCurrentDate);
     setEndTime(formatCurrentDate);
-  }, [setStartTime, setEndTime]);
+  }, [setStartTime, setEndTime, pageNumber]);
 
   function changePopup() {
     setOpenPopup(!isOpenPopup);
     setReload(!isReload);
   }
 
-  function handleSearch() {
-    let search = searchRef.current.value;
-    setDataSearch({ search: search });
-    setReload(!isReload);
-  }
+  function handleSearch() {}
 
   function handleStartTimeChange(event) {
     const selectedStartTime = event.target.value;
     const currentMoment = moment();
-    const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm");
+    const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm:ss");
 
     if (moment(selectedStartTime).isBefore(minDateTime)) {
       return;
@@ -108,13 +103,15 @@ const Campaign = () => {
       return;
     }
 
-    setStartTime(selectedStartTime);
+    // Format the date using moment before setting it
+    setStartTime(moment(selectedStartTime).format("YYYY-MM-DD HH:mm:ss"));
   }
+
   function handleEndTimeChange(event) {
     const selectedEndTime = event.target.value;
     const minDateTime = moment(startTime)
       .add(1, "days")
-      .format("YYYY-MM-DDTHH:mm");
+      .format("YYYY-MM-DDTHH:mm:ss");
 
     if (moment(selectedEndTime).isBefore(minDateTime)) {
       return;
@@ -124,7 +121,8 @@ const Campaign = () => {
       return;
     }
 
-    setEndTime(selectedEndTime);
+    // Format the date using moment before setting it
+    setEndTime(moment(selectedEndTime).format("YYYY-MM-DD HH:mm:ss"));
   }
 
   //dispatch to fetch all Campaigns
@@ -135,13 +133,16 @@ const Campaign = () => {
   useEffect(() => {
     dispatch(
       fetchListCampaignAction(
-        searchInfo.key_word,
-        searchInfo.page_number,
-        searchInfo.start_time,
-        searchInfo.end_time
+        {
+          key_word: keyWord,
+          page_number: pageNumber,
+          start_time: startTime,
+          end_time: endTime,
+        },
+        api
       )
     );
-  }, [searchInfo]);
+  }, []);
 
   return (
     <div className="campaign-grid">
@@ -207,23 +208,13 @@ const Campaign = () => {
       {isOpenPopup && <CreateCampaign changePopup={changePopup} />}
       <div className="page-navigation">
         <ReactPaginate
-          previousLabel="<"
-          nextLabel=">"
           breakLabel="..."
-          // pageCount={pageCount}
-          // onPageChange={handlePageClick}
+          nextLabel="next >"
+          onPageChange={handlePageClick}
           pageRangeDisplayed={5}
+          pageCount={18}
+          previousLabel="< previous"
           renderOnZeroPageCount={null}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousClassName={"page-item"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          breakLinkClassName={"page-link"}
-          activeClassName={"active"}
         />
       </div>
     </div>

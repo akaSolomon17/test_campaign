@@ -1,6 +1,8 @@
 export const campaignServices = {
-  fetchListCampaign: (api) => {
-    let res = api.get(`/api/all_campaign`);
+  fetchListCampaign: (initInfo, api) => {
+    let res = api.get(
+      `/api/all_campaign?key_word=${initInfo.key_word}&page_number=${initInfo.page_number}&start_date=${initInfo.start_time}&end_date=${initInfo.end_time}`
+    );
     return res;
   },
   createCampaign: (formData, api) => {

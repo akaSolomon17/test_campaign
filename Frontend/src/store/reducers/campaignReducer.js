@@ -6,6 +6,7 @@ import {
 
 const initialState = {
   listCampaigns: [],
+  totalRecords: 0,
   isLoading: false,
 };
 
@@ -21,6 +22,7 @@ const campaignReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         listCampaigns: action.payload,
+        totalRecords: action.payload.total_records,
       };
     case FETCH_CAMPAIGN_FAILED:
       return {

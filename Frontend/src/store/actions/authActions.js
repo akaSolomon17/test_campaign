@@ -11,13 +11,13 @@ import { turnOffLoading, turnOnLoading } from "./loadingActions";
 // login action
 export const loginAction = (loginData, navigate) => {
   return async (dispatch) => {
-    dispatch(loginStart());
+    dispatch(turnOnLoading());
     try {
-      dispatch(turnOnLoading());
       const res = await authServices.signin(loginData);
       dispatch(turnOffLoading());
       if (res.data.errorMessage) {
         toast.error(res.data.errorMessage);
+        dispatch(turnOffLoading());
         return;
       }
       if (res.status === 200) {
@@ -34,32 +34,23 @@ export const loginAction = (loginData, navigate) => {
           refresh_token_exp: res.data.refresh_exp,
         };
         dispatch(loginSuccess(authInformation));
-
         return navigate("/");
       } else {
-        dispatch(loginFailed());
+        dispatch(turnOffLoading());
       }
     } catch (e) {
-      dispatch(loginFailed());
+      dispatch(turnOffLoading());
     }
   };
 };
-export const loginStart = () => {
-  return {
-    type: LOGIN_START,
-  };
-};
+
 export const loginSuccess = (payload) => {
   return {
     type: LOGIN_SUCCESS,
     payload,
   };
 };
-export const loginFailed = () => {
-  return {
-    type: LOGIN_ERROR,
-  };
-};
+
 // logout
 export const logoutAction = (currentUser, navigate) => {
   return async (dispatch) => {

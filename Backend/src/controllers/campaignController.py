@@ -78,59 +78,6 @@ class getAllCampaign(Resource):
                 campaign_list = query.filter(Campaigns.name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).all()
                 total_records = query.filter(Campaigns.name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).count()
             
-            # campaign_list = []
-            # count_campaigns = 0
-            
-            # if key_word == "ALL":
-            #     campaign_list_all = Campaigns.query.filter(Campaigns.delete_flag == 0,Campaigns.start_date >= start_date,Campaigns.end_date <= end_date) \
-            #     .limit(limit_number_records).offset(offset).all()
-            #     total_records = Campaigns.query.filter(Campaigns.delete_flag == 0,Campaigns.start_date >= start_date,Campaigns.end_date <= end_date) \
-            #     .limit(limit_number_records).offset(offset).count()
-            #     campaign_list.extend(campaign_list_all)
-            # else:
-            #     campaign_list_key_word = Campaigns.query.filter(Campaigns.name.like(f"%{key_word}%"), Campaigns.delete_flag == 0,Campaigns.start_date >= start_date,Campaigns.end_date <= end_date) \
-            #     .limit(limit_number_records).offset(offset).all()
-            #     # print(Campaigns.query(Campaigns.start_date),Campaigns.query(Campaigns.end_date))
-            #     total_records = Campaigns.query.filter(Campaigns.name.like(f"%{key_word}%"), Campaigns.delete_flag == 0,Campaigns.start_date >= start_date,Campaigns.end_date <= end_date) \
-            #     .limit(limit_number_records).offset(offset).count()
-            #     campaign_list.extend(campaign_list_key_word)
-            # if campaign_list:
-            #     all_campaign_data = []  # Accumulate campaign data for all campaigns
-
-            #     for campaign in campaign_list:
-            #         creatives = Creatives.query.filter_by(campaign_id=campaign.campaign_id).all()
-            #         tuple_creative = [
-            #             {
-            #                 "creative_id": creative.creative_id,
-            #                 "title": creative.title,
-            #                 "description": creative.description,
-            #                 "img_preview": creative.img_preview,
-            #                 "final_url": creative.final_url,
-            #                 "create_at": creative.create_at,
-            #                 "update_at": creative.update_at,
-            #                 "delete_flag": creative.delete_flag,
-            #                 "campaign_id": creative.campaign_id,
-            #             }
-            #             for creative in creatives
-            #         ]
-
-            #         campaign_data = OrderedDict([
-            #             ("user_id", campaign.user_id),
-            #             ("name", campaign.name),
-            #             ("user_status", campaign.user_status),
-            #             ("used_amount", campaign.used_amount),
-            #             ("budget", campaign.budget),
-            #             ("status", campaign.status),
-            #             ("create_at", campaign.create_at),
-            #             ("update_at", campaign.update_at),
-            #             ("bid_amount", campaign.bid_amount),
-            #             ("start_date", str(campaign.start_date)),
-            #             ("end_date", str(campaign.end_date)),
-            #             ("usage_rate", campaign.usage_rate),
-            #             ("campaign_id", campaign.campaign_id),
-            #             ("creatives", tuple_creative)
-            #         ])
-
             if campaign_list:
                 for campaign in campaign_list:
                     creatives = Creatives.query.filter_by(campaign_id=campaign.campaign_id).all()
