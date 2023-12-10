@@ -71,20 +71,14 @@ class getAllCampaign(Resource):
                 Campaigns.start_date >= start_date,
                 Campaigns.end_date <= end_date
             )
-            # if not query:
-            #     return jsonify({
-            #         "campaign_list": [],
-            #         "total_records": 0,
-            #         "page_number": page_number,
-            #         "limit_number_records": limit_number_records
-            #     })
+
             if key_word == "ALL":
                 campaign_list = query.limit(limit_number_records).offset(offset).all()
                 total_records = query.count()
             else:
+                campaign_filtered = query.filter(Campaigns.name.like(f"%{key_word}%"))
                 campaign_list = query.filter(Campaigns.name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).all()
-                total_records = query.filter(Campaigns.name.like(f"%{key_word}%")).with_entities(func.sum(Campaigns.total_records)).scalar()
-
+                total_records = campaign_filtered.count()
             
             if campaign_list:
                 for campaign in campaign_list:
@@ -120,7 +114,7 @@ class getAllCampaign(Resource):
                         ("campaign_id", campaign.campaign_id),
                         ("creatives", tuple_creative)
                     ])
-                    print(campaign_data)
+
                     all_campaign_data.append(campaign_data)
 
                 return jsonify({
@@ -137,7 +131,7 @@ class getAllCampaign(Resource):
                     "limit_number_records": limit_number_records
                 })
         except Exception as e:
-            return errConfig.statusCode(str(e), 500)
+            return errConfig.statusCode("Unexpected Error",200)
 
 # GET ONE CAMPAIGN
 class getCampaign(Resource):
@@ -298,31 +292,31 @@ class updateCampaign(Resource):
             return errConfig.statusCode(str(e), 500)
 
 
-# SEARCH CAMPAIGN 
-class searchCampaignAPI(Resource):
-    @authMiddleware
-    def post(self):
-        from initSQL import db
+# # SEARCH CAMPAIGN 
+# class searchCampaignAPI(Resource):
+#     @authMiddleware
+#     def post(self):
+#         from initSQL import db
 
-        try:
-            json = request.get_json()
-            name = json["name"]
-            user_id = json["user_id"]
-            start_date = json["start_date"]
-            end_date = json["end_date"]
+#         try:
+#             json = request.get_json()
+#             name = json["name"]
+#             user_id = json["user_id"]
+#             start_date = json["start_date"]
+#             end_date = json["end_date"]
 
-            if not check_date(start_date, end_date):
-                return errConfig.statusCode("Invalid date", 400)
+#             if not check_date(start_date, end_date):
+#                 return errConfig.statusCode("Invalid date", 400)
 
-            campaign_search = search_campaign(user_id, name, start_date, end_date)
-            if campaign_search:
-                db.session.merge(campaign_search)
-                db.session.commit()
-                return errConfig.statusCode("Search campaign successfully!",200)
-            else:
-                return errConfig.statusCode("Search campaign failed!", 400)
-        except Exception as e:
-            return errConfig.statusCode(str(e), 500)
+#             campaign_search = search_campaign(user_id, name, start_date, end_date)
+#             if campaign_search:
+#                 db.session.merge(campaign_search)
+#                 db.session.commit()
+#                 return errConfig.statusCode("Search campaign successfully!",200)
+#             else:
+#                 return errConfig.statusCode("Search campaign failed!", 400)
+#         except Exception as e:
+#             return errConfig.statusCode(str(e), 500)
 
 
 # DELETE CAMPAIGN

@@ -17,7 +17,7 @@ const SideBar = (props) => {
 
   return (
     <div
-      className={`${"side-bar"}
+      className={`${"sidebar"}
             ${props.show ? "" : "hidden"}`}
     >
       <div className="user-info">

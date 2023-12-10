@@ -60,13 +60,13 @@ const Account = () => {
           />
         </div>
         <div className="acc-func-btn">
-          <CSVLink
-            data={listAccounts}
+          {/* <CSVLink
+            // data={listAccounts}
             headers={headerExport}
             filename="accounts.csv"
           >
             <button className="acc-export-btn acc-button">Export CSV</button>
-          </CSVLink>
+          </CSVLink> */}
           <button className="acc-create-btn acc-button" onClick={changePopup}>
             Create Account
           </button>

@@ -221,22 +221,66 @@ class getAllUser(Resource):
         from initSQL import db
         from models.userModel import Users
         
-        users = Users.query.options(db.defer(Users.password)).all()
-        # Users = db.session.execute(db.select(User).order_by(User.user_id).options(db.defer(User.password))).all()
-        tuple_user = [{'user_id': user.user_id,
-                       'role_id': user.role_id,
-                       'first_name': user.first_name, 
-                       'last_name': user.last_name,
-                       'email': user.email,
-                       'address': user.address,
-                       'phone': user.phone,
-                       'create_at': user.create_at,
-                       'update_at': user.update_at,
-                       'image': user.avatar,
-                       } 
-                    for user in users]
-
-        return jsonify(users=tuple_user)
+        try:
+            users = Users.query.all()
+            key_word = request.args.get('key_word')
+            page_number = int(request.args.get('page_number', 1))
+            
+            if key_word is None:
+                key_word = ""
+            
+            limit_number_records = 3
+            offset = (page_number - 1) * limit_number_records
+            
+            if not isinstance(page_number, int) or page_number < 1:
+                return jsonify({
+                    "statusCode": 400,
+                    "message": "",
+                    "errors": {"page_number": ["Invalid page number"]}
+                })
+            all_user_data = []
+            
+            query = Users.query.filter(
+                Users.delete_flag == 0,
+            ).options(db.defer(Users.password))
+            
+            if key_word == "ALL":
+                user_list = query.limit(limit_number_records).offset(offset).all()
+                total_records = query.count()
+            else:
+                user_filtered = query.filter(Users.name.like(f"%{key_word}%"))
+                user_list = query.filter(Users.name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).all()
+                total_records = user_filtered.count()
+                
+            if user_list:
+                tuple_user = [{'user_id': user.user_id,
+                        'role_id': user.role_id,
+                        'first_name': user.first_name, 
+                        'last_name': user.last_name,
+                        'email': user.email,
+                        'address': user.address,
+                        'phone': user.phone,
+                        'create_at': user.create_at,
+                        'update_at': user.update_at,
+                        'image': user.avatar,
+                        } 
+                        for user in user_list]
+                all_user_data.append(tuple_user)
+                return jsonify({
+                    "user_list": all_user_data,
+                    "total_records": total_records,
+                    "page_number": page_number,
+                    "limit_number_records": limit_number_records
+                })
+            else:
+                return jsonify({
+                    "user_list": [],
+                    "total_records": 0,
+                    "page_number": page_number,
+                    "limit_number_records": limit_number_records
+                })
+        except Exception as  e:
+            return errConfig.statusCode("Unexpected Error",200)
 # LOGOUT
 class logout(Resource):
     def get(self):
@@ -261,8 +305,9 @@ class deleteUser(Resource):
                 user_id = json['user_id']
 
                 User = Users.query.filter_by(user_id = user_id).first()
+                User.delete_flag = 1;
                 
-                db.session.delete(User)
+                # db.session.delete(User)
                 db.session.commit()
                 
                 return errConfig.statusCode("Delete User successfully!")

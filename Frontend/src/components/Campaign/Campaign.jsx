@@ -226,7 +226,7 @@ const Campaign = () => {
           setPageNumberDefault={setPageNumberDefault}
         />
       ) : (
-        <div className="camp-nodata-text">NO DATA</div>
+        <div className="camp-nodata-text">NO CAMPAIGN FOUND</div>
       )}
       {isOpenPopup && (
         <CreateCampaign
@@ -239,8 +239,8 @@ const Campaign = () => {
       )}
       {listCampaigns && totalRecords > 3 && (
         <ReactPaginate
-          previousLabel={"previous"}
-          nextLabel={"next"}
+          previousLabel={"◀️"}
+          nextLabel={"▶️"}
           breakLabel={"..."}
           pageCount={pageCount}
           marginPagesDisplayed={2}
