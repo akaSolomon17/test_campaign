@@ -2,38 +2,22 @@ import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "react-pagination-library";
 import "react-pagination-library/build/css/index.css";
-
 import "./Campaign.scss";
-
 import moment from "moment";
 import { CSVLink } from "react-csv";
-
 import CampaignTable from "./CampaignTable/CampaignTable";
 import CreateCampaign from "./CreateCampaign/CreateCampaign";
 import { fetchListCampaignAction } from "../../store/actions/campaignActions";
 import useAxios from "../../utils/useAxios";
-// import ReactPaginate from "react-paginate";
 
 const Campaign = () => {
   const typingTimeoutRef = useRef(null);
-
-  // const [startTime, setStartTime] = useState(
-  //   format(new Date(), "yyyy-MM-dd HH:mm:ss")
-  // );
-  // const [endTime, setEndTime] = useState(
-  //   format(addDays(new Date(), 1), "yyyy-MM-dd HH:mm:ss")
-  // );
-
   const [startTime, setStartTime] = useState("2023-01-01 23:59:59");
   const [endTime, setEndTime] = useState("2023-12-12 23:59:59");
   const [pageNumber, setPageNumber] = useState(1);
   const [keyWord, setkeyWord] = useState("ALL");
-
   const [isOpenPopup, setOpenPopup] = useState(false);
   const [isReload, setReload] = useState(true); // set Callback
-
-  const [data, setData] = useState([]);
-
   const api = useAxios();
   const dispatch = useDispatch();
   const listCampaigns = useSelector((state) => state.campaign.listCampaigns);
@@ -43,7 +27,6 @@ const Campaign = () => {
   const handlePageClick = (event) => {
     setPageNumber(event);
   };
-
   const handleChangeSearchByKeyWord = (e) => {
     const value = e.target.value;
     if (typingTimeoutRef.current) {
@@ -88,18 +71,9 @@ const Campaign = () => {
 
   function handleStartTimeChange(event) {
     const selectedStartTime = event.target.value;
-
-    // const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm:ss");
-
-    // if (moment(selectedStartTime).isBefore(minDateTime)) {
-    //   return;
-    // }
-
     if (moment(selectedStartTime).isAfter(endTime)) {
       return;
     }
-
-    // Format the date using moment before setting it
     setStartTime(moment(selectedStartTime).format("YYYY-MM-DD HH:mm:ss"));
   }
 
@@ -108,16 +82,12 @@ const Campaign = () => {
     const minDateTime = moment(startTime)
       .add(1, "days")
       .format("YYYY-MM-DD HH:mm:ss");
-
     if (moment(selectedEndTime).isBefore(minDateTime)) {
       return;
     }
-
     if (moment(selectedEndTime).isBefore(startTime)) {
       return;
     }
-
-    // Format the date using moment before setting it
     setEndTime(moment(selectedEndTime).format("YYYY-MM-DD HH:mm:ss"));
   }
 
@@ -133,20 +103,10 @@ const Campaign = () => {
         api
       )
     );
-  }, [pageNumber, keyWord]);
-  const setPageNumberDefault = () => {
-    dispatch(
-      fetchListCampaignAction(
-        {
-          key_word: keyWord,
-          page_number: pageNumber,
-          start_time: startTime,
-          end_time: endTime,
-        },
-        api
-      )
-    );
-    // setPageNumber(Math.min(pageNumber, pageCount));
+  }, [pageNumber, keyWord, startTime, endTime]);
+
+  const handleChangeCurrentPage = () => {
+    setPageNumber(1);
   };
 
   return (
@@ -186,7 +146,7 @@ const Campaign = () => {
             <CSVLink
               type="button"
               className="camp-export-btn camp-button"
-              data={data}
+              data={listCampaigns}
             >
               Export CSV
             </CSVLink>
@@ -207,7 +167,7 @@ const Campaign = () => {
           endTime={endTime}
           keyWord={keyWord}
           pageNumber={pageNumber}
-          setPageNumberDefault={setPageNumberDefault}
+          handleChangeCurrentPage={handleChangeCurrentPage}
         />
       ) : (
         <div className="camp-nodata-text">NO CAMPAIGN FOUND</div>
@@ -223,7 +183,7 @@ const Campaign = () => {
       )}
       {listCampaigns && totalRecords > 3 && (
         <Pagination
-          key={pageNumber}
+          // key={pageNumber}
           currentPage={pageNumber}
           totalPages={pageCount}
           changeCurrentPage={handlePageClick}

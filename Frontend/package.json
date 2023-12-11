@@ -24,6 +24,7 @@
     "fslightbox-react": "^1.6.2-2",
     "moment": "^2.29.4",
     "react": "^18.2.0",
+    "react-accessible-accordion": "^5.0.0",
     "react-csv": "^2.2.2",
     "react-datetime-picker": "^5.5.3",
     "react-dom": "^18.2.0",

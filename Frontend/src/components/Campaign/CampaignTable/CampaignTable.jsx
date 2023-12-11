@@ -34,8 +34,6 @@ const CampaignTable = (props) => {
   };
 
   const handleDeleteCampaign = async (campaign) => {
-    console.log("file: CampaignTable.jsx:37 ~ campaign:", campaign.campaign_id);
-
     dispatch(
       deleteCampaignAction(
         campaign.campaign_id,
@@ -48,19 +46,8 @@ const CampaignTable = (props) => {
         api
       )
     );
+    props.handleChangeCurrentPage();
   };
-
-  // const handleChangePage = (event, value) => {
-  //   setPage(value);
-  // };
-
-  // const rowsPerPage = 5;
-
-  // const startIndex = (page - 1) * rowsPerPage;
-  // const endIndex = startIndex + rowsPerPage;
-  // const slice = props.data || [];
-  // const slice_data = slice.slice(startIndex, endIndex);
-
   return (
     <div className="camp-table-data">
       <table>

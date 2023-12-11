@@ -14,19 +14,12 @@ import "react-pagination-library/build/css/index.css";
 const Account = () => {
   const typingTimeoutRef = useRef(null);
   const api = useAxios();
-
   const [isOpenPopup, setOpenPopup] = useState(false);
-  const [isReload, setReload] = useState(true); // set Callback
+  const [isReload, setReload] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [keyWord, setkeyWord] = useState("ALL");
-
   const dispatch = useDispatch();
-
-  const listAccounts = useSelector((state) => state.account.listAccounts);
-  console.log(
-    "🚀 ~ file: Account.jsx:25 ~ Account ~ listAccounts:",
-    listAccounts
-  );
+  const listAccounts = useSelector((state) => state.account.listAccounts[0]);
   const totalRecords = useSelector((state) => state.account.totalRecords);
   const pageCount = Math.ceil(totalRecords / 3);
 
@@ -68,17 +61,8 @@ const Account = () => {
       )
     );
   }, [pageNumber, keyWord]);
-  const setPageNumberDefault = () => {
+  const handleChangeCurrentPage = () => {
     setPageNumber(1);
-    dispatch(
-      fetchListAccountAction(
-        {
-          key_word: keyWord,
-          page_number: pageNumber,
-        },
-        api
-      )
-    );
   };
 
   function changePopup() {
@@ -115,21 +99,26 @@ const Account = () => {
           listAccounts={listAccounts}
           keyWord={keyWord}
           pageNumber={pageNumber}
-          setPageNumberDefault={setPageNumberDefault}
+          handleChangeCurrentPage={handleChangeCurrentPage}
         />
       ) : (
         <div className="acc-nodata-text">NO DATA</div>
       )}
-      {isOpenPopup && <AccPopup changePopup={changePopup} />}
-      {/* {listAccounts && totalRecords > 3 && (
-        
-      )} */}
-      <Pagination
-        currentPage={pageNumber}
-        totalPages={pageCount}
-        changeCurrentPage={handlePageClick}
-        theme="square-fill"
-      />
+      {isOpenPopup && (
+        <AccPopup
+          changePopup={changePopup}
+          keyWord={keyWord}
+          pageNumber={pageNumber}
+        />
+      )}
+      {listAccounts && totalRecords > 3 && (
+        <Pagination
+          currentPage={pageNumber}
+          totalPages={pageCount}
+          changeCurrentPage={handlePageClick}
+          theme="square-fill"
+        />
+      )}
     </div>
   );
 };

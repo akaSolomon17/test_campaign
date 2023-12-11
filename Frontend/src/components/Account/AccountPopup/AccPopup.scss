@@ -14,6 +14,18 @@
   align-items: center;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+.accordion__heading {
+  background-color: #468faf !important;
+}
+.accordion__button {
+  background-color: #468faf !important;
+  color: white !important;
+  cursor: pointer !important;
+  padding: 18px !important;
+  width: 500px !important;
+  text-align: left !important;
+  border: none !important;
+}
 
 .acc-popup-inner {
   position: relative;

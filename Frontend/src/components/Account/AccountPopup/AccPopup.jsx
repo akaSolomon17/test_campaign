@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAxios from "../../../utils/useAxios";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import "./AccPopup.scss";
-
 import { createAccountAction } from "../../../store/actions/accountAction";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+} from "react-accessible-accordion";
+import "react-accessible-accordion/dist/fancy-example.css";
 
 const AccPopup = (props) => {
   const api = useAxios();
@@ -63,18 +68,23 @@ const AccPopup = (props) => {
       if (values.role_id === "") {
         values.role_id = "1";
       }
-      let formData = new FormData();
-      formData.append("email", values.email);
-      formData.append("password", values.password);
-      formData.append("first_name", values.first_name);
-      formData.append("last_name", values.last_name);
-      formData.append("role_id", values.role_id);
-      formData.append("address", values.address);
-      formData.append("phone", values.phone);
-      formData.append("address", values.phone);
-      // console.log("🚀 ~ file: AccPopup.jsx:67 ~ onSubmit: ~ formData:", formData)
+      const formData = {
+        email: values.email,
+        password: values.password,
+        first_name: values.first_name,
+        last_name: values.last_name,
+        role_id: values.role_id,
+        address: values.address,
+        phone: values.phone,
+      };
 
-      dispatch(createAccountAction(formData, api));
+      dispatch(
+        createAccountAction(
+          formData,
+          { key_word: props.keyWord, page_number: props.pageNumber },
+          api
+        )
+      );
 
       formik.resetForm();
       closePopup();
@@ -88,7 +98,6 @@ const AccPopup = (props) => {
   const changeDetailDrop = () => {
     setDropDetail(!isDropDetail);
   };
-
   return (
     <div className="acc-popup">
       <form onSubmit={formik.handleSubmit} className="acc-popup-inner">
@@ -101,109 +110,122 @@ const AccPopup = (props) => {
             />
           </button>
         </div>
-        <div className="acc-title" onClick={changeDetailDrop}>
+        {/* <div className="acc-title" onClick={changeDetailDrop}>
           Detail
           <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"detail"} ${isDropDetail ? "" : "acc-dropped"}`}>
-          <div className="acc-text-input">
-            Email:
-            <input
-              value={formik.values.email}
-              // onChange={formik.handleChange}
-              type="text"
-              name="email"
-            />
-            {formik.errors.email && (
-              <p style={{ color: "red" }}>{formik.errors.email}</p>
-            )}
-          </div>
-          <div className="acc-text-input">
-            First name:
-            <input
-              value={formik.values.first_name}
-              onChange={formik.handleChange}
-              type="text"
-              name="first_name"
-            />
-            {formik.errors.first_name && (
-              <p style={{ color: "red" }}>{formik.errors.first_name}</p>
-            )}
-          </div>
-          <div className="acc-text-input">
-            Last name:
-            <input
-              value={formik.values.last_name}
-              onChange={formik.handleChange}
-              type="text"
-              name="last_name"
-            />
-            {formik.errors.last_name && (
-              <p style={{ color: "red" }}>{formik.errors.last_name}</p>
-            )}
-          </div>
-          <div className="role-acc">
-            Role:
-            <select
-              value={formik.values.role_id ? formik.values.role_id : "1"}
-              onChange={formik.handleChange}
-              className="role-select"
-              name="role_id"
-            >
-              <option value="1">ADMIN</option>
-              <option value="2">DAC</option>
-              <option value="3">ADVERTISER</option>
-            </select>
-          </div>
-          <div className="acc-text-input">
-            Address:
-            <input
-              value={formik.values.address}
-              onChange={formik.handleChange}
-              type="text"
-              name="address"
-            />
-            {formik.errors.address && (
-              <p style={{ color: "red" }}>{formik.errors.address}</p>
-            )}
-          </div>
-          <div className="acc-text-input">
-            Phone:
-            <input
-              value={formik.values.phone}
-              onChange={formik.handleChange}
-              type="text"
-              name="phone"
-            />
-            {formik.errors.phone && (
-              <p style={{ color: "red" }}>{formik.errors.phone}</p>
-            )}
-          </div>
-          <div className="acc-text-input">
-            Password:
-            <input
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              type="password"
-              name="password"
-            />
-            {formik.errors.password && (
-              <p style={{ color: "red" }}>{formik.errors.password}</p>
-            )}
-          </div>
-          <div className="acc-text-input">
-            Confirm password:
-            <input
-              value={formik.values.confirm_password}
-              onChange={formik.handleChange}
-              type="password"
-              name="confirm_password"
-            />
-            {formik.errors.confirm_password && (
-              <p style={{ color: "red" }}>{formik.errors.confirm_password}</p>
-            )}
-          </div>
-        </div>
+        </div> */}
+        <Accordion allowZeroExpanded>
+          <AccordionItem className="active">
+            <AccordionItemHeading>
+              <AccordionItemButton>Detail</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div
+                className={`${"detail"} ${isDropDetail ? "" : "acc-dropped"}`}
+              >
+                <div className="acc-text-input">
+                  Email:
+                  <input
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    type="text"
+                    name="email"
+                  />
+                  {formik.errors.email && (
+                    <p style={{ color: "red" }}>{formik.errors.email}</p>
+                  )}
+                </div>
+                <div className="acc-text-input">
+                  First name:
+                  <input
+                    value={formik.values.first_name}
+                    onChange={formik.handleChange}
+                    type="text"
+                    name="first_name"
+                  />
+                  {formik.errors.first_name && (
+                    <p style={{ color: "red" }}>{formik.errors.first_name}</p>
+                  )}
+                </div>
+                <div className="acc-text-input">
+                  Last name:
+                  <input
+                    value={formik.values.last_name}
+                    onChange={formik.handleChange}
+                    type="text"
+                    name="last_name"
+                  />
+                  {formik.errors.last_name && (
+                    <p style={{ color: "red" }}>{formik.errors.last_name}</p>
+                  )}
+                </div>
+                <div className="role-acc">
+                  Role:
+                  <select
+                    value={formik.values.role_id ? formik.values.role_id : "1"}
+                    onChange={formik.handleChange}
+                    className="role-select"
+                    name="role_id"
+                  >
+                    <option value="1">ADMIN</option>
+                    <option value="2">DAC</option>
+                    <option value="3">ADVERTISER</option>
+                  </select>
+                </div>
+                <div className="acc-text-input">
+                  Address:
+                  <input
+                    value={formik.values.address}
+                    onChange={formik.handleChange}
+                    type="text"
+                    name="address"
+                  />
+                  {formik.errors.address && (
+                    <p style={{ color: "red" }}>{formik.errors.address}</p>
+                  )}
+                </div>
+                <div className="acc-text-input">
+                  Phone:
+                  <input
+                    value={formik.values.phone}
+                    onChange={formik.handleChange}
+                    type="text"
+                    name="phone"
+                  />
+                  {formik.errors.phone && (
+                    <p style={{ color: "red" }}>{formik.errors.phone}</p>
+                  )}
+                </div>
+                <div className="acc-text-input">
+                  Password:
+                  <input
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    type="password"
+                    name="password"
+                  />
+                  {formik.errors.password && (
+                    <p style={{ color: "red" }}>{formik.errors.password}</p>
+                  )}
+                </div>
+                <div className="acc-text-input">
+                  Confirm password:
+                  <input
+                    value={formik.values.confirm_password}
+                    onChange={formik.handleChange}
+                    type="password"
+                    name="confirm_password"
+                  />
+                  {formik.errors.confirm_password && (
+                    <p style={{ color: "red" }}>
+                      {formik.errors.confirm_password}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+        </Accordion>
 
         <div className="acc-footer-pop">
           <div className="underline"></div>

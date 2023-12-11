@@ -137,7 +137,6 @@ const CreateCampaign = (props) => {
           api
         )
       );
-      console.log("file: CreateCampaign.jsx:113 ~ formData:", formData);
 
       formik.resetForm();
       setPreviewBanner("");
@@ -279,7 +278,7 @@ const CreateCampaign = (props) => {
               type="text"
               name="budget"
             />
-            {formik.touched.name && formik.errors.budget && (
+            {formik.touched.budget && formik.errors.budget && (
               <p style={{ color: "red" }}>{formik.errors.budget}</p>
             )}
           </div>
