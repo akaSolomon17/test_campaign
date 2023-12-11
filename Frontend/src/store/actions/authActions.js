@@ -15,7 +15,8 @@ export const loginAction = (loginData, navigate) => {
     try {
       const res = await authServices.signin(loginData);
       dispatch(turnOffLoading());
-      if (res.data.errorMessage) {
+
+      if (res.data.errorMessage === "Email or password is invalid!") {
         toast.error(res.data.errorMessage);
         dispatch(turnOffLoading());
         return;

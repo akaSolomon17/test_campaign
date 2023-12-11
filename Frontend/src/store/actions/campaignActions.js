@@ -36,16 +36,17 @@ export const fetchListCampaignSuccess = (payload) => {
 };
 
 // create Campaign Action
-export const createCampaignAction = (formData, api) => {
+export const createCampaignAction = (formData, dataForFetch, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
       const res = await campaignServices.createCampaign(formData, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListCampaignAction(api));
+        dispatch(fetchListCampaignAction(dataForFetch, api));
         toast.success("Create Campaign Successfully!");
       } else {
+        toast.error("Create Campaign Failed!");
         dispatch(turnOffLoading());
       }
     } catch (e) {
@@ -63,16 +64,17 @@ export const createCampaignSuccess = (payload) => {
 };
 
 // delete Campaign Action
-export const deleteCampaignAction = (campaignId, api) => {
+export const deleteCampaignAction = (campaignId, dataForFetch, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
       const res = await campaignServices.deleteCampaign(campaignId, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListCampaignAction(api));
+        dispatch(fetchListCampaignAction(dataForFetch, api));
         toast.success("Delete Campaign Successfully!");
       } else {
+        toast.error("Delete Campaign Failed!");
         dispatch(turnOffLoading());
       }
     } catch (e) {
@@ -90,20 +92,17 @@ export const deleteCampaignSuccess = (payload) => {
 };
 
 // update Campaign Action
-export const updateCampaignAction = (campaignId, dataCamp, api) => {
+export const updateCampaignAction = (dataCamp, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
-      const res = await campaignServices.updateCampaign(
-        campaignId,
-        dataCamp,
-        api
-      );
+      const res = await campaignServices.updateCampaign(dataCamp, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
         dispatch(fetchListCampaignAction(api));
         toast.success("Update Campaign Successfully!");
       } else {
+        toast.error("Update Campaign Failed!");
         dispatch(turnOffLoading());
       }
     } catch (e) {

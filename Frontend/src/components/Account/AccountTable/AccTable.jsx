@@ -3,7 +3,7 @@ import "./AccTable.scss";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import AccPopup from "../AccountPopup/AccPopup";
 import AccUpdatePopup from "../AccountPopup/AccUpdatePopup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
@@ -13,12 +13,9 @@ import useAxios from "../../../utils/useAxios";
 const AccTable = (props) => {
   const api = useAxios();
   const listAccounts = props.listAccounts;
-  console.log(
-    "🚀 ~ file: AccTable.jsx:16 ~ AccTable ~ listAccounts:",
-    listAccounts
-  );
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isOpenPopup, setOpenPopup] = useState(false);
+  const currentUser = useSelector((state) => state.auth?.currentUser);
 
   const dispatch = useDispatch();
 
@@ -35,7 +32,19 @@ const AccTable = (props) => {
   };
 
   function handleDeleteUser(user) {
-    dispatch(deleteAccountAction(user.user_id, api));
+    let notification = "Are you sure you want to delete?";
+    if (window.confirm(notification) === true) {
+      props.handleChangeCurrentPage();
+      dispatch(
+        deleteAccountAction(
+          user.user_id,
+          { key_word: props.keyWord, page_number: 1 },
+          api
+        )
+      );
+    } else {
+      return;
+    }
   }
 
   return (
@@ -66,14 +75,18 @@ const AccTable = (props) => {
                     <td>{user.phone}</td>
                     <td>{user.role_id}</td>
                     <td>
-                      <AiFillEdit
-                        className="btn"
-                        onClick={() => handleEditClick(user)}
-                      />
-                      <AiFillDelete
-                        className="btn"
-                        onClick={() => handleDeleteUser(user)}
-                      />
+                      {user.user_id !== currentUser.user_id && (
+                        <div>
+                          <AiFillEdit
+                            className="btn"
+                            onClick={() => handleEditClick(user)}
+                          />
+                          <AiFillDelete
+                            className="btn"
+                            onClick={() => handleDeleteUser(user)}
+                          />
+                        </div>
+                      )}
                     </td>
                   </tr>
                 </React.Fragment>

@@ -85,21 +85,21 @@ class login(Resource):
                 # CHECK INPUT IS STRING
                 
                 if not isinstance(email, str):
-                    return errConfig.statusCode("Email must be a string!",401)
+                    return errConfig.statusCode("Email must be a string!",200)
                 
                 if not isinstance(password, bytes):
-                    return errConfig.statusCode("Password must be a string!",401)
+                    return errConfig.statusCode("Password must be a string!",200)
                 
                 # CHECK VALID EMAIL
                 if not validate_email(email):
-                    return errConfig.statusCode("Invalid email",401)
+                    return errConfig.statusCode("Invalid email",200)
                 
                 # CHECK LENGTH INPUT
                 
                 if len(email) > 255:
-                    return errConfig.statusCode("Email is over maximum characters",401)
+                    return errConfig.statusCode("Email is over maximum characters",200)
                 if len(password) < 6:
-                    return errConfig.statusCode("Password is over maximum characters",401)
+                    return errConfig.statusCode("Password is over maximum characters",200)
                 
                 # CHECK MATCH EMAIL & PASSWORD IN DB
                 
@@ -120,7 +120,7 @@ class login(Resource):
                 checkPW = bcrypt.checkpw(password, User.password.encode('utf-8'))
                 
                 if not checkPW:
-                    return errConfig.statusCode("Wrong password!",401)
+                    return errConfig.statusCode("Wrong password!",200)
                 # try:
                 refresh_token = createRefreshToken(User.user_id, User.role_id)
                 access_token = createAccessToken(User.user_id, User.role_id)
@@ -246,10 +246,12 @@ class getAllUser(Resource):
             if key_word == "ALL":
                 user_list = query.limit(limit_number_records).offset(offset).all()
                 total_records = query.count()
+                print(user_list)
             else:
-                user_filtered = query.filter(Users.name.like(f"%{key_word}%"))
-                user_list = query.filter(Users.name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).all()
+                user_filtered = query.filter(Users.first_name.like(f"%{key_word}%"))
+                user_list = query.filter(Users.first_name.like(f"%{key_word}%")).limit(limit_number_records).offset(offset).all()
                 total_records = user_filtered.count()
+                
                 
             if user_list:
                 tuple_user = [{'user_id': user.user_id,
@@ -333,13 +335,13 @@ class addUser(Resource):
             password = json['password'].encode('utf-8')
 
             if not validate_email(email):
-                return errConfig.statusCode("Invalid email",400)
+                return errConfig.statusCode("Invalid email",200)
             
             if find_user_by_email(email):
-                return errConfig.statusCode("Email already in exist",400)
+                return errConfig.statusCode("Email already in exist",200)
                                             
             if len(password) < 6:
-                return errConfig.statusCode("Password must be at least 6 characters.",400)
+                return errConfig.statusCode("Password must be at least 6 characters.",200)
             
             hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
             
@@ -348,7 +350,7 @@ class addUser(Resource):
             db.session.commit()
             return errConfig.statusCode("Add User successfully!")
         except Exception as e:
-            return errConfig.statusCode(str(e),500)
+            return errConfig.statusCode(str(e),400)
 # UPDATE USER
 class updateUser(Resource):
     @authMiddleware

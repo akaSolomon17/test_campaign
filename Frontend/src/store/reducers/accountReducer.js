@@ -14,16 +14,14 @@ const accountReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_ACCOUNT_START:
       return {
-        // bat loading
         ...state,
         isLoading: true,
       };
     case FETCH_ACCOUNT_SUCCESS:
-      console.log(action.payload[0]);
       return {
         ...state,
         isLoading: false,
-        listAccounts: action.payload[0],
+        listAccounts: action.payload.user_list,
         totalRecords: action.payload.total_records,
       };
     case FETCH_ACCOUNT_FAILED:

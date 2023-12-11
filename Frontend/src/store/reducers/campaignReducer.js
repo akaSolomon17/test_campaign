@@ -18,7 +18,6 @@ const campaignReducer = (state = initialState, action) => {
         isLoading: true,
       };
     case FETCH_CAMPAIGN_SUCCESS:
-      console.log(action);
       return {
         ...state,
         isLoading: false,

@@ -77,6 +77,10 @@
   overflow: auto;
   width: 100%;
   gap: 20px; /* Adjust the gap as needed */
+  ul {
+    padding: 0;
+    margin-left: 50.5rem;
+  }
 }
 
 .camp-nodata-text {

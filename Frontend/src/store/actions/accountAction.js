@@ -16,7 +16,7 @@ export const fetchListAccountAction = (initInfo, api) => {
       const res = await accountServices.fetchListAccount(initInfo, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListAccountSuccess(res.data.user_list));
+        dispatch(fetchListAccountSuccess(res.data));
       }
     } catch (e) {
       console.log(e);
@@ -39,7 +39,10 @@ export const createAccountAction = (formData, fetchForData, api) => {
       dispatch(turnOnLoading());
       const res = await accountServices.createAccount(formData, api);
       dispatch(turnOffLoading());
-      if (res.status === 200) {
+      if (res.data.msg && res.data.msg === "Email already in exist") {
+        toast.error(res.data.msg);
+      }
+      if (res.status === 200 && res.data.msg !== "Email already in exist") {
         dispatch(fetchListAccountAction(fetchForData, api));
         toast.success("Create Account Successffuly!");
       }
@@ -57,16 +60,19 @@ export const createAccountSuccess = (payload) => {
 };
 
 // delete Account Action
-export const deleteAccountAction = (accountId, api) => {
+export const deleteAccountAction = (accountId, dataForFetch, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
       const res = await accountServices.deleteAccount(accountId, api);
+      console.log("🚀 ~ file: accountAction.js:65 ~ return ~ res:", res);
       dispatch(turnOffLoading());
+
       if (res.status === 200) {
         toast.success("Delete account successfully!");
-        dispatch(fetchListAccountAction(api));
+        dispatch(fetchListAccountAction(dataForFetch, api));
       } else {
+        toast.error(res.msg);
         dispatch(turnOffLoading());
       }
     } catch (e) {

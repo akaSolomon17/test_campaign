@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import "./CampaignTable.scss";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { FaCircleDot } from "react-icons/fa6";
 import CreateCampaign from "../CreateCampaign/CreateCampaign";
 import EditCampaign from "../CreateCampaign/EditCampaign";
-import Pagination from "@mui/material/Pagination";
-import Stack from "@mui/material/Stack";
+
 import { deleteCampaignAction } from "../../../store/actions/campaignActions";
 import useAxios from "../../../utils/useAxios";
 
@@ -37,26 +35,19 @@ const CampaignTable = (props) => {
 
   const handleDeleteCampaign = async (campaign) => {
     dispatch(
-      deleteCampaignAction(campaign.campaign_id, api, {
-        key_word: keyWord,
-        start_time: startTime,
-        end_time: endTime,
-        page_number: 1,
-      })
+      deleteCampaignAction(
+        campaign.campaign_id,
+        {
+          key_word: keyWord,
+          start_time: startTime,
+          end_time: endTime,
+          page_number: 1,
+        },
+        api
+      )
     );
+    props.handleChangeCurrentPage();
   };
-
-  // const handleChangePage = (event, value) => {
-  //   setPage(value);
-  // };
-
-  // const rowsPerPage = 5;
-
-  // const startIndex = (page - 1) * rowsPerPage;
-  // const endIndex = startIndex + rowsPerPage;
-  // const slice = props.data || [];
-  // const slice_data = slice.slice(startIndex, endIndex);
-
   return (
     <div className="camp-table-data">
       <table>

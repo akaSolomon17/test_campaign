@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 
 import "./CreateCampaign.scss";
-import moment from "moment";
 
 import { updateCampaignAction } from "../../../store/actions/campaignActions";
 import useAxios from "../../../utils/useAxios";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import moment from "moment";
 
 const EditCampaign = (props) => {
   const api = useAxios();
@@ -16,84 +18,126 @@ const EditCampaign = (props) => {
   const keyWord = props.keyWord;
   const pageNumber = props.pageNumber;
   const dispatch = useDispatch();
-  const initialState = {
-    user_id: props.record ? props.record.user_id : "",
-    campaign_id: props.record ? props.record.campaign_id : "",
-    name: props.record ? props.record.name : "",
-    status: props.record ? props.record.status : true,
-    // user_status: props.record ? props.record.user_status : true,
-    start_time: props.record ? props.record.start_date : "",
-    end_time: props.record ? props.record.end_date : "",
-    budget: props.record ? props.record.budget : "",
-    bid_amount: props.record ? props.record.bid_amount : "",
-    title: props.record ? props.record.creatives[0].title : "",
-    description: props.record ? props.record.creatives[0].description : "",
-    img_preview: props.record ? props.record.creatives[0].img_preview : "",
-    final_url: props.record ? props.record.creatives[0].final_url : "",
-  };
 
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [startTime, setStartTime] = useState("2023-01-01 23:59:59");
+  const [endTime, setEndTime] = useState("2023-12-12 23:59:59");
   const [isDropDetail, setDropDetail] = useState(true);
-  const [campaign, setCampaign] = useState(initialState);
+  const [campaign, setCampaign] = useState();
 
-  useEffect(() => {
-    const currentMoment = moment();
-    const formatCurrentDate = currentMoment.format("YYYY-MM-DDTHH:mm");
+  const currentUser = useSelector((state) => state.auth?.currentUser);
 
-    setStartTime(formatCurrentDate);
-    setEndTime(formatCurrentDate);
-  }, [setStartTime, setEndTime]);
+  const formik = useFormik({
+    initialValues: {
+      user_id: props.record ? props.record.user_id : "",
+      campaign_id: props.record ? props.record.campaign_id : "",
+      name: props.record ? props.record.name : "",
+      status: props.record ? props.record.status : true,
+      start_date: props.record ? props.record.start_date : "",
+      end_date: props.record ? props.record.end_date : "",
+      budget: props.record ? props.record.budget : "",
+      bid_amount: props.record ? props.record.bid_amount : "",
+      title: props.record ? props.record.creatives[0].title : "",
+      description: props.record ? props.record.creatives[0].description : "",
+      img_preview: props.record ? props.record.creatives[0].img_preview : "",
+      final_url: props.record ? props.record.creatives[0].final_url : "",
+    },
 
-  const handleStatusChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .required("Please enter campaign's name")
+        .min(2, "Name must have at least 2 characters")
+        .max(255, "Exceed the number of characters"),
+      start_date: Yup.date().required("Required!"),
+      end_date: Yup.date()
+        .required("Required!")
+        .when(
+          "start_date",
+          (start_date, yup) =>
+            start_date &&
+            yup.min(start_date, "End time cannot be before start time")
+        ),
+      budget: Yup.number()
+        .typeError("Budget must be a number")
+        .required("Please enter campaign's budget")
+        .positive("Must be more than 0")
+        .integer("Budget must be a integer")
+        .max(
+          Number.MAX_SAFE_INTEGER,
+          "Budget must be less than or equal to 9007199254740991"
+        ),
+      bid_amount: Yup.number()
+        .typeError("Bid amount must be a number")
+        .required("Please enter campaign's bid amount")
+        .positive("Must be more than 0")
+        .integer("Bid amount must be a integer")
+        .max(
+          Number.MAX_SAFE_INTEGER,
+          "Bid amount must be less than or equal to 9007199254740991"
+        ),
+      title: Yup.string()
+        .min(2, "Title must have at least 2 characters")
+        .max(255, "Exceed the number of characters"),
+      description: Yup.string().min(
+        2,
+        "Description must have at least 2 characters"
+      ),
+      img_preview: Yup.mixed()
+        .required("Please choose a campaign's banner")
+        .test(
+          "FILE_TYPE",
+          "Invalid type! Please choose another file",
+          (value) =>
+            value &&
+            [
+              "image/png",
+              "image/jpg",
+              "image/jpeg",
+              "image/gif",
+              "image/svg",
+            ].includes(value.type)
+        )
+        .test(
+          "Fichier taille",
+          "Please choose a size less than 1 mb",
+          (value) => !value || (value && value.size <= 1024 * 1024)
+        ),
+      final_url: Yup.string()
+        .min(2, "URL must have at least 2 characters")
+        .max(255, "Exceed the number of characters"),
+    }),
+    onSubmit: async (values) => {
+      if (values.status === "") {
+        values.status = "1";
+      }
+      let formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("status", values.status);
+      formData.append("start_time", values.start_date);
+      formData.append("end_time", values.end_date);
+      formData.append("budget", values.budget);
+      formData.append("bid_amount", values.bid_amount);
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("img_preview", values.img_preview);
+      formData.append("final_url", values.final_url);
+      formData.append("user_id", currentUser.user_id);
 
-      status: e.target.value,
-    }));
-  };
-  const handleStartTimeChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
-      start_time: e.target.value,
-    }));
-  };
-  const handleEndTimeChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
-      end_time: e.target.value,
-    }));
-  };
-  const handleBudgetChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
-      budget: e.target.value,
-    }));
-  };
-  const handleBidAmountChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
-      bid_amount: e.target.value,
-    }));
-  };
-  const handleTitleChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
-      title: e.target.value,
-    }));
-  };
-  const handleDescriptionChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
-      description: e.target.value,
-    }));
-  };
-  const handleFinalURLChange = (e) => {
-    setCampaign((prevCampaign) => ({
-      ...prevCampaign,
-      final_url: e.target.value,
-    }));
-  };
+      dispatch(
+        updateCampaignAction(
+          formData,
+          {
+            key_word: keyWord,
+            start_time: startTimeForGet,
+            end_time: endTimeForget,
+            page_number: pageNumber,
+          },
+          api
+        )
+      );
+      formik.resetForm();
+      closePopup();
+    },
+  });
 
   const closePopup = () => {
     props.onClose();
@@ -103,35 +147,44 @@ const EditCampaign = (props) => {
     setDropDetail(!isDropDetail);
   };
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  function handleStartTimeChange(event) {
+    const selectedStartTime = event.target.value;
 
-    const campData = {
-      user_id: campaign.user_id,
-      status: campaign.status === "0" ? false : true,
-      start_date: campaign.start_time,
-      end_date: campaign.end_time,
-      budget: campaign.budget,
-      bid_amount: campaign.bid_amount,
-      title: campaign.title,
-      description: campaign.description,
-      img_preview: campaign.img_preview,
-      final_url: campaign.final_url,
-    };
-    dispatch(
-      updateCampaignAction(campaign.campaign_id, campData, api, {
-        key_word: keyWord,
-        start_time: startTimeForGet,
-        end_time: endTimeForget,
-        page_number: pageNumber,
-      })
-    );
-    closePopup();
+    // const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm:ss");
+
+    // if (moment(selectedStartTime).isBefore(minDateTime)) {
+    //   return;
+    // }
+
+    if (moment(selectedStartTime).isAfter(endTime)) {
+      return;
+    }
+
+    // Format the date using moment before setting it
+    setStartTime(moment(selectedStartTime).format("YYYY-MM-DD HH:mm:ss"));
+  }
+
+  function handleEndTimeChange(event) {
+    const selectedEndTime = event.target.value;
+    const minDateTime = moment(startTime)
+      .add(1, "days")
+      .format("YYYY-MM-DD HH:mm:ss");
+
+    if (moment(selectedEndTime).isBefore(minDateTime)) {
+      return;
+    }
+
+    if (moment(selectedEndTime).isBefore(startTime)) {
+      return;
+    }
+
+    // Format the date using moment before setting it
+    setEndTime(moment(selectedEndTime).format("YYYY-MM-DD HH:mm:ss"));
   }
 
   return (
     <div className="camp-popup">
-      <form onSubmit={handleSubmit} className="camp-popup-inner">
+      <form onSubmit={formik.handleSubmit} className="camp-popup-inner">
         <div className="camp-title-pop">
           Edit Campaign
           <div className="underline"></div>
@@ -150,7 +203,7 @@ const EditCampaign = (props) => {
             Name:
             <input
               readOnly={true}
-              value={campaign.name}
+              value={formik.values.name}
               type="text"
               name="name"
             />
@@ -158,8 +211,8 @@ const EditCampaign = (props) => {
           <div className="status-camp">
             User status:
             <select
-              value={campaign.status ? campaign.status : "1"}
-              onChange={handleStatusChange}
+              value={formik.values.status ? formik.values.status : "1"}
+              onChange={formik.handleChange}
               className="status-select"
               name="status"
             >
@@ -181,7 +234,7 @@ const EditCampaign = (props) => {
                 type="datetime-local"
                 id="startDateTimePicker"
                 name="startDateTimePicker"
-                value={campaign.start_time}
+                value={formik.values.start_time}
                 onChange={handleStartTimeChange}
               ></input>
             </div>
@@ -192,7 +245,7 @@ const EditCampaign = (props) => {
                 type="datetime-local"
                 id="endDateTimePicker"
                 name="endDateTimePicker"
-                value={campaign.end_time}
+                value={formik.values.end_time}
                 onChange={handleEndTimeChange}
               ></input>
             </div>
@@ -206,8 +259,8 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Budget:
             <input
-              value={campaign.budget}
-              onChange={handleBudgetChange}
+              value={formik.values.budget}
+              onChange={formik.handleChange}
               type="text"
               name="budget"
             />
@@ -221,8 +274,8 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Bid Amount:
             <input
-              value={campaign.bid_amount}
-              onChange={handleBidAmountChange}
+              value={formik.values.bid_amount}
+              onChange={formik.handleChange}
               type="text"
               name="budget"
             />
@@ -236,8 +289,8 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Title:
             <input
-              value={campaign.title}
-              onChange={handleTitleChange}
+              value={formik.values.title}
+              onChange={formik.handleChange}
               type="text"
               name="budget"
             />
@@ -245,8 +298,8 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Description:
             <input
-              value={campaign.description}
-              onChange={handleDescriptionChange}
+              value={formik.values.description}
+              onChange={formik.handleChange}
               type="text"
               name="description"
             />
@@ -256,8 +309,8 @@ const EditCampaign = (props) => {
             <img
               className="img-preview"
               src={
-                campaign.preview_img
-                  ? campaign.preview_img
+                formik.values.preview_img
+                  ? formik.values.preview_img
                   : "https://res.cloudinary.com/dooge27kv/image/upload/v1701941092/Insert_image_here_kttfjb.svg"
               }
               alt="img-preview"
@@ -266,8 +319,8 @@ const EditCampaign = (props) => {
           <div className="camp-text-input">
             Final URL:
             <input
-              value={campaign.final_url}
-              onChange={handleFinalURLChange}
+              value={formik.values.final_url}
+              onChange={formik.handleChange}
               type="text"
               name="description"
             />
@@ -279,7 +332,11 @@ const EditCampaign = (props) => {
           <button className="cancel-btn" onClick={closePopup}>
             Cancel
           </button>
-          <button type="submit" className="save-btn" onClick={handleSubmit}>
+          <button
+            type="submit"
+            className="save-btn"
+            onClick={formik.handleSubmit}
+          >
             Update
           </button>
         </div>

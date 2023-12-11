@@ -8,24 +8,23 @@ import AccTable from "./AccountTable/AccTable";
 import AccPopup from "./AccountPopup/AccPopup";
 
 import { fetchListAccountAction } from "../../store/actions/accountAction";
-import ReactPaginate from "react-paginate";
+import Pagination from "react-pagination-library";
+import "react-pagination-library/build/css/index.css";
 
 const Account = () => {
   const typingTimeoutRef = useRef(null);
   const api = useAxios();
-  const dispatch = useDispatch();
-
   const [isOpenPopup, setOpenPopup] = useState(false);
-  const [isReload, setReload] = useState(true); // set Callback
+  const [isReload, setReload] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [keyWord, setkeyWord] = useState("ALL");
-
-  const listAccounts = useSelector((state) => state.account.listAccounts);
+  const dispatch = useDispatch();
+  const listAccounts = useSelector((state) => state.account.listAccounts[0]);
   const totalRecords = useSelector((state) => state.account.totalRecords);
   const pageCount = Math.ceil(totalRecords / 3);
 
   const handlePageClick = (event) => {
-    setPageNumber(event.selected + 1);
+    setPageNumber(event);
   };
 
   const handleChangeSearchByKeyWord = (e) => {
@@ -34,7 +33,6 @@ const Account = () => {
       clearTimeout(typingTimeoutRef.current);
     }
     typingTimeoutRef.current = setTimeout(() => {
-      // setSearchInfo({ ...searchInfo, key_word: value });
       setkeyWord(value);
     }, 600);
   };
@@ -63,17 +61,8 @@ const Account = () => {
       )
     );
   }, [pageNumber, keyWord]);
-  const setPageNumberDefault = () => {
+  const handleChangeCurrentPage = () => {
     setPageNumber(1);
-    dispatch(
-      fetchListAccountAction(
-        {
-          key_word: keyWord,
-          page_number: pageNumber,
-        },
-        api
-      )
-    );
   };
 
   function changePopup() {
@@ -106,7 +95,12 @@ const Account = () => {
         </div>
       </div>
       {listAccounts && listAccounts.length > 0 ? (
-        <AccTable listAccounts={listAccounts} />
+        <AccTable
+          listAccounts={listAccounts}
+          keyWord={keyWord}
+          pageNumber={pageNumber}
+          handleChangeCurrentPage={handleChangeCurrentPage}
+        />
       ) : (
         <div className="acc-nodata-text">NO DATA</div>
       )}
@@ -118,24 +112,11 @@ const Account = () => {
         />
       )}
       {listAccounts && totalRecords > 3 && (
-        <ReactPaginate
-          previousLabel={"◀️"}
-          nextLabel={"▶️"}
-          breakLabel={"..."}
-          pageCount={pageCount}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={3}
-          onPageChange={handlePageClick}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousClassName={"page-item"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          breakLinkClassName={"page-link"}
-          activeClassName={"active"}
+        <Pagination
+          currentPage={pageNumber}
+          totalPages={pageCount}
+          changeCurrentPage={handlePageClick}
+          theme="square-fill"
         />
       )}
     </div>
