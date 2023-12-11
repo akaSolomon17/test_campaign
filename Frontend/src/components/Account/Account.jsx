@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import useAxios from "../../utils/useAxios";
 import { useDispatch, useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
-
+import "react-pagination-js/dist/styles.css";
 import "./Account.scss";
 import AccTable from "./AccountTable/AccTable";
 import AccPopup from "./AccountPopup/AccPopup";
@@ -13,19 +13,14 @@ import ReactPaginate from "react-paginate";
 const Account = () => {
   const typingTimeoutRef = useRef(null);
   const api = useAxios();
+  const dispatch = useDispatch();
 
   const [isOpenPopup, setOpenPopup] = useState(false);
   const [isReload, setReload] = useState(true); // set Callback
   const [pageNumber, setPageNumber] = useState(1);
   const [keyWord, setkeyWord] = useState("ALL");
 
-  const dispatch = useDispatch();
-
   const listAccounts = useSelector((state) => state.account.listAccounts);
-  console.log(
-    "🚀 ~ file: Account.jsx:25 ~ Account ~ listAccounts:",
-    listAccounts
-  );
   const totalRecords = useSelector((state) => state.account.totalRecords);
   const pageCount = Math.ceil(totalRecords / 3);
 
@@ -115,7 +110,13 @@ const Account = () => {
       ) : (
         <div className="acc-nodata-text">NO DATA</div>
       )}
-      {isOpenPopup && <AccPopup changePopup={changePopup} />}
+      {isOpenPopup && (
+        <AccPopup
+          changePopup={changePopup}
+          keyWord={keyWord}
+          pageNumber={pageNumber}
+        />
+      )}
       {listAccounts && totalRecords > 3 && (
         <ReactPaginate
           previousLabel={"◀️"}
