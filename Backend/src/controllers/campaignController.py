@@ -57,6 +57,7 @@ class getAllCampaign(Resource):
 
             limit_number_records = 3
             offset = (page_number - 1) * limit_number_records
+            
             if not isinstance(page_number, int) or page_number < 1:
                 return jsonify({
                     "statusCode": 400,

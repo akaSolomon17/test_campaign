@@ -13,14 +13,20 @@ import CreateCampaign from "./CreateCampaign/CreateCampaign";
 import { fetchListCampaignAction } from "../../store/actions/campaignActions";
 import useAxios from "../../utils/useAxios";
 import ReactPaginate from "react-paginate";
-import { toast } from "react-toastify";
+import { addDays, format } from "date-fns";
 
 const Campaign = () => {
-  const searchRef = useRef();
   const typingTimeoutRef = useRef(null);
+  const currentMoment = moment();
 
+  // const [startTime, setStartTime] = useState(
+  //   format(new Date(), "yyyy-MM-dd HH:mm:ss")
+  // );
+  // const [endTime, setEndTime] = useState(
+  //   format(addDays(new Date(), 1), "yyyy-MM-dd HH:mm:ss")
+  // );
   const [startTime, setStartTime] = useState("2023-01-01 23:59:59");
-  const [endTime, setEndTime] = useState("2023-12-31 23:59:59");
+  const [endTime, setEndTime] = useState("2023-12-11 00:07:55");
   const [pageNumber, setPageNumber] = useState(1);
   const [keyWord, setkeyWord] = useState("ALL");
 
@@ -32,6 +38,10 @@ const Campaign = () => {
   const api = useAxios();
   const dispatch = useDispatch();
   const listCampaigns = useSelector((state) => state.campaign.listCampaigns);
+  console.log(
+    "🚀 ~ file: Campaign.jsx:41 ~ Campaign ~ listCampaigns:",
+    listCampaigns
+  );
   const totalRecords = useSelector((state) => state.campaign.totalRecords);
   const pageCount = Math.ceil(totalRecords / 3);
   const handlePageClick = (event) => {
@@ -77,28 +87,19 @@ const Campaign = () => {
   //   }
   // };
 
-  useEffect(() => {
-    // const currentMoment = moment();
-    // const formatCurrentDate = currentMoment.format("YYYY-MM-DD HH:mm:ss");
-    // setStartTime(formatCurrentDate);
-    // setEndTime(formatCurrentDate);
-  }, [setStartTime, setEndTime, pageNumber]);
-
   function changePopup() {
     setOpenPopup(!isOpenPopup);
     setReload(!isReload);
   }
 
-  function handleSearch() {}
-
   function handleStartTimeChange(event) {
     const selectedStartTime = event.target.value;
     const currentMoment = moment();
-    const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm:ss");
+    // const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm:ss");
 
-    if (moment(selectedStartTime).isBefore(minDateTime)) {
-      return;
-    }
+    // if (moment(selectedStartTime).isBefore(minDateTime)) {
+    //   return;
+    // }
 
     if (moment(selectedStartTime).isAfter(endTime)) {
       return;
@@ -123,7 +124,7 @@ const Campaign = () => {
     }
 
     // Format the date using moment before setting it
-    setEndTime(moment(selectedEndTime).format("YYYY-MM-DD HH:mm:ss"));
+    setEndTime(moment(selectedEndTime).format("YYYY-MM-DDTHH:mm:ss"));
   }
 
   useEffect(() => {

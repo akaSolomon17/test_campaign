@@ -13,9 +13,12 @@ import useAxios from "../../../utils/useAxios";
 const AccTable = (props) => {
   const api = useAxios();
   const listAccounts = props.listAccounts;
+  console.log(
+    "🚀 ~ file: AccTable.jsx:16 ~ AccTable ~ listAccounts:",
+    listAccounts
+  );
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isOpenPopup, setOpenPopup] = useState(false);
-  // const [page, setPage] = useState(1);
 
   const dispatch = useDispatch();
 
@@ -30,20 +33,6 @@ const AccTable = (props) => {
   const changePopup = () => {
     setOpenPopup(!isOpenPopup);
   };
-
-  // const handleChangePage = (event, value) => {
-  //   setPage(value);
-  // };
-
-  // const rowsPerPage = 5;
-
-  // const startIndex = (page - 1) * rowsPerPage;
-  // const endIndex = startIndex + rowsPerPage;
-
-  // const props_data = props || [];
-  // const slice_data = props_data.slice(startIndex, endIndex);
-
-  // const count = Array.isArray(props) ? props.length : 0;
 
   function handleDeleteUser(user) {
     dispatch(deleteAccountAction(user.user_id, api));
@@ -92,14 +81,6 @@ const AccTable = (props) => {
             })}
         </tbody>
       </table>
-      <Stack spacing={2} className="pagination-container">
-        <Pagination
-          // count={Math.ceil(count / rowsPerPage)} // Total number of pages
-          // page={page}
-          // onChange={handleChangePage}
-          color="primary"
-        />
-      </Stack>
       {isOpenPopup && <AccPopup changePopup={changePopup} />}
       {selectedRecord && (
         <AccUpdatePopup record={selectedRecord} onClose={handleFormClose} />

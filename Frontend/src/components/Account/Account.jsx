@@ -8,17 +8,41 @@ import AccTable from "./AccountTable/AccTable";
 import AccPopup from "./AccountPopup/AccPopup";
 
 import { fetchListAccountAction } from "../../store/actions/accountAction";
+import ReactPaginate from "react-paginate";
 
 const Account = () => {
-  const searchRef = useRef();
+  const typingTimeoutRef = useRef(null);
+  const api = useAxios();
 
-  const [dataSearch, setDataSearch] = useState({ search: null });
   const [isOpenPopup, setOpenPopup] = useState(false);
   const [isReload, setReload] = useState(true); // set Callback
+  const [pageNumber, setPageNumber] = useState(1);
+  const [keyWord, setkeyWord] = useState("ALL");
 
   const dispatch = useDispatch();
-  const api = useAxios();
+
   const listAccounts = useSelector((state) => state.account.listAccounts);
+  console.log(
+    "🚀 ~ file: Account.jsx:25 ~ Account ~ listAccounts:",
+    listAccounts
+  );
+  const totalRecords = useSelector((state) => state.account.totalRecords);
+  const pageCount = Math.ceil(totalRecords / 3);
+
+  const handlePageClick = (event) => {
+    setPageNumber(event.selected + 1);
+  };
+
+  const handleChangeSearchByKeyWord = (e) => {
+    const value = e.target.value;
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      // setSearchInfo({ ...searchInfo, key_word: value });
+      setkeyWord(value);
+    }, 600);
+  };
 
   const headerExport = [
     { label: "Role", key: "role_id" },
@@ -34,19 +58,34 @@ const Account = () => {
   ];
 
   useEffect(() => {
-    dispatch(fetchListAccountAction(api));
-  }, []);
+    dispatch(
+      fetchListAccountAction(
+        {
+          key_word: keyWord,
+          page_number: pageNumber,
+        },
+        api
+      )
+    );
+  }, [pageNumber, keyWord]);
+  const setPageNumberDefault = () => {
+    setPageNumber(1);
+    dispatch(
+      fetchListAccountAction(
+        {
+          key_word: keyWord,
+          page_number: pageNumber,
+        },
+        api
+      )
+    );
+  };
 
   function changePopup() {
     setOpenPopup(!isOpenPopup);
     setReload(!isReload);
   }
 
-  function handleSearch() {
-    let search = searchRef.current.value;
-    setDataSearch({ search: search });
-    setReload(!isReload);
-  }
   return (
     <div className="account">
       <div className="acc-filter-bar">
@@ -54,8 +93,7 @@ const Account = () => {
           <input
             type="text"
             id="search-bar"
-            onBlur={handleSearch}
-            ref={searchRef}
+            onInput={(e) => handleChangeSearchByKeyWord(e)}
             placeholder="Search"
           />
         </div>
@@ -78,6 +116,27 @@ const Account = () => {
         <div className="acc-nodata-text">NO DATA</div>
       )}
       {isOpenPopup && <AccPopup changePopup={changePopup} />}
+      {listAccounts && totalRecords > 3 && (
+        <ReactPaginate
+          previousLabel={"◀️"}
+          nextLabel={"▶️"}
+          breakLabel={"..."}
+          pageCount={pageCount}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={3}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination justify-content-center"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item"}
+          previousLinkClassName={"page-link"}
+          nextClassName={"page-item"}
+          nextLinkClassName={"page-link"}
+          breakClassName={"page-item"}
+          breakLinkClassName={"page-link"}
+          activeClassName={"active"}
+        />
+      )}
     </div>
   );
 };

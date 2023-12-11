@@ -222,7 +222,6 @@ class getAllUser(Resource):
         from models.userModel import Users
         
         try:
-            users = Users.query.all()
             key_word = request.args.get('key_word')
             page_number = int(request.args.get('page_number', 1))
             
@@ -265,6 +264,7 @@ class getAllUser(Resource):
                         'image': user.avatar,
                         } 
                         for user in user_list]
+                print(tuple_user,'\n')
                 all_user_data.append(tuple_user)
                 return jsonify({
                     "user_list": all_user_data,

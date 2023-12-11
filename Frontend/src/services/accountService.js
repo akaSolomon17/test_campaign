@@ -1,6 +1,8 @@
 export const accountServices = {
-  fetchListAccount: (api) => {
-    let res = api.get(`/api/all_user_info`);
+  fetchListAccount: (initInfo, api) => {
+    let res = api.get(
+      `/api/all_user_info?key_word=${initInfo.key_word}&page_number=${initInfo.page_number}`
+    );
     return res;
   },
   createAccount: (formData, api) => {

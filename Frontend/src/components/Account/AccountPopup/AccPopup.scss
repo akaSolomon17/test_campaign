@@ -96,6 +96,7 @@
   }
 }
 .acc-text-input {
+  position: relative;
   display: flex;
   justify-content: right;
   align-items: center;
@@ -121,6 +122,11 @@
     margin-left: 27px;
     border-radius: 5px;
     border: 1px solid;
+  }
+  p {
+    position: absolute;
+    top: 22px;
+    left: 170px;
   }
 }
 

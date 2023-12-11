@@ -6,43 +6,51 @@ import "./AccPopup.scss";
 
 import useAxios from "../../../utils/useAxios";
 import { updateAccountAction } from "../../../store/actions/accountAction";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const AccUpdatePopup = (props) => {
-  const initialState = {
-    firstname: props.record ? props.record.first_name : "",
-    email: props.record ? props.record.email : "",
-    phone: props.record ? props.record.phone : "",
-    address: props.record ? props.record.address : "",
-    role_id: props.record ? props.record.role_id : "1",
-    lastname: props.record ? props.record.last_name : "",
-    user_id: props.record ? props.record.user_id : "",
-  };
-
   const api = useAxios();
   const dispatch = useDispatch();
-
-  const [user, setUser] = useState(initialState);
   const [isDropDetail, setDropDetail] = useState(true);
 
-  const handlePhoneChange = (event) => {
-    setUser((prevUser) => ({ ...prevUser, phone: event.target.value }));
-  };
+  const formik = useFormik({
+    initialValues: {
+      email: props.record ? props.record.email : "",
+      first_name: props.record ? props.record.first_name : "",
+      last_name: props.record ? props.record.last_name : "",
+      role_id: props.record ? props.record.role_id : "1",
+      address: props.record ? props.record.address : "",
+      phone: props.record ? props.record.phone : "",
+      user_id: props.record ? props.record.user_id : "",
+    },
 
-  const handleFirstNameChange = (event) => {
-    setUser((prevUser) => ({ ...prevUser, firstname: event.target.value }));
-  };
+    validationSchema: Yup.object({
+      firstname: Yup.string().required("First name is required").max(40),
+      lastname: Yup.string().required("Last name is required").max(40),
+      role_id: Yup.string().required("Role is required"),
+      address: Yup.string().required("Address is required").max(255),
+      phone: Yup.string()
+        .required("Phone number is required")
+        .matches(/^\d+$/, "Phone must contain only digits")
+        .min(10, "Phone number must be at least 10 digits")
+        .max(11, "Phone number must not exceed 11 digits"),
+    }),
+    onSubmit: async (values) => {
+      const updateData = {
+        user_id: values.user_id,
+        first_name: values.first_name,
+        last_name: values.last_name,
+        role_id: values.role_id,
+        address: values.address,
+        phone: values.phone,
+      };
 
-  const handleLastNameChange = (event) => {
-    setUser((prevUser) => ({ ...prevUser, lastname: event.target.value }));
-  };
-
-  const handleAddressChange = (event) => {
-    setUser((prevUser) => ({ ...prevUser, address: event.target.value }));
-  };
-
-  const handleRoleChange = (event) => {
-    setUser((prevUser) => ({ ...prevUser, role: event.target.value }));
-  };
+      dispatch(updateAccountAction(updateData, api));
+      formik.resetForm();
+      closePopup();
+    },
+  });
 
   const closePopup = () => {
     props.onClose();
@@ -52,37 +60,9 @@ const AccUpdatePopup = (props) => {
     setDropDetail(!isDropDetail);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const updateData = {
-        user_id: user.user_id,
-        first_name: user.firstname,
-        last_name: user.lastname,
-        role_id: user.role_id,
-        address: user.address,
-        phone: user.phone,
-      };
-
-      dispatch(updateAccountAction(updateData, api));
-      closePopup();
-    } catch (error) {
-      console.log(error);
-    }
-
-    // try {
-    //   const res = await AccountServices.updateAccount(dataAcc, token);
-    //   console.log(res);
-    //   alert("UPDATE ACCOUNT SUCCESSFULLY!");
-    //   closePopup();
-    // } catch (error) {
-    //   alert("UPDATE ACCOUNT FAILED!");
-    // }
-  };
-
   return (
     <div className="acc-popup">
-      <div className="acc-popup-inner">
+      <form onSubmit={formik.handleSubmit} className="acc-popup-inner">
         <div className="acc-title-pop">
           Edit Account
           <div className="underline"></div>
@@ -102,9 +82,8 @@ const AccUpdatePopup = (props) => {
           <div className="acc-text-input-update">
             Email:
             <input
-              // ref={emailRef}
               readOnly={true}
-              value={user.email}
+              value={formik.values.email}
               type="text"
               name="name"
             />
@@ -112,26 +91,35 @@ const AccUpdatePopup = (props) => {
           <div className="acc-text-input-update">
             First name:
             <input
-              value={user.firstname}
-              onChange={handleFirstNameChange}
+              value={formik.values.first_name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               type="text"
               name="name"
             />
+            {formik.errors.first_name && (
+              <p style={{ color: "red" }}>{formik.errors.first_name}</p>
+            )}
           </div>
           <div className="acc-text-input-update">
             Last name:
             <input
-              value={user.lastname}
-              onChange={handleLastNameChange}
+              value={formik.values.last_name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               type="text"
               name="name"
             />
+            {formik.errors.last_name && (
+              <p style={{ color: "red" }}>{formik.errors.last_name}</p>
+            )}
           </div>
           <div className="role-acc">
             Role:
             <select
-              value={user.role_id}
-              onChange={handleRoleChange}
+              value={formik.values.role_id ? formik.values.role_id : "1"}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="role-select"
               name="status"
             >
@@ -143,20 +131,28 @@ const AccUpdatePopup = (props) => {
           <div className="acc-text-input-update">
             Address:
             <input
-              value={user.address}
-              onChange={handleAddressChange}
+              value={formik.values.address}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               type="text"
               name="name"
             />
+            {formik.errors.address && (
+              <p style={{ color: "red" }}>{formik.errors.address}</p>
+            )}
           </div>
           <div className="acc-text-input-update">
             Phone:
             <input
-              value={user.phone}
-              onChange={handlePhoneChange}
+              value={formik.values.phone}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               type="text"
               name="name"
             />
+            {formik.errors.phone && (
+              <p style={{ color: "red" }}>{formik.errors.phone}</p>
+            )}
           </div>
         </div>
 
@@ -165,11 +161,11 @@ const AccUpdatePopup = (props) => {
           <button className="cancel-btn" onClick={props.onClose}>
             Cancel
           </button>
-          <button className="save-btn" onClick={handleSubmit}>
+          <button className="save-btn" onClick={formik.handleSubmit}>
             Update
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

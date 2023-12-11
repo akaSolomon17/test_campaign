@@ -6,6 +6,7 @@ import {
 
 const initialState = {
   listAccounts: [],
+  totalRecords: 0,
   isLoading: false,
 };
 
@@ -18,10 +19,12 @@ const accountReducer = (state = initialState, action) => {
         isLoading: true,
       };
     case FETCH_ACCOUNT_SUCCESS:
+      console.log(action.payload[0]);
       return {
         ...state,
         isLoading: false,
-        listAccounts: action.payload,
+        listAccounts: action.payload[0],
+        totalRecords: action.payload.total_records,
       };
     case FETCH_ACCOUNT_FAILED:
       return {

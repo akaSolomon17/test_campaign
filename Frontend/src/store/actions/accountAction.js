@@ -9,14 +9,14 @@ import {
 import { turnOffLoading, turnOnLoading } from "./loadingActions";
 
 // fetch List Account Action
-export const fetchListAccountAction = (api) => {
+export const fetchListAccountAction = (initInfo, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
-      const res = await accountServices.fetchListAccount(api);
+      const res = await accountServices.fetchListAccount(initInfo, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListAccountSuccess(res.data.users));
+        dispatch(fetchListAccountSuccess(res.data.user_list));
       }
     } catch (e) {
       console.log(e);
@@ -33,14 +33,14 @@ export const fetchListAccountSuccess = (payload) => {
 };
 
 // create Account Action
-export const createAccountAction = (formData, api) => {
+export const createAccountAction = (formData, fetchForData, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
       const res = await accountServices.createAccount(formData, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListAccountAction(api));
+        dispatch(fetchListAccountAction(fetchForData, api));
         toast.success("Create Account Successffuly!");
       }
     } catch (e) {

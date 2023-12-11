@@ -10,28 +10,11 @@ import "./AccPopup.scss";
 
 import { createAccountAction } from "../../../store/actions/accountAction";
 
-const initialState = {
-  email: "",
-  password: "",
-  first_name: "",
-  last_name: "",
-  role_id: "ADMIN",
-  address: "",
-  phone: "",
-  confirm_password: "",
-  err: "",
-  success: "",
-};
-
 const AccPopup = (props) => {
   const api = useAxios();
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState(initialState);
+  // const [formData, setFormData] = useState(initialState);
   const [isDropDetail, setDropDetail] = useState(true);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -44,32 +27,55 @@ const AccPopup = (props) => {
       phone: "",
       confirm_password: "",
     },
+
     validationSchema: Yup.object({
       email: Yup.string()
-        .required("Email must be required")
+        .required("Email is required")
         .email("Please enter a valid email"),
       password: Yup.string()
-        .required("Password must required")
-        .min(6, "Password must be at least 6 characters"),
-      first_name: Yup.string().required(),
-      last_name: Yup.string().required(),
-      role_id: Yup.string().required(),
-      address: Yup.string().required(),
-      phone: Yup.string().required(),
-      confirm_password: Yup.string().required(),
+        .required("Password is required")
+        .min(6, "Password must be at least 6 characters")
+        .max(120, "Password must not exceed 11 characters"),
+      first_name: Yup.string()
+        .required("First name is required")
+        .matches(/^[A-Za-z ]*$/, "Please enter valid first name")
+        .max(40),
+      last_name: Yup.string()
+        .required("Last name is required")
+        .matches(/^[A-Za-z ]*$/, "Please enter valid last name")
+        .max(40),
+      address: Yup.string()
+        .required("Address is required")
+        .typeError("Your address must be a string")
+        .max(255, "Exceed the number of characters"),
+      phone: Yup.string()
+        .required("Phone number is required")
+        .matches(/^\d+$/, "Phone must contain only digits")
+        .min(10, "Phone number must be at least 10 digits")
+        .max(11, "Phone number must not exceed 11 digits"),
+      confirm_password: Yup.string()
+        .required("Confirm Password is required")
+        .min(6, "Confirm password must be at least 6 characters")
+        .oneOf([Yup.ref("password"), null], "Passwords must match"),
     }),
+
     onSubmit: async (values) => {
       if (values.role_id === "") {
         values.role_id = "1";
       }
       let formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("name", values.name);
-      formData.append("name", values.name);
-      formData.append("name", values.name);
-      formData.append("name", values.name);
+      formData.append("email", values.email);
+      formData.append("password", values.password);
+      formData.append("first_name", values.first_name);
+      formData.append("last_name", values.last_name);
+      formData.append("role_id", values.role_id);
+      formData.append("address", values.address);
+      formData.append("phone", values.phone);
+      formData.append("address", values.phone);
+      // console.log("🚀 ~ file: AccPopup.jsx:67 ~ onSubmit: ~ formData:", formData)
 
       dispatch(createAccountAction(formData, api));
+
       formik.resetForm();
       closePopup();
     },
@@ -103,35 +109,44 @@ const AccPopup = (props) => {
           <div className="acc-text-input">
             Email:
             <input
-              value={formData.email}
-              onChange={handleChange}
+              value={formik.values.email}
+              // onChange={formik.handleChange}
               type="text"
               name="email"
             />
+            {formik.errors.email && (
+              <p style={{ color: "red" }}>{formik.errors.email}</p>
+            )}
           </div>
           <div className="acc-text-input">
             First name:
             <input
-              value={formData.first_name}
-              onChange={handleChange}
+              value={formik.values.first_name}
+              onChange={formik.handleChange}
               type="text"
               name="first_name"
             />
+            {formik.errors.first_name && (
+              <p style={{ color: "red" }}>{formik.errors.first_name}</p>
+            )}
           </div>
           <div className="acc-text-input">
             Last name:
             <input
-              value={formData.last_name}
-              onChange={handleChange}
+              value={formik.values.last_name}
+              onChange={formik.handleChange}
               type="text"
               name="last_name"
             />
+            {formik.errors.last_name && (
+              <p style={{ color: "red" }}>{formik.errors.last_name}</p>
+            )}
           </div>
           <div className="role-acc">
             Role:
             <select
-              value={formData.role_id ? formData.role_id : "1"}
-              onChange={handleChange}
+              value={formik.values.role_id ? formik.values.role_id : "1"}
+              onChange={formik.handleChange}
               className="role-select"
               name="role_id"
             >
@@ -143,38 +158,50 @@ const AccPopup = (props) => {
           <div className="acc-text-input">
             Address:
             <input
-              value={formData.address}
-              onChange={handleChange}
+              value={formik.values.address}
+              onChange={formik.handleChange}
               type="text"
               name="address"
             />
+            {formik.errors.address && (
+              <p style={{ color: "red" }}>{formik.errors.address}</p>
+            )}
           </div>
           <div className="acc-text-input">
             Phone:
             <input
-              value={formData.phone}
-              onChange={handleChange}
+              value={formik.values.phone}
+              onChange={formik.handleChange}
               type="text"
               name="phone"
             />
+            {formik.errors.phone && (
+              <p style={{ color: "red" }}>{formik.errors.phone}</p>
+            )}
           </div>
           <div className="acc-text-input">
             Password:
             <input
-              value={formData.password}
-              onChange={handleChange}
+              value={formik.values.password}
+              onChange={formik.handleChange}
               type="password"
               name="password"
             />
+            {formik.errors.password && (
+              <p style={{ color: "red" }}>{formik.errors.password}</p>
+            )}
           </div>
           <div className="acc-text-input">
             Confirm password:
             <input
-              value={formData.confirm_password}
-              onChange={handleChange}
+              value={formik.values.confirm_password}
+              onChange={formik.handleChange}
               type="password"
               name="confirm_password"
             />
+            {formik.errors.confirm_password && (
+              <p style={{ color: "red" }}>{formik.errors.confirm_password}</p>
+            )}
           </div>
         </div>
 
@@ -183,11 +210,7 @@ const AccPopup = (props) => {
           <button className="cancel-btn" onClick={closePopup}>
             Cancel
           </button>
-          <button
-            type="submit"
-            className="save-btn"
-            onClick={formik.handleSubmit}
-          >
+          <button type="submit" className="save-btn">
             Create
           </button>
         </div>
