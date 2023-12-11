@@ -17,11 +17,10 @@ class Creatives(db.Model):
     delete_flag = db.Column(db.BOOLEAN, default=False)
     campaign_id = db.Column(db.INT, db.ForeignKey('campaigns.campaign_id'), nullable=False)
     
-    def __init__(self,title,description,img_preview,final_url,status,delete_flag,campaign_id):
+    def __init__(self,title,description,img_preview,final_url,delete_flag,campaign_id):
         self.title = title
         self.description = description
         self.img_preview = img_preview
         self.final_url = final_url
-        self.status = status
         self.delete_flag = delete_flag
         self.campaign_id = campaign_id

@@ -8,7 +8,8 @@ import AccTable from "./AccountTable/AccTable";
 import AccPopup from "./AccountPopup/AccPopup";
 
 import { fetchListAccountAction } from "../../store/actions/accountAction";
-import ReactPaginate from "react-paginate";
+import Pagination from "react-pagination-library";
+import "react-pagination-library/build/css/index.css";
 
 const Account = () => {
   const typingTimeoutRef = useRef(null);
@@ -30,7 +31,7 @@ const Account = () => {
   const pageCount = Math.ceil(totalRecords / 3);
 
   const handlePageClick = (event) => {
-    setPageNumber(event.selected + 1);
+    setPageNumber(event);
   };
 
   const handleChangeSearchByKeyWord = (e) => {
@@ -39,7 +40,6 @@ const Account = () => {
       clearTimeout(typingTimeoutRef.current);
     }
     typingTimeoutRef.current = setTimeout(() => {
-      // setSearchInfo({ ...searchInfo, key_word: value });
       setkeyWord(value);
     }, 600);
   };
@@ -111,32 +111,25 @@ const Account = () => {
         </div>
       </div>
       {listAccounts && listAccounts.length > 0 ? (
-        <AccTable listAccounts={listAccounts} />
+        <AccTable
+          listAccounts={listAccounts}
+          keyWord={keyWord}
+          pageNumber={pageNumber}
+          setPageNumberDefault={setPageNumberDefault}
+        />
       ) : (
         <div className="acc-nodata-text">NO DATA</div>
       )}
       {isOpenPopup && <AccPopup changePopup={changePopup} />}
-      {listAccounts && totalRecords > 3 && (
-        <ReactPaginate
-          previousLabel={"◀️"}
-          nextLabel={"▶️"}
-          breakLabel={"..."}
-          pageCount={pageCount}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={3}
-          onPageChange={handlePageClick}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousClassName={"page-item"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          breakLinkClassName={"page-link"}
-          activeClassName={"active"}
-        />
-      )}
+      {/* {listAccounts && totalRecords > 3 && (
+        
+      )} */}
+      <Pagination
+        currentPage={pageNumber}
+        totalPages={pageCount}
+        changeCurrentPage={handlePageClick}
+        theme="square-fill"
+      />
     </div>
   );
 };

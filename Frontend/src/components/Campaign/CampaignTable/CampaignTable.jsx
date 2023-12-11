@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import "./CampaignTable.scss";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { FaCircleDot } from "react-icons/fa6";
 import CreateCampaign from "../CreateCampaign/CreateCampaign";
 import EditCampaign from "../CreateCampaign/EditCampaign";
-import Pagination from "@mui/material/Pagination";
-import Stack from "@mui/material/Stack";
+
 import { deleteCampaignAction } from "../../../store/actions/campaignActions";
 import useAxios from "../../../utils/useAxios";
 
@@ -36,13 +34,19 @@ const CampaignTable = (props) => {
   };
 
   const handleDeleteCampaign = async (campaign) => {
+    console.log("file: CampaignTable.jsx:37 ~ campaign:", campaign.campaign_id);
+
     dispatch(
-      deleteCampaignAction(campaign.campaign_id, api, {
-        key_word: keyWord,
-        start_time: startTime,
-        end_time: endTime,
-        page_number: 1,
-      })
+      deleteCampaignAction(
+        campaign.campaign_id,
+        {
+          key_word: keyWord,
+          start_time: startTime,
+          end_time: endTime,
+          page_number: 1,
+        },
+        api
+      )
     );
   };
 

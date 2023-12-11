@@ -152,7 +152,7 @@ class getCampaign(Resource):
 
                 return jsonify(Campaign_dict)
             else:
-                return errConfig.statusCode("Campaign not found!", 404)
+                return errConfig.statusCode("Campaign not found!")
         except Exception as e:
             return errConfig.statusCode(str(e), 500)
 
@@ -170,6 +170,7 @@ class addCampaign(Resource):
             budget = json["budget"]
             start_date = json["start_date"]
             end_date = json["end_date"]
+            status= json["status"]
             user_status = json["user_status"]
             title = json["title"]
             description = json["description"]
@@ -177,18 +178,18 @@ class addCampaign(Resource):
             final_url = json["final_url"]
 
             if not check_date(start_date, end_date):
-                return errConfig.statusCode("Invalid date",400)
+                return errConfig.statusCode("Invalid date")
             
             if len(name) > 120 or len(name) ==0:
-                return errConfig.statusCode("Invalid name. Please re-enter",400)
+                return errConfig.statusCode("Invalid name. Please re-enter")
             
             if len(title) > 120 or len(name) ==0:
-                return errConfig.statusCode("Invalid title. Please re-enter",400)
+                return errConfig.statusCode("Invalid title. Please re-enter")
 
             if (len(description) >255 or len(img_preview) > 255 or len(final_url) > 255 
                 or len(description) ==0 or len(img_preview) ==0 or len(final_url) ==0
                 or len(bid_amount) ==0  or len(budget) == 0):
-                return errConfig.statusCode("Invalid. Please re-enter",400)
+                return errConfig.statusCode("Invalid. Please re-enter")
             try:
                 campaign = Campaigns(
                     user_id=user_id,
@@ -197,11 +198,13 @@ class addCampaign(Resource):
                     budget=budget,
                     start_date=start_date,
                     end_date=end_date,
+                    status=status,
                     user_status=user_status,
                     delete_flag=False,
                     used_amount=0,
                     usage_rate=0,
                 )
+                print(campaign)
                 db.session.add(campaign)
                 db.session.commit()
                 db.session.refresh(campaign)
@@ -214,18 +217,17 @@ class addCampaign(Resource):
                     img_preview=img_preview,
                     final_url=final_url,
                     delete_flag=False,
-                    status=True,
                 )
-
+                print(creative)
                 db.session.add(creative)
                 db.session.commit()
                 db.session.refresh(creative)
 
-                return errConfig.statusCode("Add Campaign successfully!",200)
+                return errConfig.statusCode("Add Campaign successfully!")
             except Exception as e:
-                return errConfig.statusCode(f"Add Campaign failed!{str(e)}",400)
+                return errConfig.statusCode("Add Campaign failed! " + str(e))
         except Exception as e:
-            return errConfig.statusCode(str(e), 500)
+            return errConfig.statusCode("Unexpected Error!")
 
 
 # UPDATE CAMPAIGN BY ID
@@ -247,7 +249,7 @@ class updateCampaign(Resource):
             final_url = json["final_url"]
             
             if not check_date(start_date, end_date):
-                return errConfig.statusCode("Invalid date", 400)
+                return errConfig.statusCode("Invalid date")
             
             # Không đổi tên campaign validate lại!
             # if len(name) > 120 or len(name) ==0:
@@ -259,7 +261,7 @@ class updateCampaign(Resource):
             if (len(description) >255 or len(img_preview) > 255 or len(final_url) > 255 
                 or len(description) ==0 or len(img_preview) ==0 or len(final_url) ==0):
                 # or len(bid_amount) == 0  or len(budget) == 0):
-                return errConfig.statusCode("Invalid. Please re-enter",400)
+                return errConfig.statusCode("Invalid. Please re-enter")
             
             
             
@@ -272,8 +274,6 @@ class updateCampaign(Resource):
             ).first()
 
             try:
-                print(status)
-
                 campaign.budget = budget
                 campaign.bid_amount = bid_amount
                 campaign.start_date = start_date
@@ -288,9 +288,9 @@ class updateCampaign(Resource):
                 db.session.commit()
                 return errConfig.statusCode("Update campaign successfully!",200)
             except Exception as e:
-                return errConfig.statusCode(f"Update campaign failed!{str(e)}",400)
+                return errConfig.statusCode(f"Update campaign failed!{str(e)}")
         except Exception as e:
-            return errConfig.statusCode(str(e), 500)
+            return errConfig.statusCode(str(e))
 
 
 # # SEARCH CAMPAIGN 
@@ -328,21 +328,21 @@ class deleteCampaign(Resource):
 
         try:
             if camp_id is None:
-                return errConfig.statusCode("Invalid campaign ID", 404)
+                return errConfig.statusCode("Invalid campaign ID")
 
             camp = Campaigns.query.filter(Campaigns.campaign_id == camp_id).first()
-            campaign_id = camp.campaign_id
-            creative = Creatives.query.filter(Creatives.campaign_id ==campaign_id).first()
-
+            creative = Creatives.query.filter(Creatives.campaign_id == camp_id).first()
+           
             if camp:
+                
                 db.session.delete(camp)
                 db.session.delete(creative)
                 db.session.commit()
                 return errConfig.statusCode("Delete Campaign successfully!",200)
             else:
-                return errConfig.statusCode("Delete Campaign failed!", 400)
+                return errConfig.statusCode("Delete Campaign failed!")
         except Exception as e:
-            return errConfig.statusCode(str(e), 500)
+            return errConfig.statusCode(str(e))
 
 
 class bannerCampaign(Resource):
@@ -357,7 +357,7 @@ class bannerCampaign(Resource):
             user_status = json['user_status']
 
             if camp_id is None:
-                return errConfig.statusCode("Invalid campaign ID", 404)
+                return errConfig.statusCode("Invalid campaign ID")
 
             camp = Campaigns.query.filter(Campaigns.campaign_id == camp_id).first()
             
@@ -379,7 +379,7 @@ class bannerCampaign(Resource):
                     
                 return errConfig.statusCode("Update campaign successfully!",200)
             else:
-                return errConfig.statusCode("Update campaign failed!",400)
+                return errConfig.statusCode("Update campaign failed!")
 
         except Exception as e:
-            return errConfig.statusCode(str(e), 500)
+            return errConfig.statusCode(str(e))

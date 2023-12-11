@@ -8,7 +8,7 @@ from initSQL import db
 
     
 class Campaigns(db.Model):
-    campaign_id = db.Column(db.INT, primary_key = True,autoincrement=True)
+    campaign_id = db.Column(db.INT, primary_key = True, autoincrement=True)
     name = db.Column(db.NVARCHAR(120), nullable=False)
     status = db.Column(db.BOOLEAN, default=True, nullable=False)
     user_status = db.Column(db.BOOLEAN, default = True, nullable = False)
@@ -26,8 +26,9 @@ class Campaigns(db.Model):
     user = db.relationship('Users',backref = db.backref('campaigns'), lazy=True)
     creative = db.relationship('Creatives',backref = db.backref('campaigns'), lazy=True)
     
-    def __init__(self,name,user_status, used_amount,usage_rate,budget,bid_amount,start_date,end_date,delete_flag,user_id):
+    def __init__(self,name,status,user_status, used_amount,usage_rate,budget,bid_amount,start_date,end_date,delete_flag,user_id):
         self.name = name
+        self.status = status
         self.user_status = user_status
         self.used_amount = used_amount
         self.usage_rate = usage_rate

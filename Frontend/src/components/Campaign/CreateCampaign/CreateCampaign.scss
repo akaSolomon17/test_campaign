@@ -124,6 +124,7 @@
   }
 }
 .camp-text-input {
+  position: relative;
   display: flex;
   justify-content: right;
   align-items: center;
@@ -155,6 +156,11 @@
     border-radius: 6px;
     padding: 53px;
     margin-left: 27px;
+  }
+  p {
+    position: absolute;
+    top: 22px;
+    left: 170px;
   }
 }
 .camp-schedule-input {

@@ -7,6 +7,8 @@ import "./CreateCampaign.scss";
 
 import { createCampaignAction } from "../../../store/actions/campaignActions";
 import useAxios from "../../../utils/useAxios";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const CreateCampaign = (props) => {
   const api = useAxios();
@@ -17,41 +19,132 @@ const CreateCampaign = (props) => {
   const pageNumber = props.pageNumber;
 
   const currentUser = useSelector((state) => state.auth?.currentUser);
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
 
-  const initialState = {
-    name: "",
-    user_status: true,
-    start_date: moment(startTime).format("YYYY-MM-DD HH:mm:ss"),
-    end_date: moment(endTime).format("YYYY-MM-DD HH:mm:ss"),
-    budget: "",
-    bid_amount: "",
-    title: "",
-    description: "",
-    img_preview:
-      "https://res.cloudinary.com/dooge27kv/image/upload/v1701586838/project/6SB-7138-87000072_fpnway.jpg",
-    final_url: "",
-  };
-
-  const [formData, setFormData] = useState(initialState);
+  const [startTime, setStartTime] = useState("2023-01-01 23:59:59");
+  const [endTime, setEndTime] = useState("2023-12-12 23:59:59");
+  const [previewBanner, setPreviewBanner] = useState("");
   const [isDropDetail, setDropDetail] = useState(true);
 
-  useEffect(() => {
-    const currentMoment = moment();
-    const formatCurrentDate = currentMoment.format("YYYY-MM-DDTHH:mm");
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      status: true,
+      user_status: true,
+      start_date: moment(startTime).format("YYYY-MM-DD HH:mm:ss"),
+      end_date: moment(endTime).format("YYYY-MM-DD HH:mm:ss"),
+      budget: "",
+      bid_amount: "",
+      title: "",
+      description: "",
+      img_preview:
+        "https://res.cloudinary.com/dooge27kv/image/upload/v1701586838/project/6SB-7138-87000072_fpnway.jpg",
+      final_url: "",
+    },
 
-    setStartTime(formatCurrentDate);
-    setEndTime(formatCurrentDate);
-  }, [setStartTime, setEndTime]);
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .required("Please enter campaign's name")
+        .min(2, "Name must have at least 2 characters")
+        .max(255, "Exceed the number of characters"),
+      start_date: Yup.date().required("Required!"),
+      end_date: Yup.date()
+        .required("Required!")
+        .when(
+          "start_time",
+          (start_date, yup) =>
+            start_date &&
+            yup.min(start_date, "End time cannot be before start time")
+        ),
+      budget: Yup.number()
+        .typeError("Budget must be a number")
+        .required("Please enter campaign's budget")
+        .positive("Must be more than 0")
+        .integer("Budget must be a integer")
+        .max(
+          Number.MAX_SAFE_INTEGER,
+          "Budget must be less than or equal to 9007199254740991"
+        ),
+      bid_amount: Yup.number()
+        .typeError("Bid amount must be a number")
+        .required("Please enter campaign's bid amount")
+        .positive("Must be more than 0")
+        .integer("Bid amount must be a integer")
+        .max(
+          Number.MAX_SAFE_INTEGER,
+          "Bid amount must be less than or equal to 9007199254740991"
+        ),
+      title: Yup.string()
+        .min(2, "Title must have at least 2 characters")
+        .max(255, "Exceed the number of characters"),
+      description: Yup.string().min(
+        2,
+        "Description must have at least 2 characters"
+      ),
+      // img_preview: Yup.mixed()
+      //   .required("Please choose your campaign banner")
+      //   .test(
+      //     "FILE_TYPE",
+      //     "Invalid type! Please choose another file",
+      //     (value) =>
+      //       value &&
+      //       [
+      //         "image/png",
+      //         "image/jpg",
+      //         "image/jpeg",
+      //         "image/gif",
+      //         "image/svg",
+      //       ].includes(value.type)
+      //   )
+      //   .test(
+      //     "Fichier taille",
+      //     "Please choose a size less than 1 mb",
+      //     (value) => !value || (value && value.size <= 1024 * 1024)
+      //   ),
+      final_url: Yup.string()
+        .required("Final URL is required")
+        .min(2, "URL must have at least 2 characters")
+        .max(255, "Exceed the number of characters"),
+    }),
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    onSubmit: async (values) => {
+      if (values.status === "") {
+        values.status = true;
+      }
+      const formData = {
+        user_id: currentUser.user_id,
+        name: values.name,
+        status: values.status ? values.status : true,
+        user_status: true,
+        start_date: values.start_date,
+        end_date: values.end_date,
+        budget: values.budget,
+        bid_amount: values.bid_amount,
+        title: values.title,
+        description: values.description,
+        img_preview: values.img_preview,
+        final_url: values.final_url,
+      };
 
-      [e.target.name]: e.target.value,
-    });
-  };
+      dispatch(
+        createCampaignAction(
+          formData,
+          {
+            key_word: keyWord,
+            start_time: startTimeForGet,
+            end_time: endTimeForGet,
+            page_number: pageNumber,
+          },
+          api
+        )
+      );
+      console.log("file: CreateCampaign.jsx:113 ~ formData:", formData);
+
+      formik.resetForm();
+      setPreviewBanner("");
+
+      closePopup();
+    },
+  });
 
   const closePopup = () => {
     props.changePopup();
@@ -64,7 +157,7 @@ const CreateCampaign = (props) => {
   function handleStartTimeChange(event) {
     const selectedStartTime = event.target.value;
     const currentMoment = moment();
-    const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm");
+    const minDateTime = currentMoment.format("YYYY-MM-DD HH:mm:ss");
 
     if (moment(selectedStartTime).isBefore(minDateTime)) {
       return;
@@ -81,7 +174,7 @@ const CreateCampaign = (props) => {
     const selectedEndTime = event.target.value;
     const minDateTime = moment(startTime)
       .add(1, "days")
-      .format("YYYY-MM-DDTHH:mm");
+      .format("YYYY-MM-DD HH:mm:ss");
 
     if (moment(selectedEndTime).isBefore(minDateTime)) {
       return;
@@ -94,30 +187,9 @@ const CreateCampaign = (props) => {
     setEndTime(selectedEndTime);
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const createFormData = {
-      ...formData,
-      user_id: currentUser.user_id,
-    };
-    dispatch(
-      createCampaignAction(
-        createFormData,
-        {
-          key_word: keyWord,
-          start_time: startTimeForGet,
-          end_time: endTimeForGet,
-          page_number: pageNumber,
-        },
-        api
-      )
-    );
-    closePopup();
-  };
-
   return (
     <div className="camp-popup">
-      <form onSubmit={handleSubmit} className="camp-popup-inner">
+      <form onSubmit={formik.handleSubmit} className="camp-popup-inner">
         <div className="camp-title-pop">
           Create Campaign
           <div className="underline"></div>
@@ -135,17 +207,20 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Name:
             <input
-              value={formData.name}
-              onChange={handleChange}
+              value={formik.values.name}
+              onChange={formik.handleChange}
               type="text"
               name="name"
             />
+            {formik.touched.name && formik.errors.name && (
+              <p style={{ color: "red" }}>{formik.errors.name}</p>
+            )}
           </div>
           <div className="status-camp">
             User status:
             <select
-              value={formData.user_status ? formData.user_status : true}
-              onChange={handleChange}
+              value={formik.values.status ? formik.values.status : true}
+              onChange={formik.handleChange}
               className="status-select"
               name="status"
             >
@@ -167,9 +242,12 @@ const CreateCampaign = (props) => {
                 type="datetime-local"
                 id="startDateTimePicker"
                 name="startDateTimePicker"
-                value={startTime}
+                value={formik.values.start_date}
                 onChange={handleStartTimeChange}
-              ></input>
+              />
+              {formik.touched.name && formik.errors.start_date && (
+                <p style={{ color: "red" }}>{formik.errors.start_date}</p>
+              )}
             </div>
             <div className="camp-endtime-container">
               <label htmlFor="endDateTimePicker">End Time:</label>
@@ -178,9 +256,12 @@ const CreateCampaign = (props) => {
                 type="datetime-local"
                 id="endDateTimePicker"
                 name="endDateTimePicker"
-                value={endTime}
+                value={formik.values.end_date}
                 onChange={handleEndTimeChange}
-              ></input>
+              />
+              {formik.touched.name && formik.errors.end_date && (
+                <p style={{ color: "red" }}>{formik.errors.end_date}</p>
+              )}
             </div>
           </div>
         </div>
@@ -193,11 +274,14 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Budget:
             <input
-              value={formData.budget}
-              onChange={handleChange}
+              value={formik.values.budget}
+              onChange={formik.handleChange}
               type="text"
               name="budget"
             />
+            {formik.touched.name && formik.errors.budget && (
+              <p style={{ color: "red" }}>{formik.errors.budget}</p>
+            )}
           </div>
         </div>
 
@@ -209,11 +293,14 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Bid Amount:
             <input
-              value={formData.bid_amount}
-              onChange={handleChange}
+              value={formik.values.bid_amount}
+              onChange={formik.handleChange}
               type="text"
               name="bid_amount"
             />
+            {formik.touched.name && formik.errors.bid_amount && (
+              <p style={{ color: "red" }}>{formik.errors.bid_amount}</p>
+            )}
           </div>
         </div>
         <div className="camp-title" onClick={changeDetailDrop}>
@@ -224,37 +311,49 @@ const CreateCampaign = (props) => {
           <div className="camp-text-input">
             Title:
             <input
-              value={formData.title}
-              onChange={handleChange}
+              value={formik.values.title}
+              onChange={formik.handleChange}
               type="text"
               name="title"
             />
+            {formik.touched.name && formik.errors.title && (
+              <p style={{ color: "red" }}>{formik.errors.title}</p>
+            )}
           </div>
           <div className="camp-text-input">
             Description:
             <input
-              value={formData.description}
-              onChange={handleChange}
+              value={formik.values.description}
+              onChange={formik.handleChange}
               type="text"
               name="description"
             />
+            {formik.touched.name && formik.errors.description && (
+              <p style={{ color: "red" }}>{formik.errors.description}</p>
+            )}
           </div>
           <div className="camp-text-input">
             Creative preview:
             <img
               className="img-preview"
-              src={formData.img_preview}
+              src={formik.values.img_preview}
               alt="img-preview"
             />
+            {formik.touched.name && formik.errors.img_preview && (
+              <p style={{ color: "red" }}>{formik.errors.img_preview}</p>
+            )}
           </div>
           <div className="camp-text-input">
             Final URL:
             <input
-              value={formData.final_url}
-              onChange={handleChange}
+              value={formik.values.final_url}
+              onChange={formik.handleChange}
               type="text"
               name="final_url"
             />
+            {formik.touched.name && formik.errors.final_url && (
+              <p style={{ color: "red" }}>{formik.errors.final_url}</p>
+            )}
           </div>
         </div>
 
@@ -263,7 +362,11 @@ const CreateCampaign = (props) => {
           <button className="cancel-btn" onClick={closePopup}>
             Cancel
           </button>
-          <button type="submit" className="save-btn" onClick={handleSubmit}>
+          <button
+            type="submit"
+            className="save-btn"
+            onClick={formik.handleSubmit}
+          >
             Create
           </button>
         </div>
