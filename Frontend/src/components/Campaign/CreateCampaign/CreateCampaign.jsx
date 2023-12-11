@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
 import moment from "moment";
 import "./CreateCampaign.scss";
-
 import { createCampaignAction } from "../../../store/actions/campaignActions";
 import useAxios from "../../../utils/useAxios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+} from "react-accessible-accordion";
+import "react-accessible-accordion/dist/fancy-example.css";
 
 const CreateCampaign = (props) => {
   const api = useAxios();
@@ -61,18 +67,15 @@ const CreateCampaign = (props) => {
         .positive("Must be more than 0")
         .integer("Budget must be a integer")
         .max(
-          Number.MAX_SAFE_INTEGER,
+          2147483647,
           "Budget must be less than or equal to 9007199254740991"
         ),
       bid_amount: Yup.number()
         .typeError("Bid amount must be a number")
         .required("Please enter campaign's bid amount")
-        .positive("Must be more than 0")
-        .integer("Bid amount must be a integer")
-        .max(
-          Number.MAX_SAFE_INTEGER,
-          "Bid amount must be less than or equal to 9007199254740991"
-        ),
+        .positive("Bid amount must be positive")
+        .integer("Bid amount must be an integer")
+        .max(2147483647, "Bid amount exceeds the maximum value for an INT"),
       title: Yup.string()
         .min(2, "Title must have at least 2 characters")
         .max(255, "Exceed the number of characters"),
@@ -153,38 +156,31 @@ const CreateCampaign = (props) => {
     setDropDetail(!isDropDetail);
   };
 
-  function handleStartTimeChange(event) {
-    const selectedStartTime = event.target.value;
-    const currentMoment = moment();
-    const minDateTime = currentMoment.format("YYYY-MM-DD HH:mm:ss");
+  const handleDateChange = (event, dateField) => {
+    const selectedDate = event.target.value;
 
-    if (moment(selectedStartTime).isBefore(minDateTime)) {
-      return;
+    if (dateField === "start_date") {
+      const minDateTime = moment().format("YYYY-MM-DD HH:mm");
+      if (
+        moment(selectedDate).isBefore(minDateTime) ||
+        moment(selectedDate).isAfter(endTime)
+      ) {
+        return;
+      }
+      setStartTime(selectedDate);
+    } else if (dateField === "end_date") {
+      const minDateTime = moment(startTime)
+        .add(1, "days")
+        .format("YYYY-MM-DD HH:mm");
+      if (
+        moment(selectedDate).isBefore(minDateTime) ||
+        moment(selectedDate).isBefore(startTime)
+      ) {
+        return;
+      }
+      setEndTime(selectedDate);
     }
-
-    if (moment(selectedStartTime).isAfter(endTime)) {
-      return;
-    }
-
-    setStartTime(selectedStartTime);
-  }
-
-  function handleEndTimeChange(event) {
-    const selectedEndTime = event.target.value;
-    const minDateTime = moment(startTime)
-      .add(1, "days")
-      .format("YYYY-MM-DD HH:mm:ss");
-
-    if (moment(selectedEndTime).isBefore(minDateTime)) {
-      return;
-    }
-
-    if (moment(selectedEndTime).isBefore(startTime)) {
-      return;
-    }
-
-    setEndTime(selectedEndTime);
-  }
+  };
 
   return (
     <div className="camp-popup">
@@ -198,163 +194,183 @@ const CreateCampaign = (props) => {
             />
           </button>
         </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Detail
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Name:
-            <input
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              type="text"
-              name="name"
-            />
-            {formik.touched.name && formik.errors.name && (
-              <p style={{ color: "red" }}>{formik.errors.name}</p>
-            )}
-          </div>
-          <div className="status-camp">
-            User status:
-            <select
-              value={formik.values.status ? formik.values.status : true}
-              onChange={formik.handleChange}
-              className="status-select"
-              name="status"
-            >
-              <option value={true}>ACTIVE</option>
-              <option value={false}>INACTIVE</option>
-            </select>
-          </div>
-        </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Schedule
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-schedule-input">
-            Schedule:
-            <div className="camp-starttime-container">
-              <label htmlFor="startDateTimePicker">Start Time: </label>
-              <input
-                type="datetime-local"
-                id="startDateTimePicker"
-                name="startDateTimePicker"
-                value={formik.values.start_date}
-                onChange={handleStartTimeChange}
-              />
-              {formik.touched.name && formik.errors.start_date && (
-                <p style={{ color: "red" }}>{formik.errors.start_date}</p>
-              )}
-            </div>
-            <div className="camp-endtime-container">
-              <label htmlFor="endDateTimePicker">End Time:</label>
-              <input
-                className="endtime"
-                type="datetime-local"
-                id="endDateTimePicker"
-                name="endDateTimePicker"
-                value={formik.values.end_date}
-                onChange={handleEndTimeChange}
-              />
-              {formik.touched.name && formik.errors.end_date && (
-                <p style={{ color: "red" }}>{formik.errors.end_date}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Budget
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Budget:
-            <input
-              value={formik.values.budget}
-              onChange={formik.handleChange}
-              type="text"
-              name="budget"
-            />
-            {formik.touched.budget && formik.errors.budget && (
-              <p style={{ color: "red" }}>{formik.errors.budget}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Bidding
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Bid Amount:
-            <input
-              value={formik.values.bid_amount}
-              onChange={formik.handleChange}
-              type="text"
-              name="bid_amount"
-            />
-            {formik.touched.name && formik.errors.bid_amount && (
-              <p style={{ color: "red" }}>{formik.errors.bid_amount}</p>
-            )}
-          </div>
-        </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Creative
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Title:
-            <input
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              type="text"
-              name="title"
-            />
-            {formik.touched.name && formik.errors.title && (
-              <p style={{ color: "red" }}>{formik.errors.title}</p>
-            )}
-          </div>
-          <div className="camp-text-input">
-            Description:
-            <input
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              type="text"
-              name="description"
-            />
-            {formik.touched.name && formik.errors.description && (
-              <p style={{ color: "red" }}>{formik.errors.description}</p>
-            )}
-          </div>
-          <div className="camp-text-input">
-            Creative preview:
-            <img
-              className="img-preview"
-              src={formik.values.img_preview}
-              alt="img-preview"
-            />
-            {formik.touched.name && formik.errors.img_preview && (
-              <p style={{ color: "red" }}>{formik.errors.img_preview}</p>
-            )}
-          </div>
-          <div className="camp-text-input">
-            Final URL:
-            <input
-              value={formik.values.final_url}
-              onChange={formik.handleChange}
-              type="text"
-              name="final_url"
-            />
-            {formik.touched.name && formik.errors.final_url && (
-              <p style={{ color: "red" }}>{formik.errors.final_url}</p>
-            )}
-          </div>
-        </div>
+        <Accordion
+          allowMultipleExpanded
+          preExpanded={[
+            "active-detail",
+            "active-schedule",
+            "active-budget",
+            "active-bidding",
+            "active-creative",
+          ]}
+        >
+          <AccordionItem uuid="active-detail">
+            <AccordionItemHeading>
+              <AccordionItemButton>Detail</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Name:
+                <input
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="name"
+                />
+                {formik.touched.name && formik.errors.name && (
+                  <p style={{ color: "red" }}>{formik.errors.name}</p>
+                )}
+              </div>
+              <div className="status-camp">
+                User status:
+                <select
+                  value={formik.values.status ? formik.values.status : true}
+                  onChange={formik.handleChange}
+                  className="status-select"
+                  name="status"
+                >
+                  <option value={true}>ACTIVE</option>
+                  <option value={false}>INACTIVE</option>
+                </select>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-schedule">
+            <AccordionItemHeading>
+              <AccordionItemButton>Schedule</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-schedule-input">
+                Schedule:
+                <div className="camp-starttime-container">
+                  <label htmlFor="startDateTimePicker">Start Time: </label>
+                  <input
+                    type="datetime-local"
+                    id="startDateTimePicker"
+                    name="start_date"
+                    value={formik.values.start_date}
+                    onChange={(event) => {
+                      formik.handleChange(event);
+                      handleDateChange(event, "start_date");
+                    }}
+                  />
+                  {formik.touched.start_date && formik.errors.start_date && (
+                    <p style={{ color: "red" }}>{formik.errors.start_date}</p>
+                  )}
+                </div>
+                <div className="camp-endtime-container">
+                  <label htmlFor="endDateTimePicker">End Time:</label>
+                  <input
+                    className="endtime"
+                    type="datetime-local"
+                    id="endDateTimePicker"
+                    name="end_date"
+                    value={formik.values.end_date}
+                    onChange={(event) => {
+                      formik.handleChange(event);
+                      handleDateChange(event, "end_date");
+                    }}
+                  />
+                  {formik.touched.end_date && formik.errors.end_date && (
+                    <p style={{ color: "red" }}>{formik.errors.end_date}</p>
+                  )}
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-budget">
+            <AccordionItemHeading>
+              <AccordionItemButton>Budget</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Budget:
+                <input
+                  value={formik.values.budget}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="budget"
+                />
+                {formik.touched.budget && formik.errors.budget && (
+                  <p style={{ color: "red" }}>{formik.errors.budget}</p>
+                )}
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-bidding">
+            <AccordionItemHeading>
+              <AccordionItemButton>Bidding</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Bid Amount:
+                <input
+                  value={formik.values.bid_amount}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="bid_amount"
+                />
+                {formik.touched.bid_amount && formik.errors.bid_amount && (
+                  <p style={{ color: "red" }}>{formik.errors.bid_amount}</p>
+                )}
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-creative">
+            <AccordionItemHeading>
+              <AccordionItemButton>Creative</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Title:
+                <input
+                  value={formik.values.title}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="title"
+                />
+                {formik.touched.title && formik.errors.title && (
+                  <p style={{ color: "red" }}>{formik.errors.title}</p>
+                )}
+              </div>
+              <div className="camp-text-input">
+                Description:
+                <input
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="description"
+                />
+                {formik.touched.description && formik.errors.description && (
+                  <p style={{ color: "red" }}>{formik.errors.description}</p>
+                )}
+              </div>
+              <div className="camp-text-input">
+                Creative preview:
+                <img
+                  className="img-preview"
+                  src={formik.values.img_preview}
+                  alt="img-preview"
+                />
+                {formik.touched.img_preview && formik.errors.img_preview && (
+                  <p style={{ color: "red" }}>{formik.errors.img_preview}</p>
+                )}
+              </div>
+              <div className="camp-text-input">
+                Final URL:
+                <input
+                  value={formik.values.final_url}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="final_url"
+                />
+                {formik.touched.final_url && formik.errors.final_url && (
+                  <p style={{ color: "red" }}>{formik.errors.final_url}</p>
+                )}
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+        </Accordion>
 
         <div className="camp-footer-pop">
           <div className="underline"></div>

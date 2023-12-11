@@ -16,15 +16,20 @@
 }
 .accordion__heading {
   background-color: #468faf !important;
+  margin-top: 10px !important;
 }
 .accordion__button {
   background-color: #468faf !important;
   color: white !important;
   cursor: pointer !important;
   padding: 18px !important;
-  width: 500px !important;
+  width: 807px !important;
   text-align: left !important;
   border: none !important;
+  // box-shadow: none !important;
+  ::before {
+    margin-bottom: 3px;
+  }
 }
 
 .acc-popup-inner {
@@ -149,7 +154,7 @@
   margin-bottom: 30px;
   margin-top: 30px;
   .role-select {
-    width: 710px;
+    width: 677px;
     height: 36px;
     margin-left: 27px;
     border-color: black;

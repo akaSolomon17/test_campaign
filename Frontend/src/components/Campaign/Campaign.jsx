@@ -21,8 +21,24 @@ const Campaign = () => {
   const api = useAxios();
   const dispatch = useDispatch();
   const listCampaigns = useSelector((state) => state.campaign.listCampaigns);
+
   const totalRecords = useSelector((state) => state.campaign.totalRecords);
   const pageCount = Math.ceil(totalRecords / 3);
+
+  // const headerExport = [
+  //   { label: "Name", key: "name" },
+  //   { label: "Status", key: "status" },
+  //   { label: "Used Amount", key: "used_amount" },
+  //   { label: "Usage Rate", key: "usage_rate" },
+  //   { label: "Budget", key: "budget" },
+  //   { label: "Bid amount", key: "bid_amount" },
+  //   { label: "Start date", key: "start_date" },
+  //   { label: "End date", key: "end_date" },
+  //   { label: "Description", key: "description" },
+  //   { label: "Final url", key: "final_url" },
+  //   { label: "Title", key: "title" },
+  //   { label: "Banner", key: "banner" },
+  // ];
 
   const handlePageClick = (event) => {
     setPageNumber(event);
@@ -33,36 +49,9 @@ const Campaign = () => {
       clearTimeout(typingTimeoutRef.current);
     }
     typingTimeoutRef.current = setTimeout(() => {
-      // setSearchInfo({ ...searchInfo, key_word: value });
       setkeyWord(value);
     }, 600);
   };
-  // const handleChangeSearchByStartTime = (e) => {
-  //   if (
-  //     searchInfo.end_time !== "" &&
-  //     searchInfo.end_time < e.target.value.replace("T", " ")
-  //   ) {
-  //     toast.error("End time cannot be before start time");
-  //   } else {
-  //     setSearchInfo({
-  //       ...searchInfo,
-  //       start_time: e.target.value.replace("T", " "),
-  //     });
-  //   }
-  // };
-  // const handleChangeSearchByEndTime = (e) => {
-  //   if (
-  //     searchInfo.start_time !== "" &&
-  //     searchInfo.start_time > e.target.value.replace("T", " ")
-  //   ) {
-  //     toast.error("End time cannot be before start time");
-  //   } else {
-  //     setSearchInfo({
-  //       ...searchInfo,
-  //       end_time: e.target.value.replace("T", " "),
-  //     });
-  //   }
-  // };
 
   function changePopup() {
     setOpenPopup(!isOpenPopup);
@@ -147,6 +136,8 @@ const Campaign = () => {
               type="button"
               className="camp-export-btn camp-button"
               data={listCampaigns}
+              filename="campaigns.csv"
+              // headers={headerExport}
             >
               Export CSV
             </CSVLink>

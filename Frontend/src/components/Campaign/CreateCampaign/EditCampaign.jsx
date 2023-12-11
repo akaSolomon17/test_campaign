@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
-
 import "./CreateCampaign.scss";
-
 import { updateCampaignAction } from "../../../store/actions/campaignActions";
 import useAxios from "../../../utils/useAxios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import moment from "moment";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+} from "react-accessible-accordion";
+import "react-accessible-accordion/dist/fancy-example.css";
 
 const EditCampaign = (props) => {
   const api = useAxios();
@@ -109,18 +114,19 @@ const EditCampaign = (props) => {
       if (values.status === "") {
         values.status = "1";
       }
-      let formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("status", values.status);
-      formData.append("start_time", values.start_date);
-      formData.append("end_time", values.end_date);
-      formData.append("budget", values.budget);
-      formData.append("bid_amount", values.bid_amount);
-      formData.append("title", values.title);
-      formData.append("description", values.description);
-      formData.append("img_preview", values.img_preview);
-      formData.append("final_url", values.final_url);
-      formData.append("user_id", currentUser.user_id);
+      let formData = {
+        name: values.name,
+        status: values.status,
+        start_time: values.start_date,
+        end_time: values.end_date,
+        budget: values.budget,
+        bid_amount: values.bid_amount,
+        title: values.title,
+        description: values.description,
+        img_preview: values.img_preview,
+        final_url: values.final_url,
+        user_id: currentUser.user_id,
+      };
 
       dispatch(
         updateCampaignAction(
@@ -194,139 +200,154 @@ const EditCampaign = (props) => {
             />
           </button>
         </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Detail
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Name:
-            <input
-              readOnly={true}
-              value={formik.values.name}
-              type="text"
-              name="name"
-            />
-          </div>
-          <div className="status-camp">
-            User status:
-            <select
-              value={formik.values.status ? formik.values.status : "1"}
-              onChange={formik.handleChange}
-              className="status-select"
-              name="status"
-            >
-              <option value={1}>ACTIVE</option>
-              <option value={0}>INACTIVE</option>
-            </select>
-          </div>
-        </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Schedule
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-schedule-input">
-            Schedule:
-            <div className="camp-starttime-container">
-              <label htmlFor="startDateTimePicker">Start Time: </label>
-              <input
-                type="datetime-local"
-                id="startDateTimePicker"
-                name="startDateTimePicker"
-                value={formik.values.start_time}
-                onChange={handleStartTimeChange}
-              ></input>
-            </div>
-            <div className="camp-endtime-container">
-              <label htmlFor="endDateTimePicker">End Time:</label>
-              <input
-                className="endtime"
-                type="datetime-local"
-                id="endDateTimePicker"
-                name="endDateTimePicker"
-                value={formik.values.end_time}
-                onChange={handleEndTimeChange}
-              ></input>
-            </div>
-          </div>
-        </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Budget
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Budget:
-            <input
-              value={formik.values.budget}
-              onChange={formik.handleChange}
-              type="text"
-              name="budget"
-            />
-          </div>
-        </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Bidding
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Bid Amount:
-            <input
-              value={formik.values.bid_amount}
-              onChange={formik.handleChange}
-              type="text"
-              name="budget"
-            />
-          </div>
-        </div>
-        <div className="camp-title" onClick={changeDetailDrop}>
-          Creative
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div className={`${"mg-right"} ${isDropDetail ? "" : "camp-dropped"}`}>
-          <div className="camp-text-input">
-            Title:
-            <input
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              type="text"
-              name="budget"
-            />
-          </div>
-          <div className="camp-text-input">
-            Description:
-            <input
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              type="text"
-              name="description"
-            />
-          </div>
-          <div className="camp-text-input">
-            Creative preview:
-            <img
-              className="img-preview"
-              src={
-                formik.values.preview_img
-                  ? formik.values.preview_img
-                  : "https://res.cloudinary.com/dooge27kv/image/upload/v1701941092/Insert_image_here_kttfjb.svg"
-              }
-              alt="img-preview"
-            />
-          </div>
-          <div className="camp-text-input">
-            Final URL:
-            <input
-              value={formik.values.final_url}
-              onChange={formik.handleChange}
-              type="text"
-              name="description"
-            />
-          </div>
-        </div>
-
+        <Accordion
+          allowMultipleExpanded
+          preExpanded={[
+            "active-detail",
+            "active-schedule",
+            "active-budget",
+            "active-bidding",
+            "active-creative",
+          ]}
+        >
+          <AccordionItem uuid="active-detail">
+            <AccordionItemHeading>
+              <AccordionItemButton>Detail</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Name:
+                <input
+                  readOnly={true}
+                  value={formik.values.name}
+                  type="text"
+                  name="name"
+                />
+              </div>
+              <div className="status-camp">
+                User status:
+                <select
+                  value={formik.values.status ? formik.values.status : "1"}
+                  onChange={formik.handleChange}
+                  className="status-select"
+                  name="status"
+                >
+                  <option value={1}>ACTIVE</option>
+                  <option value={0}>INACTIVE</option>
+                </select>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-schedule">
+            <AccordionItemHeading>
+              <AccordionItemButton>Schedule</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-schedule-input">
+                Schedule:
+                <div className="camp-starttime-container">
+                  <label htmlFor="startDateTimePicker">Start Time: </label>
+                  <input
+                    type="datetime-local"
+                    id="startDateTimePicker"
+                    name="startDateTimePicker"
+                    value={formik.values.start_time}
+                    onChange={handleStartTimeChange}
+                  ></input>
+                </div>
+                <div className="camp-endtime-container">
+                  <label htmlFor="endDateTimePicker">End Time:</label>
+                  <input
+                    className="endtime"
+                    type="datetime-local"
+                    id="endDateTimePicker"
+                    name="endDateTimePicker"
+                    value={formik.values.end_time}
+                    onChange={handleEndTimeChange}
+                  ></input>
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-budget">
+            <AccordionItemHeading>
+              <AccordionItemButton>Budget</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Budget:
+                <input
+                  value={formik.values.budget}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="budget"
+                />
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-bidding">
+            <AccordionItemHeading>
+              <AccordionItemButton>Bidding</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Bid Amount:
+                <input
+                  value={formik.values.bid_amount}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="budget"
+                />
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem uuid="active-creative">
+            <AccordionItemHeading>
+              <AccordionItemButton>Creative</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="camp-text-input">
+                Title:
+                <input
+                  value={formik.values.title}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="budget"
+                />
+              </div>
+              <div className="camp-text-input">
+                Description:
+                <input
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="description"
+                />
+              </div>
+              <div className="camp-text-input">
+                Creative preview:
+                <img
+                  className="img-preview"
+                  src={
+                    formik.values.preview_img
+                      ? formik.values.preview_img
+                      : "https://res.cloudinary.com/dooge27kv/image/upload/v1701941092/Insert_image_here_kttfjb.svg"
+                  }
+                  alt="img-preview"
+                />
+              </div>
+              <div className="camp-text-input">
+                Final URL:
+                <input
+                  value={formik.values.final_url}
+                  onChange={formik.handleChange}
+                  type="text"
+                  name="description"
+                />
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+        </Accordion>
         <div className="camp-footer-pop">
           <div className="underline"></div>
           <button className="cancel-btn" onClick={closePopup}>

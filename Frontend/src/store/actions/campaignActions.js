@@ -17,7 +17,7 @@ export const fetchListCampaignAction = (initInfo, api) => {
 
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListCampaignSuccess(res.data));
+        dispatch(fetchListCampaignSuccess(res.data.msg));
       } else {
         dispatch(turnOffLoading());
       }
@@ -92,14 +92,19 @@ export const deleteCampaignSuccess = (payload) => {
 };
 
 // update Campaign Action
-export const updateCampaignAction = (dataCamp, api) => {
+export const updateCampaignAction = (
+  campaignId,
+  dataCamp,
+  dataForFetch,
+  api
+) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
       const res = await campaignServices.updateCampaign(dataCamp, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListCampaignAction(api));
+        dispatch(fetchListCampaignAction(dataForFetch, api));
         toast.success("Update Campaign Successfully!");
       } else {
         toast.error("Update Campaign Failed!");

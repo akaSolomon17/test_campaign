@@ -21,7 +21,7 @@ const accountReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        listAccounts: action.payload.user_list,
+        listAccounts: action.payload.user_list[0],
         totalRecords: action.payload.total_records,
       };
     case FETCH_ACCOUNT_FAILED:

@@ -18,8 +18,7 @@ import "react-accessible-accordion/dist/fancy-example.css";
 const AccPopup = (props) => {
   const api = useAxios();
   const dispatch = useDispatch();
-  // const [formData, setFormData] = useState(initialState);
-  const [isDropDetail, setDropDetail] = useState(true);
+  // const [isDropDetail, setDropDetail] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -94,10 +93,6 @@ const AccPopup = (props) => {
   const closePopup = () => {
     props.changePopup();
   };
-
-  const changeDetailDrop = () => {
-    setDropDetail(!isDropDetail);
-  };
   return (
     <div className="acc-popup">
       <form onSubmit={formik.handleSubmit} className="acc-popup-inner">
@@ -105,24 +100,20 @@ const AccPopup = (props) => {
           Create Account
           <div className="underline"></div>
           <button className="acc-close-btn" onClick={closePopup}>
-            <AiOutlineClose
-              className={`${isDropDetail ? "" : "dropped-icon"}`}
-            />
+            <AiOutlineClose className="dropped-icon" />
           </button>
         </div>
         {/* <div className="acc-title" onClick={changeDetailDrop}>
           Detail
           <AiOutlineDown className="drop-btn" />
         </div> */}
-        <Accordion allowZeroExpanded>
-          <AccordionItem className="active">
+        <Accordion allowZeroExpanded preExpanded={["active"]}>
+          <AccordionItem uuid="active">
             <AccordionItemHeading>
               <AccordionItemButton>Detail</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
-              <div
-                className={`${"detail"} ${isDropDetail ? "" : "acc-dropped"}`}
-              >
+              <div className="detail">
                 <div className="acc-text-input">
                   Email:
                   <input

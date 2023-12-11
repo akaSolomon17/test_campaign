@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
-
-import { AiOutlineDown, AiOutlineClose } from "react-icons/ai";
+import { AiOutlineClose } from "react-icons/ai";
 import "./AccPopup.scss";
-
 import useAxios from "../../../utils/useAxios";
 import { updateAccountAction } from "../../../store/actions/accountAction";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+} from "react-accessible-accordion";
+import "react-accessible-accordion/dist/fancy-example.css";
 
 const AccUpdatePopup = (props) => {
   const api = useAxios();
   const dispatch = useDispatch();
-  const [isDropDetail, setDropDetail] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -26,8 +31,8 @@ const AccUpdatePopup = (props) => {
     },
 
     validationSchema: Yup.object({
-      firstname: Yup.string().required("First name is required").max(40),
-      lastname: Yup.string().required("Last name is required").max(40),
+      first_name: Yup.string().required("First name is required").max(40),
+      last_name: Yup.string().required("Last name is required").max(40),
       role_id: Yup.string().required("Role is required"),
       address: Yup.string().required("Address is required").max(255),
       phone: Yup.string()
@@ -46,7 +51,16 @@ const AccUpdatePopup = (props) => {
         phone: values.phone,
       };
 
-      dispatch(updateAccountAction(updateData, api));
+      dispatch(
+        updateAccountAction(
+          updateData,
+          {
+            key_word: props.keyWord,
+            page_number: props.pageNumber,
+          },
+          api
+        )
+      );
       formik.resetForm();
       closePopup();
     },
@@ -55,11 +69,6 @@ const AccUpdatePopup = (props) => {
   const closePopup = () => {
     props.onClose();
   };
-
-  const changeDetailDrop = () => {
-    setDropDetail(!isDropDetail);
-  };
-
   return (
     <div className="acc-popup">
       <form onSubmit={formik.handleSubmit} className="acc-popup-inner">
@@ -67,95 +76,95 @@ const AccUpdatePopup = (props) => {
           Edit Account
           <div className="underline"></div>
           <button className="acc-close-btn" onClick={props.onClose}>
-            <AiOutlineClose
-              className={`${isDropDetail ? "" : "dropped-icon"}`}
-            />
+            <AiOutlineClose className="dropped-icon" />
           </button>
         </div>
-        <div className="acc-title" onClick={changeDetailDrop}>
-          Detail
-          <AiOutlineDown className="drop-btn" />
-        </div>
-        <div
-          className={`${"detail-update"} ${isDropDetail ? "" : "acc-dropped"}`}
-        >
-          <div className="acc-text-input-update">
-            Email:
-            <input
-              readOnly={true}
-              value={formik.values.email}
-              type="text"
-              name="name"
-            />
-          </div>
-          <div className="acc-text-input-update">
-            First name:
-            <input
-              value={formik.values.first_name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              type="text"
-              name="name"
-            />
-            {formik.errors.first_name && (
-              <p style={{ color: "red" }}>{formik.errors.first_name}</p>
-            )}
-          </div>
-          <div className="acc-text-input-update">
-            Last name:
-            <input
-              value={formik.values.last_name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              type="text"
-              name="name"
-            />
-            {formik.errors.last_name && (
-              <p style={{ color: "red" }}>{formik.errors.last_name}</p>
-            )}
-          </div>
-          <div className="role-acc">
-            Role:
-            <select
-              value={formik.values.role_id ? formik.values.role_id : "1"}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="role-select"
-              name="status"
-            >
-              <option value="1">ADMIN</option>
-              <option value="2">DAC</option>
-              <option value="3">ADVERTISER</option>
-            </select>
-          </div>
-          <div className="acc-text-input-update">
-            Address:
-            <input
-              value={formik.values.address}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              type="text"
-              name="name"
-            />
-            {formik.errors.address && (
-              <p style={{ color: "red" }}>{formik.errors.address}</p>
-            )}
-          </div>
-          <div className="acc-text-input-update">
-            Phone:
-            <input
-              value={formik.values.phone}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              type="text"
-              name="name"
-            />
-            {formik.errors.phone && (
-              <p style={{ color: "red" }}>{formik.errors.phone}</p>
-            )}
-          </div>
-        </div>
-
+        <Accordion allowZeroExpanded preExpanded={["active"]}>
+          <AccordionItem uuid="active">
+            <AccordionItemHeading>
+              <AccordionItemButton>Detail</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="detail-update">
+                <div className="acc-text-input-update">
+                  Email:
+                  <input
+                    readOnly={true}
+                    value={formik.values.email}
+                    type="text"
+                    name="email"
+                  />
+                </div>
+                <div className="acc-text-input-update">
+                  First name:
+                  <input
+                    value={formik.values.first_name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="text"
+                    name="first_name"
+                  />
+                  {formik.errors.first_name && (
+                    <p style={{ color: "red" }}>{formik.errors.first_name}</p>
+                  )}
+                </div>
+                <div className="acc-text-input-update">
+                  Last name:
+                  <input
+                    value={formik.values.last_name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="text"
+                    name="last_name"
+                  />
+                  {formik.errors.last_name && (
+                    <p style={{ color: "red" }}>{formik.errors.last_name}</p>
+                  )}
+                </div>
+                <div className="role-acc">
+                  Role:
+                  <select
+                    value={formik.values.role_id ? formik.values.role_id : "1"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className="role-select"
+                    name="role_id"
+                  >
+                    <option value="1">ADMIN</option>
+                    <option value="2">DAC</option>
+                    <option value="3">ADVERTISER</option>
+                  </select>
+                </div>
+                <div className="acc-text-input-update">
+                  Address:
+                  <input
+                    value={formik.values.address}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="text"
+                    name="address"
+                  />
+                  {formik.errors.address && (
+                    <p style={{ color: "red" }}>{formik.errors.address}</p>
+                  )}
+                </div>
+                <div className="acc-text-input-update">
+                  Phone:
+                  <input
+                    value={formik.values.phone}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="text"
+                    name="phone"
+                  />
+                  {formik.errors.phone && (
+                    <p style={{ color: "red" }}>{formik.errors.phone}</p>
+                  )}
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+        </Accordion>
         <div className="acc-footer-pop">
           <div className="underline"></div>
           <button className="cancel-btn" onClick={props.onClose}>

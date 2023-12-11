@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import useAxios from "../../utils/useAxios";
 import { useDispatch, useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
-import "react-pagination-js/dist/styles.css";
 import "./Account.scss";
 import AccTable from "./AccountTable/AccTable";
 import AccPopup from "./AccountPopup/AccPopup";
@@ -19,7 +18,7 @@ const Account = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [keyWord, setkeyWord] = useState("ALL");
   const dispatch = useDispatch();
-  const listAccounts = useSelector((state) => state.account.listAccounts[0]);
+  const listAccounts = useSelector((state) => state.account.listAccounts);
   const totalRecords = useSelector((state) => state.account.totalRecords);
   const pageCount = Math.ceil(totalRecords / 3);
 
@@ -82,13 +81,15 @@ const Account = () => {
           />
         </div>
         <div className="acc-func-btn">
-          {/* <CSVLink
-            // data={listAccounts}
-            headers={headerExport}
-            filename="accounts.csv"
-          >
-            <button className="acc-export-btn acc-button">Export CSV</button>
-          </CSVLink> */}
+          {listAccounts && (
+            <CSVLink
+              data={listAccounts}
+              headers={headerExport}
+              filename="accounts.csv"
+            >
+              <button className="acc-export-btn acc-button">Export CSV</button>
+            </CSVLink>
+          )}
           <button className="acc-create-btn acc-button" onClick={changePopup}>
             Create Account
           </button>

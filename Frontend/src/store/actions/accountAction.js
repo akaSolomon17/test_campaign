@@ -16,7 +16,7 @@ export const fetchListAccountAction = (initInfo, api) => {
       const res = await accountServices.fetchListAccount(initInfo, api);
       dispatch(turnOffLoading());
       if (res.status === 200) {
-        dispatch(fetchListAccountSuccess(res.data));
+        dispatch(fetchListAccountSuccess(res.data.msg));
       }
     } catch (e) {
       console.log(e);
@@ -72,7 +72,7 @@ export const deleteAccountAction = (accountId, dataForFetch, api) => {
         toast.success("Delete account successfully!");
         dispatch(fetchListAccountAction(dataForFetch, api));
       } else {
-        toast.error(res.msg);
+        toast.error(res.data.msg);
         dispatch(turnOffLoading());
       }
     } catch (e) {
@@ -90,7 +90,7 @@ export const deleteAccountSuccess = (payload) => {
 };
 
 // update Account Action
-export const updateAccountAction = (dataAcc, api) => {
+export const updateAccountAction = (dataAcc, dataForFetch, api) => {
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
@@ -98,8 +98,9 @@ export const updateAccountAction = (dataAcc, api) => {
       dispatch(turnOffLoading());
       if (res.status === 200) {
         toast.success("Updated account successfully!");
-        dispatch(fetchListAccountAction(api));
+        dispatch(fetchListAccountAction(dataForFetch, api));
       } else {
+        toast.error(res.data.msg);
         dispatch(turnOffLoading());
       }
     } catch (e) {
