@@ -358,7 +358,7 @@ class getBannerCampaign(Resource):
         try:
             campaigns = (
                     Campaigns.query.filter_by(user_status=True)
-                    .order_by(desc(Campaigns.bid_amount))
+                    .order_by(Campaigns.bid_amount.desc())
                     .limit(5)
                     .all()
                 )
