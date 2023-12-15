@@ -27,3 +27,6 @@ def initialRoutesCampaign(api):
 
     # [PUT] UPDATE BANNER CAMPAIGN
     api.add_resource(bannerCampaign,"/api/banner_campaign/<camp_id>", endpoint="banner_campaign")
+    
+    ## [GET] GET BANNER
+    api.add_resource(getBannerCampaign,"/api/get_banner_campaign", endpoint="get_banner_campaign")
