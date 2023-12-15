@@ -27,7 +27,6 @@ const EditCampaign = (props) => {
   const [startTime, setStartTime] = useState("2023-01-01 23:59:59");
   const [endTime, setEndTime] = useState("2023-12-12 23:59:59");
   const [isDropDetail, setDropDetail] = useState(true);
-  const [campaign, setCampaign] = useState();
 
   const currentUser = useSelector((state) => state.auth?.currentUser);
 
@@ -48,10 +47,6 @@ const EditCampaign = (props) => {
     },
 
     validationSchema: Yup.object({
-      name: Yup.string()
-        .required("Please enter campaign's name")
-        .min(2, "Name must have at least 2 characters")
-        .max(255, "Exceed the number of characters"),
       start_date: Yup.date().required("Required!"),
       end_date: Yup.date()
         .required("Required!")
@@ -86,26 +81,26 @@ const EditCampaign = (props) => {
         2,
         "Description must have at least 2 characters"
       ),
-      img_preview: Yup.mixed()
-        .required("Please choose a campaign's banner")
-        .test(
-          "FILE_TYPE",
-          "Invalid type! Please choose another file",
-          (value) =>
-            value &&
-            [
-              "image/png",
-              "image/jpg",
-              "image/jpeg",
-              "image/gif",
-              "image/svg",
-            ].includes(value.type)
-        )
-        .test(
-          "Fichier taille",
-          "Please choose a size less than 1 mb",
-          (value) => !value || (value && value.size <= 1024 * 1024)
-        ),
+      // img_preview: Yup.mixed()
+      //   .required("Please choose a campaign's banner")
+      //   .test(
+      //     "FILE_TYPE",
+      //     "Invalid type! Please choose another file",
+      //     (value) =>
+      //       value &&
+      //       [
+      //         "image/png",
+      //         "image/jpg",
+      //         "image/jpeg",
+      //         "image/gif",
+      //         "image/svg",
+      //       ].includes(value.type)
+      //   )
+      //   .test(
+      //     "Fichier taille",
+      //     "Please choose a size less than 1 mb",
+      //     (value) => !value || (value && value.size <= 1024 * 1024)
+      //   ),
       final_url: Yup.string()
         .min(2, "URL must have at least 2 characters")
         .max(255, "Exceed the number of characters"),
@@ -115,21 +110,21 @@ const EditCampaign = (props) => {
         values.status = "1";
       }
       let formData = {
-        name: values.name,
+        user_id: currentUser.user_id,
         status: values.status,
-        start_time: values.start_date,
-        end_time: values.end_date,
+        start_date: values.start_date,
+        end_date: values.end_date,
         budget: values.budget,
         bid_amount: values.bid_amount,
         title: values.title,
         description: values.description,
         img_preview: values.img_preview,
         final_url: values.final_url,
-        user_id: currentUser.user_id,
       };
 
       dispatch(
         updateCampaignAction(
+          props.record.campaign_id,
           formData,
           {
             key_word: keyWord,
@@ -153,40 +148,31 @@ const EditCampaign = (props) => {
     setDropDetail(!isDropDetail);
   };
 
-  function handleStartTimeChange(event) {
-    const selectedStartTime = event.target.value;
+  const handleDateChange = (event, dateField) => {
+    const selectedDate = event.target.value;
 
-    // const minDateTime = currentMoment.format("YYYY-MM-DDTHH:mm:ss");
-
-    // if (moment(selectedStartTime).isBefore(minDateTime)) {
-    //   return;
-    // }
-
-    if (moment(selectedStartTime).isAfter(endTime)) {
-      return;
+    if (dateField === "start_date") {
+      const minDateTime = moment().format("YYYY-MM-DD HH:mm");
+      if (
+        moment(selectedDate).isBefore(minDateTime) ||
+        moment(selectedDate).isAfter(endTime)
+      ) {
+        return;
+      }
+      setStartTime(selectedDate);
+    } else if (dateField === "end_date") {
+      const minDateTime = moment(startTime)
+        .add(1, "days")
+        .format("YYYY-MM-DD HH:mm");
+      if (
+        moment(selectedDate).isBefore(minDateTime) ||
+        moment(selectedDate).isBefore(startTime)
+      ) {
+        return;
+      }
+      setEndTime(selectedDate);
     }
-
-    // Format the date using moment before setting it
-    setStartTime(moment(selectedStartTime).format("YYYY-MM-DD HH:mm:ss"));
-  }
-
-  function handleEndTimeChange(event) {
-    const selectedEndTime = event.target.value;
-    const minDateTime = moment(startTime)
-      .add(1, "days")
-      .format("YYYY-MM-DD HH:mm:ss");
-
-    if (moment(selectedEndTime).isBefore(minDateTime)) {
-      return;
-    }
-
-    if (moment(selectedEndTime).isBefore(startTime)) {
-      return;
-    }
-
-    // Format the date using moment before setting it
-    setEndTime(moment(selectedEndTime).format("YYYY-MM-DD HH:mm:ss"));
-  }
+  };
 
   return (
     <div className="camp-popup">
@@ -195,9 +181,7 @@ const EditCampaign = (props) => {
           Edit Campaign
           <div className="underline"></div>
           <button className="camp-close-btn" onClick={closePopup}>
-            <AiOutlineClose
-              className={`${isDropDetail ? "" : "dropped-icon"}`}
-            />
+            <AiOutlineClose className="dropped-icon" />
           </button>
         </div>
         <Accordion
@@ -223,18 +207,28 @@ const EditCampaign = (props) => {
                   type="text"
                   name="name"
                 />
+                {formik.errors.name && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.name}
+                  </p>
+                )}
               </div>
               <div className="status-camp">
                 User status:
                 <select
-                  value={formik.values.status ? formik.values.status : "1"}
+                  value={formik.values.status ? formik.values.status : true}
                   onChange={formik.handleChange}
                   className="status-select"
                   name="status"
                 >
-                  <option value={1}>ACTIVE</option>
-                  <option value={0}>INACTIVE</option>
+                  <option value={true}>ACTIVE</option>
+                  <option value={false}>INACTIVE</option>
                 </select>
+                {formik.errors.status && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.status}
+                  </p>
+                )}
               </div>
             </AccordionItemPanel>
           </AccordionItem>
@@ -250,10 +244,18 @@ const EditCampaign = (props) => {
                   <input
                     type="datetime-local"
                     id="startDateTimePicker"
-                    name="startDateTimePicker"
-                    value={formik.values.start_time}
-                    onChange={handleStartTimeChange}
-                  ></input>
+                    name="start_date"
+                    value={formik.values.start_date}
+                    onChange={(event) => {
+                      formik.handleChange(event);
+                      handleDateChange(event, "start_date");
+                    }}
+                  />
+                  {formik.errors.start_date && (
+                    <p className="error-text" style={{ color: "red" }}>
+                      {formik.errors.start_date}
+                    </p>
+                  )}
                 </div>
                 <div className="camp-endtime-container">
                   <label htmlFor="endDateTimePicker">End Time:</label>
@@ -261,10 +263,18 @@ const EditCampaign = (props) => {
                     className="endtime"
                     type="datetime-local"
                     id="endDateTimePicker"
-                    name="endDateTimePicker"
-                    value={formik.values.end_time}
-                    onChange={handleEndTimeChange}
-                  ></input>
+                    name="end_date"
+                    value={formik.values.end_date}
+                    onChange={(event) => {
+                      formik.handleChange(event);
+                      handleDateChange(event, "end_date");
+                    }}
+                  />
+                  {formik.errors.end_date && (
+                    <p className="error-text" style={{ color: "red" }}>
+                      {formik.errors.end_date}
+                    </p>
+                  )}
                 </div>
               </div>
             </AccordionItemPanel>
@@ -282,6 +292,11 @@ const EditCampaign = (props) => {
                   type="text"
                   name="budget"
                 />
+                {formik.errors.budget && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.budget}
+                  </p>
+                )}
               </div>
             </AccordionItemPanel>
           </AccordionItem>
@@ -296,8 +311,13 @@ const EditCampaign = (props) => {
                   value={formik.values.bid_amount}
                   onChange={formik.handleChange}
                   type="text"
-                  name="budget"
+                  name="bid_amount"
                 />
+                {formik.errors.bid_amount && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.bid_amount}
+                  </p>
+                )}
               </div>
             </AccordionItemPanel>
           </AccordionItem>
@@ -312,8 +332,13 @@ const EditCampaign = (props) => {
                   value={formik.values.title}
                   onChange={formik.handleChange}
                   type="text"
-                  name="budget"
+                  name="title"
                 />
+                {formik.errors.title && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.title}
+                  </p>
+                )}
               </div>
               <div className="camp-text-input">
                 Description:
@@ -323,6 +348,11 @@ const EditCampaign = (props) => {
                   type="text"
                   name="description"
                 />
+                {formik.errors.description && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.description}
+                  </p>
+                )}
               </div>
               <div className="camp-text-input">
                 Creative preview:
@@ -335,6 +365,11 @@ const EditCampaign = (props) => {
                   }
                   alt="img-preview"
                 />
+                {formik.errors.preview_img && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.preview_img}
+                  </p>
+                )}
               </div>
               <div className="camp-text-input">
                 Final URL:
@@ -342,8 +377,13 @@ const EditCampaign = (props) => {
                   value={formik.values.final_url}
                   onChange={formik.handleChange}
                   type="text"
-                  name="description"
+                  name="final_url"
                 />
+                {formik.errors.final_url && (
+                  <p className="error-text" style={{ color: "red" }}>
+                    {formik.errors.final_url}
+                  </p>
+                )}
               </div>
             </AccordionItemPanel>
           </AccordionItem>

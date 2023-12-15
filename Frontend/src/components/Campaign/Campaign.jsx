@@ -135,7 +135,7 @@ const Campaign = () => {
             <CSVLink
               type="button"
               className="camp-export-btn camp-button"
-              data={listCampaigns}
+              data={Array.isArray(listCampaigns) ? listCampaigns : []}
               filename="campaigns.csv"
               // headers={headerExport}
             >

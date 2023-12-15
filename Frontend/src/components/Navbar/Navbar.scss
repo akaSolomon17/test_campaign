@@ -32,3 +32,9 @@
 .name-btn {
   margin-left: 5px;
 }
+
+@media screen and (max-width: 1024px) {
+  .name-btn {
+    display: none;
+  }
+}

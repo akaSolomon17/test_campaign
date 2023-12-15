@@ -21,7 +21,11 @@
       text-align: center;
       border: 2px solid black;
       padding: 10px;
-
+      max-width: 250px;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
       img {
         padding-right: 10px;
         width: 40px;
@@ -43,4 +47,17 @@
 .pagination-container {
   justify-content: center;
   padding-top: 20px;
+}
+
+@media screen and (max-width: 1408px) {
+  .acc-table-data {
+    table {
+      th {
+        border: 2px solid black;
+        color: white;
+        height: 46px;
+        font-weight: 500;
+      }
+    }
+  }
 }

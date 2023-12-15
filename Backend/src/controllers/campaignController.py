@@ -239,7 +239,6 @@ class updateCampaign(Resource):
             start_date = json["start_date"]
             end_date = json["end_date"]
             status = json["status"]
-
             title = json["title"]
             description = json["description"]
             img_preview = json["img_preview"]
@@ -286,7 +285,7 @@ class updateCampaign(Resource):
                 
                 return errConfig.msgFeedback("Update campaign successfully!","",200)
             except Exception as e:
-                return errConfig.msgFeedback("Update campaign failed!","",200)
+                return errConfig.msgFeedback("Update campaign failed!",f"{str(e)}",200)
         except Exception as e:
             return errConfig.msgFeedback("Unexpected Error: ",f"{str(e)}",200)
 

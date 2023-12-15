@@ -14,10 +14,11 @@ export const loginAction = (loginData, navigate) => {
     dispatch(turnOnLoading());
     try {
       const res = await authServices.signin(loginData);
+      console.log("file: authActions.js:17 ~ res:", res.data.msg.errorMessage);
       dispatch(turnOffLoading());
 
-      if (res.data.errorMessage === "Email or password is invalid!") {
-        toast.error(res.data.errorMessage);
+      if (res.data.msg.errorMessage === "Email or password is invalid!") {
+        toast.error(res.data.msg.errorMessage);
         dispatch(turnOffLoading());
         return;
       }

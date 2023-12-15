@@ -101,7 +101,11 @@ export const updateCampaignAction = (
   return async (dispatch) => {
     try {
       dispatch(turnOnLoading());
-      const res = await campaignServices.updateCampaign(dataCamp, api);
+      const res = await campaignServices.updateCampaign(
+        campaignId,
+        dataCamp,
+        api
+      );
       dispatch(turnOffLoading());
       if (res.status === 200) {
         dispatch(fetchListCampaignAction(dataForFetch, api));

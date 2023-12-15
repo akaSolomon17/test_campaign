@@ -65,7 +65,6 @@ export const deleteAccountAction = (accountId, dataForFetch, api) => {
     try {
       dispatch(turnOnLoading());
       const res = await accountServices.deleteAccount(accountId, api);
-      console.log("🚀 ~ file: accountAction.js:65 ~ return ~ res:", res);
       dispatch(turnOffLoading());
 
       if (res.status === 200) {
@@ -100,7 +99,7 @@ export const updateAccountAction = (dataAcc, dataForFetch, api) => {
         toast.success("Updated account successfully!");
         dispatch(fetchListAccountAction(dataForFetch, api));
       } else {
-        toast.error(res.data.msg);
+        toast.error(res.data.msg.errorMessage);
         dispatch(turnOffLoading());
       }
     } catch (e) {

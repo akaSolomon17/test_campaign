@@ -43,11 +43,11 @@ const AccPopup = (props) => {
       first_name: Yup.string()
         .required("First name is required")
         .matches(/^[A-Za-z ]*$/, "Please enter valid first name")
-        .max(40),
+        .max(40, "First name maximum is 40 characters"),
       last_name: Yup.string()
         .required("Last name is required")
         .matches(/^[A-Za-z ]*$/, "Please enter valid last name")
-        .max(40),
+        .max(40, "Last name maximum is 40 characters"),
       address: Yup.string()
         .required("Address is required")
         .typeError("Your address must be a string")

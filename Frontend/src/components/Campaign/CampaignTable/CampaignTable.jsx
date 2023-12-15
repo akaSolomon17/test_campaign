@@ -34,20 +34,26 @@ const CampaignTable = (props) => {
   };
 
   const handleDeleteCampaign = async (campaign) => {
-    dispatch(
-      deleteCampaignAction(
-        campaign.campaign_id,
-        {
-          key_word: keyWord,
-          start_time: startTime,
-          end_time: endTime,
-          page_number: 1,
-        },
-        api
-      )
-    );
-    props.handleChangeCurrentPage();
+    let notification = "Are you sure you want to delete?";
+    if (window.confirm(notification) === true) {
+      props.handleChangeCurrentPage();
+      dispatch(
+        deleteCampaignAction(
+          campaign.campaign_id,
+          {
+            key_word: keyWord,
+            start_time: startTime,
+            end_time: endTime,
+            page_number: 1,
+          },
+          api
+        )
+      );
+    } else {
+      return;
+    }
   };
+
   return (
     <div className="camp-table-data">
       <table>
