@@ -315,8 +315,6 @@ class deleteCampaign(Resource):
 
 
 class bannerCampaign(Resource):
-    @authMiddleware
-    @authMiddlewareAdmin
     def put(self,camp_id):
         try:
             json = request.get_json()
@@ -353,7 +351,6 @@ class bannerCampaign(Resource):
         
 
 class getBannerCampaign(Resource):
-
     def get(self):
         try:
             campaigns = (
@@ -370,11 +367,12 @@ class getBannerCampaign(Resource):
                         "user_status": campaign.user_status,
                         "bid_amount": campaign.bid_amount,
                         "campaign_id": campaign.campaign_id,
+                        "final_url": campaign.final_url
                     }
                     for campaign in campaigns
                 ]
-                return jsonify(campaigns=tuple_campaign)
+                return errConfig.msgFeedback({tuple_campaign,"Get Banner successfully!"},None,200)
             else:
-                return errConfig.statusCode("Campaign not found", 404)
+                return errConfig.msgFeedback("Campaign not found","", 200)
         except Exception as e:
             return errConfig.statusCode(str(e), 500)
